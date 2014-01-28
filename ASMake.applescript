@@ -151,6 +151,10 @@ on runTask(action)
 	end try
 end runTask
 
-on run
-	return me
+on run {action}
+	if action is "__ASMAKE__LOAD__" then -- Allow loading ASMake from text format with run script
+		return me
+	else
+		runTask(action)
+	end if
 end run
