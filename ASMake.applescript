@@ -55,77 +55,75 @@ script Stdout
 	
 end script -- Stdout
 
-property parent : Stdout
-property ASMake : me
-property tasks : {}
-property pwd : missing value
+script TaskBase
+	property parent : Stdout
+	property class : "Task"
+	property TASKS : {} -- shared by all tasks, should not be overriden
+	property PWD : missing value -- shared by all tasks, should not be overridden
+	property synonyms : {} -- Define a task's aliases
+	property printSuccess : true -- Print success message when a task finishes?
+
+	on cp(src, dst) -- src can be a list of POSIX paths
+		local cmd
+		if src's class is text then
+			set src to {src}
+		end if
+		set cmd to "cp -r"
+		repeat with s in src
+			set cmd to cmd & space & quoted form of s & space
+		end repeat
+		sh(cmd & space & quoted form of dst)
+	end cp
+
+	on mkdir(dirname)
+		sh("mkdir -p" & space & quoted form of dirname)
+	end mkdir
+
+	on osacompile(src)
+		if src's class is text then
+			set src to {src}
+		end if
+		repeat with s in src
+			sh("osacompile -x -o" & space & Â
+				quoted form of (s & ".scpt") & space & Â
+				quoted form of (s & ".applescript"))
+		end repeat
+	end osacompile
+
+	on rm(patterns)
+		if patterns's class is text then
+			set patterns to {patterns}
+		end if
+		set cmd to ""
+		repeat with p in patterns
+			set cmd to cmd & "rm -fr" & space & p & ";" & space
+		end repeat
+		sh(cmd)
+	end rm
+
+	on sh(command)
+		local output
+		echo(command)
+		-- Execute command in working directory
+		set command to Â
+			"cd" & space & quoted form of my PWD & ";" & space & command
+		set output to (do shell script command & space & "2>&1")
+		if output is not equal to "" then echo(output)
+	end sh
+
+	on which(command)
+		try
+			do shell script "which" & space & command
+			true
+		on error
+			false
+		end try
+	end which
+end script
 
 on Task(t)
-	set the end of my tasks to t -- Register task
-	
-	script
-		property parent : Stdout
-		property class : "Task"
-		property synonyms : {} -- Define a task's aliases
-		property printSuccess : true -- Print "==> Success!" when a task finishes?
-		
-		on cp(src, dst) -- src can be a list of POSIX paths
-			local cmd
-			if src's class is text then
-				set src to {src}
-			end if
-			set cmd to "cp -r"
-			repeat with s in src
-				set cmd to cmd & space & quoted form of s & space
-			end repeat
-			sh(cmd & space & quoted form of dst)
-		end cp
-		
-		on mkdir(dirname)
-			sh("mkdir -p" & space & quoted form of dirname)
-		end mkdir
-		
-		on osacompile(src)
-			if src's class is text then
-				set src to {src}
-			end if
-			repeat with s in src
-				sh("osacompile -x -o" & space & Â
-					quoted form of (s & ".scpt") & space & Â
-					quoted form of (s & ".applescript"))
-			end repeat
-		end osacompile
-		
-		on rm(patterns)
-			if patterns's class is text then
-				set patterns to {patterns}
-			end if
-			set cmd to ""
-			repeat with p in patterns
-				set cmd to cmd & "rm -fr" & space & p & ";" & space
-			end repeat
-			sh(cmd)
-		end rm
-		
-		on sh(command)
-			local output
-			echo(command)
-			-- Execute command in working directory
-			set command to Â
-				"cd" & space & quoted form of its pwd & ";" & space & command
-			set output to (do shell script command & space & "2>&1")
-			if output is not equal to "" then echo(output)
-		end sh
-		
-		on which(command)
-			try
-				do shell script "which" & space & command
-				true
-			on error
-				false
-			end try
-		end which
-	end script
+	set the end of TaskBase's TASKS to t -- Register task
+	return TaskBase
 end Task
 
 -- Predefined tasks
@@ -135,21 +133,31 @@ script helpTask
 	property synonyms : {"-help", "--help", "-h"}
 	property description : "Show the list of available tasks and exit."
 	property printSuccess : false
-	repeat with t in ASMake's tasks
+	repeat with t in my TASKS
 		echo(bb(my white) & t's name & my reset & tab & tab & t's description)
 	end repeat
 end script
 
+script workDir
+	property parent : Task(me)
+	property name : "pwd"
+	property synonyms : {"wd"}
+	property description : "Print the path of the working directory and exit."
+	property printSuccess : false
+	log my PWD
+end script
+
+property parent : Stdout
 
 on parseTask(action)
-	repeat with t in (a reference to my tasks)
+	repeat with t in (a reference to TaskBase's TASKS)
 		if action = t's name or action is in t's synonyms then return t
 	end repeat
 	error
 end parseTask
 
 on runTask(action)
-	set my pwd to POSIX path of (path to me) -- path of makefile.applescript
+	set TaskBase's PWD to POSIX path of (path to me) -- path of makefile.applescript
 	try
 		set t to parseTask(action)
 	on error errMsg number errNum
