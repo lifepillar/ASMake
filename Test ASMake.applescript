@@ -13,7 +13,8 @@ property ASMake : missing value -- The variable holding the script to be tested
 
 set ASMake to run script Â
 	((folder of file (path to me) of application "Finder" as text) Â
-		& "ASMake.applescript") as alias
+		& "ASMake.applescript") as alias Â
+	with parameters {"__ASMAKE__LOAD__"}
 
 autorun(suite)
 
