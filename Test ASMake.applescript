@@ -40,7 +40,7 @@ script |ASMake core|
 	
 end script -- ASMake core
 
-script |Test Tasks|
+script |Test empty task|
 	property parent : TestSet(me)
 	property aTask : missing value
 	
@@ -51,11 +51,58 @@ script |Test Tasks|
 		set aTask to the result
 	end setUp
 	
-	script |Empty task|
+	script |Task's class|
 		property parent : UnitTest(me)
 		assertInstanceOf("Task", aTask)
+	end script
+	
+	script |Task's name|
+		property parent : UnitTest(me)
 		assertEqual("emptyTask", aTask's name)
+	end script
+	
+	script |Task's synonyms|
+		property parent : UnitTest(me)
 		assertEqual({}, aTask's synonyms)
+	end script
+	
+	script |Task's printSuccess|
+		property parent : UnitTest(me)
 		ok(aTask's printSuccess)
+	end script
+end script
+
+script |Test task|
+	property parent : TestSet(me)
+	property aTask : missing value
+	
+	on setUp()
+		script
+			property parent : ASMake's Task(me)
+			property name : "myTask"
+			property synonyms : {"yourTask"}
+			property printSuccess : false
+		end script
+		set aTask to the result
+	end setUp
+	
+	script |Task's class|
+		property parent : UnitTest(me)
+		assertInstanceOf("Task", aTask)
+	end script
+	
+	script |Task's name|
+		property parent : UnitTest(me)
+		assertEqual("myTask", aTask's name)
+	end script
+	
+	script |Task's synonyms|
+		property parent : UnitTest(me)
+		assertEqual({"yourTask"}, aTask's synonyms)
+	end script
+	
+	script |Task's printSuccess|
+		property parent : UnitTest(me)
+		notOk(aTask's printSuccess)
 	end script
 end script
