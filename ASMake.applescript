@@ -147,25 +147,31 @@ script workDir
 	log my PWD
 end script
 
+
 property parent : Stdout
 
 on parseTask(action)
 	repeat with t in (a reference to TaskBase's TASKS)
-		if action = t's name or action is in t's synonyms then return t
+		if action = t's name or action is in t's synonyms then return {t, {}}
 	end repeat
 	error
 end parseTask
 
 on runTask(action)
+	local t, args
 	set TaskBase's PWD to POSIX path of (path to me) -- path of makefile.applescript
 	try
-		set t to parseTask(action)
+		set {t, args} to parseTask(action)
 	on error errMsg number errNum
-		ofail("Unknown task: " & action, "")
+		ofail("Wrong task specification: " & action, "")
 		error errMsg number errNum
 	end try
 	try
-		run t
+		if args is {} then
+			run t
+		else
+			run script t with parameters args
+		end if
 		if t's printSuccess then ohai("Success!")
 	on error errMsg number errNum
 		ofail("Task failed", "")
