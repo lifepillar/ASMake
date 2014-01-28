@@ -91,7 +91,7 @@ end script -- ASMakeBase
 on Task(t)
 	tell ASMakeBase to set the end of its tasks to t -- Register task
 	
-	script BaseTask
+	script
 		property parent : ASMakeBase
 		property class : "Task"
 		
@@ -152,8 +152,6 @@ on Task(t)
 			end try
 		end which
 	end script
-	
-	return BaseTask
 end Task
 
 on run
