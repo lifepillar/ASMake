@@ -56,6 +56,7 @@ script Stdout
 end script -- Stdout
 
 property parent : Stdout
+property ASMake : me
 property tasks : {}
 property pwd : missing value
 
@@ -126,6 +127,19 @@ on Task(t)
 		end which
 	end script
 end Task
+
+-- Predefined tasks
+script helpTask
+	property parent : Task(me)
+	property name : "help"
+	property synonyms : {"-help", "--help", "-h"}
+	property description : "Show the list of available tasks and exit."
+	property printSuccess : false
+	repeat with t in ASMake's tasks
+		echo(bb(my white) & t's name & my reset & tab & tab & t's description)
+	end repeat
+end script
+
 
 on parseTask(action)
 	repeat with t in (a reference to my tasks)
