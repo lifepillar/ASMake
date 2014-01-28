@@ -4,72 +4,58 @@
 		Unit tests for ASMake.
 	@charset macintosh
 *)
+use AppleScript version "2.3"
+use script "ASUnit" version "1.2.2"
 use scripting additions
 property parent : script "ASUnit"
----------------------------------------------------------------------------------------
-property suitename : "Suite of unit tests for ASMake"
-property scriptName : "ASMake" -- The name of the script to be tested
-global ASMake -- The variable holding the script to be tested
----------------------------------------------------------------------------------------
+property suite : makeTestSuite("Suite of unit tests for ASMake")
+property ASMake : missing value -- The variable holding the script to be tested
 
-property TopLevel : me
-property suite : makeTestSuite(suitename)
+set ASMake to run script Â
+	((folder of file (path to me) of application "Finder" as text) Â
+		& "ASMake.applescript") as alias
 
-(*
--- Optional: choose loggers
-set suite's loggers to {AppleScriptEditorLogger, ConsoleLogger}
-*)
-(*
--- Optional: customize colors for AS Editor output
-tell AppleScriptEditorLogger
-	set its defaultColor to {256 * 1, 256 * 102, 256 * 146}
-	set its successColor to {256 * 0, 256 * 159, 256 * 120}
-	set its defectColor to {256 * 137, 256 * 89, 256 * 168}
-end tell
-*)
-(*
--- Optional: customize colors for terminal output (osascript)
-tell StdoutLogger
-	set its defaultColor to its blue
-	set its successColor to bb(its green) -- bold green
-	set its defectColor to bb(its red) -- bold red
-end tell
-*)
 autorun(suite)
 
 ---------------------------------------------------------------------------------------
 -- Tests
 ---------------------------------------------------------------------------------------
 
--- Don't change this test case if you are testing an external script
--- in the same folder as this test script! We load the script in a test case, because
--- this will work when all the tests in the current folder are run together using loadTestsFromFolder().
--- Besides, this will make sure that we are using the latest version of the script
--- to be tested even if we do not recompile this test script.
-script |Load script|
+script |ASMake core|
 	property parent : TestSet(me)
-	script |Loading the script|
+	
+	script |Check script name, id|
 		property parent : UnitTest(me)
-		set ASMake to run script Â
-			((folder of file (path to me) of application "Finder" as text) Â
-				& scriptName & ".applescript") as alias
 		assertInstanceOf(script, ASMake)
+		assertEqual("ASMake", ASMake's name)
+		assertEqual("com.lifepillar.ASMake", ASMake's id)
 	end script
-end script
+	
+	script |Check script data structures|
+		assertInstanceOf(script, ASMake's Stdout)
+		assertInstanceOf(list, ASMake's tasks)
+		assertEqual({}, ASMake's tasks)
+		assertEqual(missing value, pwd)
+	end script
+	
+end script -- ASMake core
 
-
-script |A test set|
+script |Test Tasks|
 	property parent : TestSet(me)
+	property aTask : missing value
 	
 	on setUp()
+		script emptyTask
+			property parent : ASMake's Task(me)
+		end script
+		set aTask to the result
 	end setUp
 	
-	on tearDown()
-	end tearDown
-	
-	script |test something|
+	script |Empty task|
 		property parent : UnitTest(me)
-		assertInheritsFrom(current application, ASMake)
+		assertInstanceOf("Task", aTask)
+		assertEqual("emptyTask", aTask's name)
+		assertEqual({}, aTask's synonyms)
+		ok(aTask's printSuccess)
 	end script
-	
 end script
