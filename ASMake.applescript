@@ -229,7 +229,7 @@ end script
 
 (*! @abstract A script object for collecting and parsing command-line arguments. *)
 script CommandLineParser
-	property parent : AppleScript
+	property parent : Stdout
 	(*! @abstract The full command string. *)
 	property stream : ""
 	(*! @abstract The length of the command string. *)
