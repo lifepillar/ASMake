@@ -347,21 +347,22 @@ script CommandLineParser
 		log msg
 		error msg
 	end syntaxError
-
+	
 end script
 
-on parseTask(action)
+on findTask(action)
 	repeat with t in (a reference to TaskBase's TASKS)
-		if action = t's name or action is in t's synonyms then return {t, {}}
+		if action = t's name or action is in t's synonyms then return t
 	end repeat
 	error
-end parseTask
+end findTask
 
 on runTask(action)
-	local t, Args
+	local t
 	set TaskBase's PWD to POSIX path of (path to me) -- path of makefile.applescript
 	try
-		set {t, Args} to parseTask(action)
+		CommandLineParser's parse(action)
+		set t to findTask(Args's command)
 	on error errMsg number errNum
 		ofail("Wrong task specification: " & action, "")
 		error errMsg number errNum
@@ -380,7 +381,6 @@ on run {action}
 	if action is "__ASMAKE__LOAD__" then -- Allow loading ASMake from text format with run script
 		return me
 	else
-		CommandLineParser's parse(action)
-		--runTask(action)
+		runTask(action)
 	end if
 end run
