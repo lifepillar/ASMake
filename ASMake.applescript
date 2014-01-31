@@ -55,14 +55,16 @@ script Stdout
 	
 end script -- Stdout
 
+(*! @abstract The script object common to all tasks. *)
 script TaskBase
 	property parent : Stdout
 	property class : "Task"
 	property TASKS : {} -- shared by all tasks, should not be overriden
 	property PWD : missing value -- shared by all tasks, should not be overridden
 	property synonyms : {} -- Define a task's aliases
+	property arguments : {} -- A task's arguments
 	property printSuccess : true -- Print success message when a task finishes?
-
+	
 	on cp(src, dst) -- src can be a list of POSIX paths
 		local cmd
 		if src's class is text then
@@ -166,12 +168,9 @@ on runTask(action)
 		ofail("Wrong task specification: " & action, "")
 		error errMsg number errNum
 	end try
+	set t's arguments to args
 	try
-		if args is {} then
-			run t
-		else
-			run script t with parameters args
-		end if
+		run t
 		if t's printSuccess then ohai("Success!")
 	on error errMsg number errNum
 		ofail("Task failed", "")
