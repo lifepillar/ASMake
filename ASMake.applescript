@@ -64,7 +64,7 @@ script TaskBase
 	property synonyms : {} -- Define a task's aliases
 	property arguments : {} -- A task's arguments
 	property printSuccess : true -- Print success message when a task finishes?
-
+	
 	on cp(src, dst) -- src can be a list of POSIX paths
 		local cmd
 		if src's class is text then
@@ -76,11 +76,11 @@ script TaskBase
 		end repeat
 		sh(cmd & space & quoted form of dst)
 	end cp
-
+	
 	on mkdir(dirname)
 		sh("mkdir -p" & space & quoted form of dirname)
 	end mkdir
-
+	
 	on osacompile(src)
 		if src's class is text then
 			set src to {src}
@@ -91,7 +91,7 @@ script TaskBase
 				quoted form of (s & ".applescript"))
 		end repeat
 	end osacompile
-
+	
 	on rm(patterns)
 		if patterns's class is text then
 			set patterns to {patterns}
@@ -102,7 +102,7 @@ script TaskBase
 		end repeat
 		sh(cmd)
 	end rm
-
+	
 	on sh(command)
 		local output
 		echo(command)
@@ -112,7 +112,7 @@ script TaskBase
 		set output to (do shell script command & space & "2>&1")
 		if output is not equal to "" then echo(output)
 	end sh
-
+	
 	on which(command)
 		try
 			do shell script "which" & space & command
@@ -152,19 +152,17 @@ end script
 
 property parent : Stdout
 
-(*! @abstract A script object for collecting and parsing command-line arguments. *)
-script CommandLineParser
+(*!
+	@abstract
+		A script object representing the command-line arguments.
+	@discussion
+		This is passed to the task.
+*)
+script Args
 	property parent : AppleScript
+	
 	(*! @abstract The name of the task to be executed. *)
 	property command : ""
-	(*! @abstract The full command string. *)
-	property stream : ""
-	(*! @abstract The length of the command string. *)
-	property streamLength : 0
-	(*! @abstract The index of the next character to be read from the command string. *)
-	property npos : 1
-	(*! @abstract The current parsed token. *)
-	property currToken : ""
 	
 	(*! @abstract A list of ASMake options. *)
 	property options : {}
@@ -188,6 +186,58 @@ script CommandLineParser
 			the value <tt>false</tt>.
 	*)
 	property values : {}
+	
+	(*! @abstract Returns the number of arguments. *)
+	on numberOfArguments()
+		my values's length
+	end numberOfArguments
+	
+	(*!
+			@abstract
+				Retrieves the argument with the given key.
+			@return
+				The value associated with the key, or the specified default value if the key is not found.
+		*)
+	on fetch(key, default)
+		local i, n
+		set n to numberOfArguments()
+		repeat with i from 1 to n
+			if item i of my keys is key then return item i of my values
+		end repeat
+		default
+	end fetch
+	
+	(*! @abstract Like @link fetch @/link(), but removes the argument from the list of arguments. *)
+	on fetchAndDelete(key, default)
+	end fetchAndDelete
+	
+	(*!
+			@abstract
+				Retrieves the first argument and removes it from the list of arguments.
+			@return
+				A pair {key, value}, or {missing value,missing value} if there are no arguments.
+		*)
+	on shift()
+		if num() is 0 then return {missing value, missing value}
+		local k, v
+		set {k, v} to {the first item of my keys, the first item of my values}
+		set {my keys, my values} to {the rest of my keys, the rest of my values}
+		{k, v}
+	end shift
+	
+end script
+
+(*! @abstract A script object for collecting and parsing command-line arguments. *)
+script CommandLineParser
+	property parent : AppleScript
+	(*! @abstract The full command string. *)
+	property stream : ""
+	(*! @abstract The length of the command string. *)
+	property streamLength : 0
+	(*! @abstract The index of the next character to be read from the command string. *)
+	property npos : 1
+	(*! @abstract The current parsed token. *)
+	property currToken : ""
 	
 	(*!
 		@abstract
@@ -234,14 +284,14 @@ script CommandLineParser
 	on optionList()
 		nextToken()
 		if my currToken starts with "-" then
-			set the end of my options to my currToken
+			set the end of Args's options to my currToken
 			optionList()
 		end if
 	end optionList
 	
 	on taskName()
 		if my currToken is missing value then syntaxError("Missing task name")
-		set my command to my currToken
+		set Args's command to my currToken
 	end taskName
 	
 	on argList()
@@ -252,11 +302,11 @@ script CommandLineParser
 	end argList
 	
 	on arg()
-		set the end of my keys to my currToken
+		set the end of Args's keys to my currToken
 		nextToken()
 		if my currToken is not "=" then syntaxError("Arguments must have the form key=value")
 		nextToken()
-		set the end of my values to my currToken
+		set the end of Args's values to my currToken
 	end arg
 	
 	on nextToken()
@@ -297,45 +347,7 @@ script CommandLineParser
 		log msg
 		error msg
 	end syntaxError
-	
-	(*! @abstract Returns the number of arguments. *)
-	on num()
-		my values's length
-	end num
-	
-	(*!
-			@abstract
-				Retrieves the argument with the given key.
-			@return
-				The value associated with the key, or the specified default value if the key is not found.
-		*)
-	on fetch(key, default)
-		local i, n
-		set n to num()
-		repeat with i from 1 to n
-			if item i of keys is key then return item i of values
-		end repeat
-		default
-	end fetch
-	
-	(*! @abstract Like @link fetch @/link(), but removes the argument from the list of arguments. *)
-	on fetchAndDelete(key, default)
-	end fetchAndDelete
-	
-	(*!
-			@abstract
-				Retrieves the first argument and removes it from the list of arguments.
-			@return
-				A pair {key, value}, or {missing value,missing value} if there are no arguments.
-		*)
-	on shift()
-		if num() is 0 then return {missing value, missing value}
-		local k, v
-		set {k, v} to {the first item of keys, the first item of values}
-		set {keys, values} to {the rest of keys, the rest of values}
-		{k, v}
-	end shift
-	
+
 end script
 
 on parseTask(action)
@@ -346,15 +358,15 @@ on parseTask(action)
 end parseTask
 
 on runTask(action)
-	local t, args
+	local t, Args
 	set TaskBase's PWD to POSIX path of (path to me) -- path of makefile.applescript
 	try
-		set {t, args} to parseTask(action)
+		set {t, Args} to parseTask(action)
 	on error errMsg number errNum
 		ofail("Wrong task specification: " & action, "")
 		error errMsg number errNum
 	end try
-	set t's arguments to args
+	set t's arguments to Args
 	try
 		run t
 		if t's printSuccess then ohai("Success!")
@@ -368,6 +380,7 @@ on run {action}
 	if action is "__ASMAKE__LOAD__" then -- Allow loading ASMake from text format with run script
 		return me
 	else
-		runTask(action)
+		CommandLineParser's parse(action)
+		--runTask(action)
 	end if
 end run
