@@ -64,7 +64,7 @@ script TaskBase
 	property synonyms : {} -- Define a task's aliases
 	property arguments : {} -- A task's arguments
 	property printSuccess : true -- Print success message when a task finishes?
-	
+
 	on cp(src, dst) -- src can be a list of POSIX paths
 		local cmd
 		if src's class is text then
@@ -151,6 +151,192 @@ end script
 
 
 property parent : Stdout
+
+(*! @abstract A script object for collecting and parsing command-line arguments. *)
+script CommandLineParser
+	property parent : AppleScript
+	(*! @abstract The name of the task to be executed. *)
+	property command : ""
+	(*! @abstract The full command string. *)
+	property stream : ""
+	(*! @abstract The length of the command string. *)
+	property streamLength : 0
+	(*! @abstract The index of the next character to be read from the command string. *)
+	property npos : 1
+	(*! @abstract The current parsed token. *)
+	property currToken : ""
+	
+	(*! @abstract A list of ASMake options. *)
+	property options : {}
+	(*!
+		@abstract
+			A list of keys from command-line options.
+		@discussion
+			This property stores they keys of command-line options of the form <tt>key=value</tt>.
+			For flags and command-line switches, it stores their names as they are,
+			unless they start with <tt>no-</tt>, <tt>-no-</tt>, or <tt>--no-</tt>, in which case
+			such prefix is removed.
+	*)
+	property keys : {}
+	(*!
+		@abstract
+			A list of values from command-line options.
+		@discussion
+			This property stores they values of command-line options of the form <tt>key=value</tt>.
+			For flags and command-line switches, it stores the value <tt>true</tt> unless the switch
+			starts with <tt>no-</tt>, <tt>-no-</tt>, or <tt>--no-</tt>, in which case it stores
+			the value <tt>false</tt>.
+	*)
+	property values : {}
+	
+	(*!
+		@abstract
+			Parses the given command-line string.
+		@discussion
+			A command-line string has the following syntax:
+			
+			<pre>
+			[<ASMake options>] <task name> [<key>=<value> ...]
+			</pre>
+			
+			The full grammar for a command-line string is as follows (terminals are enclosed in quotes):
+			
+			<pre>
+			CommandLine ::= OptionList TaskName ArgList
+			OptionList ::= Option OptionList | ''
+			Option ::= '-<string>' | '--<string>'
+			TaskName ::= '<string>'
+			ArgList ::= Arg ArgList | ''
+			Arg ::= <string>' '=' '<string>' 
+			</pre>
+
+			[ | <-- this bar is here because of a bug (#15956484) in AppleScript Editor. Ignore this line. ]
+
+		Since ASMake can accept only a single argument, the whole command line string
+		must be enclosed in quotes. Alternatively, ASMake interprets a dot as a space.
+		Examples:
+
+			<pre>
+			asmake help
+			asmake 'footask xyz = a tuv=b'
+			asmake footask.xyz=a.tuv=b
+			</pre>
+	*)
+	on parse(commandLine)
+		set my stream to commandLine
+		set my streamLength to the length of my stream
+		set npos to 1
+		optionList()
+		taskName()
+		argList()
+	end parse
+	
+	on optionList()
+		nextToken()
+		if my currToken starts with "-" then
+			set the end of my options to my currToken
+			optionList()
+		end if
+	end optionList
+	
+	on taskName()
+		if my currToken is missing value then syntaxError("Missing task name")
+		set my command to my currToken
+	end taskName
+	
+	on argList()
+		nextToken()
+		if my currToken is missing value then return -- no arguments
+		arg()
+		argList()
+	end argList
+	
+	on arg()
+		set the end of my keys to my currToken
+		nextToken()
+		if my currToken is not "=" then syntaxError("Arguments must have the form key=value")
+		nextToken()
+		set the end of my values to my currToken
+	end arg
+	
+	on nextToken()
+		set n to my stream's length
+		set i to my npos
+		repeat while i ² n
+			if character i of my stream is not in {space, tab, "."} then exit repeat
+			set i to i + 1
+		end repeat
+		if i > n then
+			set my currToken to missing value
+			return my currToken
+		end if
+		set c to character i of my stream
+		set my npos to i + 1
+		if c is "=" then
+			set my currToken to c
+			return c
+		end if
+		set i to my npos
+		repeat while i ² n
+			if character i of my stream is in {space, tab, ".", "="} then exit repeat
+			set i to i + 1
+		end repeat
+		set my currToken to text ((my npos) - 1) thru (i - 1) of my stream
+		set my npos to i
+	end nextToken
+	
+	on syntaxError(msg)
+		local sp
+		set sp to ""
+		repeat with i from 1 to npos - 1
+			set sp to sp & space
+		end repeat
+		set sp to sp & "^"
+		log stream
+		log sp
+		log msg
+		error msg
+	end syntaxError
+	
+	(*! @abstract Returns the number of arguments. *)
+	on num()
+		my values's length
+	end num
+	
+	(*!
+			@abstract
+				Retrieves the argument with the given key.
+			@return
+				The value associated with the key, or the specified default value if the key is not found.
+		*)
+	on fetch(key, default)
+		local i, n
+		set n to num()
+		repeat with i from 1 to n
+			if item i of keys is key then return item i of values
+		end repeat
+		default
+	end fetch
+	
+	(*! @abstract Like @link fetch @/link(), but removes the argument from the list of arguments. *)
+	on fetchAndDelete(key, default)
+	end fetchAndDelete
+	
+	(*!
+			@abstract
+				Retrieves the first argument and removes it from the list of arguments.
+			@return
+				A pair {key, value}, or {missing value,missing value} if there are no arguments.
+		*)
+	on shift()
+		if num() is 0 then return {missing value, missing value}
+		local k, v
+		set {k, v} to {the first item of keys, the first item of values}
+		set {keys, values} to {the rest of keys, the rest of values}
+		{k, v}
+	end shift
+	
+end script
 
 on parseTask(action)
 	repeat with t in (a reference to TaskBase's TASKS)
