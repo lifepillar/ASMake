@@ -338,7 +338,7 @@ script CommandLineParser
 	on syntaxError(msg)
 		local sp
 		set sp to ""
-		repeat with i from 1 to npos - 1
+		repeat with i from 1 to npos - (length of my currToken) - 1
 			set sp to sp & space
 		end repeat
 		set sp to sp & "^"
