@@ -234,10 +234,37 @@ script CommandLineParser
 	property stream : ""
 	(*! @abstract The length of the command string. *)
 	property streamLength : 0
-	(*! @abstract The index of the next character to be read from the command string. *)
+	(*!
+		@abstract
+			The index of the next character to be read from the command string.
+		@discussion
+			The invariant for this property is maintained by the @link nextChar@/link() handler.
+	*)
 	property npos : 1
 	(*! @abstract The current parsed token. *)
 	property currToken : ""
+	property UNQUOTED : space
+	property SINGLE_QUOTED : "'"
+	property DOUBLE_QUOTED : quote
+	(*! @abstract The state of the lexical analyzer. *)
+	property state : UNQUOTED
+	
+	(*!
+		@abstract
+			Sets the stream to be parsed to the given value.
+		@param
+			newStream <em>[text]</em> The string to be parsed.
+	*)
+	on setStream(newStream)
+		set my stream to newStream
+		set my streamLength to the length of newStream
+		resetStream()
+	end setStream
+	
+	(*! @abstract Resets the stream to its initial state, ready to be parsed again. *)
+	on resetStream()
+		set my npos to 1
+	end resetStream
 	
 	(*!
 		@abstract
@@ -326,6 +353,14 @@ script CommandLineParser
 			set my currToken to c
 			return c
 		end if
+		if c is "\\" then
+			if npos > n then
+				set my currToken to missing value
+				return my currToken
+			else
+				set npos to npos + 1
+			end if
+		end if
 		set i to my npos
 		repeat while i ² n
 			if character i of my stream is in {space, tab, ".", "="} then exit repeat
@@ -334,6 +369,87 @@ script CommandLineParser
 		set my currToken to text ((my npos) - 1) thru (i - 1) of my stream
 		set my npos to i
 	end nextToken
+	
+	
+	(*!
+		@abstract
+			Gets the next character from the command string, considering quoted characters.
+		@discussion
+			Returns the next unread character, taking into account that a character may be <it>quoted</it>
+			(that is, made to stand for itself) by preceding it with a <tt>\</tt> (backslash).
+			A backslash at the end of the command string is ignored.
+			
+			All characters enclosed between a pair of single quotes (<tt>'</tt>) are quoted. A single quote
+			cannot appear within single quotes. For example, <tt>'\\'</tt> stands for <tt>\\</tt>.
+			
+			Inside double quotes (<tt>"</tt>), a <tt>\</tt> quotes the characters <tt>\</tt> and <tt>"</tt>.
+			That is, <tt>\\</tt> stands for <tt>\</tt> and <tt>\"</tt> stands for <tt>"</tt>.
+
+		@return
+			The next unread character, considering escaping. If at the end of the stream, returns the empty string.
+	*)
+	on nextChar()
+		set c to getChar()
+		if c is "" then return c -- end of stream
+		if my state is UNQUOTED then
+			if c is "'" then -- enter single-quoted state
+				set my state to SINGLE_QUOTED
+				return nextChar()
+			else if c is quote then -- enter double-quoted state
+				set my state to DOUBLE_QUOTED
+				return nextChar()
+			else if c is "\\" then -- escaped character
+				return getChar()
+			else
+				return c
+			end if
+		else if my state is SINGLE_QUOTED then
+			if c is "'" then -- exit single-quoted state
+				set my state to UNQUOTED
+				return nextChar()
+			else
+				return c
+			end if
+		else if my state is DOUBLE_QUOTED then
+			if c is quote then -- exit double-quoted state
+				set my state to UNQUOTED
+				return nextChar()
+			else if c is "\\" then
+				set c to getChar()
+				if c is in {quote, "\\"} then return c
+				putBack()
+				return "\\"
+			else
+				return c
+			end if
+		end if
+		error "nextChar(): Internal error (lexical analyzer)"
+	end nextChar
+	
+	(*!
+		@abstract
+			Gets a character from the command string.
+		@returns
+			The next character to be read, or the empty string if the end of the stream has been reached.
+	*)
+	on getChar()
+		if my npos > my streamLength then return ""
+		set my npos to (my npos) + 1
+		character (npos - 1) of my stream
+	end getChar
+	
+	(*!
+		@abstract
+			Puts the last read character back into the stream.
+		@discussion
+			If the end of the stream has been reached, this handler is a no-op.
+		@return
+			The value of @link npos@/link.
+	*)
+	on putBack()
+		if my npos > my streamLength then return my npos
+		set my npos to (my npos) - 1
+	end putBack
 	
 	on syntaxError(msg)
 		local sp

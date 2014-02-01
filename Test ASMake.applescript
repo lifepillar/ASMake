@@ -106,4 +106,99 @@ script |Test task|
 		property parent : UnitTest(me)
 		notOk(aTask's printSuccess)
 	end script
-end script
+end script -- Test task
+
+script |Test command line parsing|
+	property parent : TestSet(me)
+	property parser : missing value
+	property backslash : "\\"
+	
+	on setUp()
+		set parser to a reference to ASMake's CommandLineParser
+	end setUp
+	
+	script |Test setStream()|
+		property parent : UnitTest(me)
+		parser's setStream("abcde")
+		assertEqual("abcde", parser's stream)
+		assertEqual(5, parser's streamLength)
+		assertEqual(1, parser's npos)
+	end script
+	
+	script |Test getChar()|
+		property parent : UnitTest(me)
+		parser's setStream("a" & backslash & "'")
+		assertEqual("a", parser's getChar())
+		assertEqual(backslash, parser's getChar())
+		assertEqual("'", parser's getChar())
+		assertEqual("", parser's getChar())
+		parser's setStream(backslash & backslash)
+		assertEqual(backslash, parser's getChar())
+		assertEqual(backslash, parser's getChar())
+		assertEqual("", parser's getChar())
+		assertEqual("", parser's getChar())
+	end script
+	
+	script |Test nextChar() with empty stream|
+		property parent : UnitTest(me)
+		parser's setStream("")
+		assertEqual("", parser's nextChar())
+		assertEqual("", parser's nextChar())
+	end script
+	
+	script |Test nextChar() with backslash|
+		property parent : UnitTest(me)
+		parser's setStream(backslash & backslash & backslash & space)
+		assertEqual(backslash, parser's nextChar())
+		assertEqual(space, parser's nextChar())
+		assertEqual("", parser's nextChar())
+	end script
+	
+	script |Test nextChar() with single-quoted string|
+		property parent : UnitTest(me)
+		parser's setStream("'" & backslash & space & backslash & quote & backslash & "'")
+		assertEqual(backslash, parser's nextChar())
+		assertEqual(space, parser's nextChar())
+		assertEqual(backslash, parser's nextChar())
+		assertEqual(quote, parser's nextChar())
+		assertEqual(backslash, parser's nextChar())
+		assertEqual("", parser's nextChar())
+	end script
+	
+	script |Test nextChar() with double-quoted string|
+		property parent : UnitTest(me)
+		parser's setStream(quote & backslash & quote & backslash & backslash & backslash & space & quote)
+		assertEqual(quote, parser's nextChar())
+		assertEqual(parser's DOUBLE_QUOTED, parser's state)
+		assertEqual(backslash, parser's nextChar())
+		assertEqual(backslash, parser's nextChar())
+		assertEqual(parser's DOUBLE_QUOTED, parser's state)
+		assertEqual(space, parser's nextChar())
+		assertEqual("", parser's nextChar())
+	end script
+	
+	script |Test nextChar() with mixed quoting|
+		property parent : UnitTest(me)
+		parser's setStream("a" & quote & "'" & quote & "'" & quote & "'" & backslash & quote & backslash)
+		assertEqual("a", parser's nextChar())
+		assertEqual("'", parser's nextChar()) -- single quote between double quotes
+		assertEqual(quote, parser's nextChar()) -- double quote between single quotes
+		assertEqual(quote, parser's nextChar()) -- escaped double quote
+		assertEqual("", parser's nextChar()) -- The single backslash at the end is ignored
+	end script
+	
+	script |Test resetStream()|
+		property parent : UnitTest(me)
+		script Wrapper
+			parser's resetStream()
+		end script
+		shouldNotRaise({}, Wrapper, "resetStream() should not raise.")
+		parser's setStream("abc")
+		parser's nextChar()
+		parser's nextChar()
+		parser's resetStream()
+		assertEqual(1, parser's npos)
+		assertEqual(parser's UNQUOTED, parser's state)
+	end script
+	
+end script -- Test command line parsing
