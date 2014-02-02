@@ -59,7 +59,7 @@ end script -- Stdout
 script TaskBase
 	property parent : Stdout
 	property class : "Task"
-	property TASKS : {} -- shared by all tasks, should not be overriden
+	property TASKS : {} -- shared by all tasks, should not be overridden
 	property PWD : missing value -- shared by all tasks, should not be overridden
 	property synonyms : {} -- Define a task's aliases
 	property arguments : {} -- A task's arguments
