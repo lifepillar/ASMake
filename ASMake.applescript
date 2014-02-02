@@ -237,9 +237,21 @@ end script
 
 (*! @abstract A script object for collecting and parsing command-line arguments. *)
 script CommandLineParser
+	
+	(*! @abstract The parent of this object. *)
 	property parent : AppleScript
 	
-	(*! @abstract The full command string. *)
+	(*!
+		@abstract
+			The string to be parsed.
+		@discussion
+			Typically, this is the full command string. For example, given this command:
+			<pre>
+			asmake --debug taskname key=value
+			</pre>
+			
+			this property is set to <tt>--debug taskname key=value</tt>.
+	*)
 	property stream : ""
 	
 	(*! @abstract The length of the command string. *)
@@ -247,23 +259,31 @@ script CommandLineParser
 	
 	(*!
 		@abstract
-			The index of the next character to be read from the command string.
+			The index of the next character to be read from the stream.
 		@discussion
-			The invariant for this property is maintained by the @link nextChar@/link() handler.
+			This property always points to the next character to be read.
+			This invariant for is maintained by @link nextChar@/link().
 	*)
 	property npos : 1
 	
 	(*! @abstract A constant denoting the absence of a token. *)
 	property NO_TOKEN : ""
 	
-	(*! @abstract The current parsed token. *)
+	(*! @abstract The current token. *)
 	property currToken : my NO_TOKEN
 	
 	(*! @abstract The character signalling that the stream has been consumed. *)
 	property EOS : ""
+	
+	(*! @abstract A constant used by the lexical analyzer to denote an unquoted state. *)
 	property UNQUOTED : space
+	
+	(*! @abstract A constant used by the lexical analyzer to denote a single-quoted state. *)
 	property SINGLE_QUOTED : "'"
+	
+	(*! @abstract A constant used by the lexical analyzer to denote a double-quoted state. *)
 	property DOUBLE_QUOTED : quote
+	
 	(*! @abstract The state of the lexical analyzer. *)
 	property state : my UNQUOTED
 	
@@ -296,6 +316,7 @@ script CommandLineParser
 			[<ASMake options>] <task name> [<key>=<value> ...]
 			</pre>
 			
+			Only the name of the task is mandatory.
 			The full grammar for a command-line string is as follows (terminals are enclosed in quotes):
 			
 			<pre>
@@ -315,8 +336,9 @@ script CommandLineParser
 
 			<pre>
 			asmake help
-			asmake 'footask xyz = a tuv=b'
-			asmake footask.xyz=a.tuv=b
+			asmake "build target=dev"
+			asmake build.target=dev
+			asmake 'build targets="dev test"'
 			</pre>
 	*)
 	on parse(commandLine)
@@ -330,6 +352,7 @@ script CommandLineParser
 		argList()
 	end parse
 	
+	(*! @abstract Parses a possibly empty list of ASMake options. *)
 	on optionList()
 		nextToken()
 		if my currToken starts with "-" then
@@ -338,6 +361,7 @@ script CommandLineParser
 		end if
 	end optionList
 	
+	(*! @abstract Parses a task name. *)
 	on taskName()
 		if my currToken is my NO_TOKEN then syntaxError("Missing task name")
 		if nextChar() is "=" then
@@ -348,6 +372,7 @@ script CommandLineParser
 		set Args's command to my currToken
 	end taskName
 	
+	(*! @abstract Parses a possibly empty list of key-value arguments. *)
 	on argList()
 		nextToken()
 		if my currToken is my NO_TOKEN then return -- no arguments
@@ -355,6 +380,7 @@ script CommandLineParser
 		argList()
 	end argList
 	
+	(*! @abstract Parses a key-value argument. *)
 	on arg()
 		set the end of Args's keys to my currToken
 		nextToken()
@@ -363,6 +389,12 @@ script CommandLineParser
 		set the end of Args's values to my currToken
 	end arg
 	
+	(*!
+		@abstract
+			Gets the next token from the stream.
+		@return
+			<em>[text]</em> The next token or the constant @link NO_TOKEN	@/link no token can be retrieved.
+	*)
 	on nextToken()
 		local c
 		repeat -- skip white space
@@ -395,7 +427,12 @@ script CommandLineParser
 		return my currToken
 	end nextToken
 	
-	(*! @abstract Returns true if the end of the stream has been reached; returns false otherwise. *)
+	(*!
+		@abstract
+			Tests whether the stream has been consumed.
+		@return
+			<em>[boolean]</em> True if the end of the stream has been reached; false otherwise.
+	*)
 	on endOfStream()
 		my npos > my streamLength
 	end endOfStream
@@ -404,18 +441,19 @@ script CommandLineParser
 		@abstract
 			Gets the next character from the command string, considering quoted characters.
 		@discussion
-			Returns the next unread character, taking into account that a character may be <it>quoted</it>
-			(that is, made to stand for itself) by preceding it with a <tt>\</tt> (backslash).
-			A backslash at the end of the command string is ignored.
+			A character may be <it>quoted</it> (that is, made to stand for itself) by preceding it
+			with a <tt>\</tt> (backslash). A backslash at the end of the command string is ignored.
 			
-			All characters enclosed between a pair of single quotes (<tt>'</tt>) are quoted. A single quote
-			cannot appear within single quotes. For example, <tt>'\\'</tt> stands for <tt>\\</tt>.
+			All characters enclosed between a pair of single quotes (<tt>'</tt>) are quoted.
+			For example, <tt>'\\'</tt> stands for <tt>\\</tt>.
+			A single quote cannot appear within single quotes.
 			
 			Inside double quotes (<tt>"</tt>), a <tt>\</tt> quotes the characters <tt>\</tt> and <tt>"</tt>.
 			That is, <tt>\\</tt> stands for <tt>\</tt> and <tt>\"</tt> stands for <tt>"</tt>.
 
 		@return
-			The next unread character, considering escaping. If at the end of the stream, returns the empty string.
+			<em>[text]</em> The next unread character (considering escaping)
+			or @link EOS @/link if at the end of the stream.
 	*)
 	on nextChar()
 		set c to getChar()
@@ -458,8 +496,13 @@ script CommandLineParser
 	(*!
 		@abstract
 			Gets a character from the command string.
+		@discussion
+			This is the low-level procedure that extracts the next character from the stream.
+			This handler treats the stream as a sequence of characters without interpreting them.
+			In other words, it does not take quoting into account.
 		@returns
-			The next character to be read, or the empty string if the end of the stream has been reached.
+			<em>[text]</em> The next unread character,
+			or @link EOS @/link if the end of the stream has been reached.
 	*)
 	on getChar()
 		if endOfStream() then return my EOS
@@ -480,6 +523,7 @@ script CommandLineParser
 		set my npos to (my npos) - 1
 	end putBack
 	
+	(*! @abstract The handler called when a syntax error occurs. *)
 	on syntaxError(msg)
 		local sp, n
 		set sp to ""
@@ -495,7 +539,7 @@ script CommandLineParser
 		error msg & linefeed & my stream & linefeed & sp
 	end syntaxError
 	
-end script
+end script -- CommandLineParser
 
 on findTask(action)
 	repeat with t in (a reference to TaskBase's TASKS)
