@@ -192,6 +192,14 @@ script Args
 		my values's length
 	end numberOfArguments
 	
+	(*! @abstract Clears the arguments. *)
+	on clear()
+		set command to ""
+		set options to {}
+		set keys to {}
+		set values to {}
+	end clear
+	
 	(*!
 			@abstract
 				Retrieves the argument with the given key.
