@@ -99,14 +99,47 @@ end script -- Stdout
 
 (*! @abstract The script object common to all tasks. *)
 script TaskBase
-	property parent : Stdout
-	property class : "Task"
-	property TASKS : {} -- shared by all tasks, should not be overridden
-	property PWD : missing value -- shared by all tasks, should not be overridden
-	property synonyms : {} -- Define a task's aliases
-	property arguments : {} -- A task's arguments
-	property printSuccess : true -- Print success message when a task finishes?
 	
+	(*! @abstract The parent of this object. *)
+	property parent : Stdout
+	
+	(*! @abstract The class of a task object. *)
+	property class : "Task"
+	
+	(*!
+		@abstract
+			The list of registered tasks.
+		@discussion
+			This is a read-only property shared by all tasks, and should not be overridden.
+			The value of this property is updated automatically at compile-time whenever
+			a task script is encountered.
+	*)
+	property TASKS : {}
+	
+	(*!
+		@abstract
+			The POSIX path of the working directory.
+		@discussion
+			This is a read-only property shared by all tasks, and should not be overridden.
+			The value of this property is set automatically when a makefile is executed.
+	*)
+	property PWD : missing value
+	
+	(*! @abstract Defines a list of aliases for this task. *)
+	property synonyms : {}
+	
+	(*! @abstract Stores a reference to the @link Args @/link script object. *)
+	property arguments : {}
+	
+	
+	(*!
+		@abstract
+			Flag to determine whether a success message should be printed
+			when a tasks completes without error.
+	*)
+	property printSuccess : true
+	
+	(* @abstract Copies one or more files to the specified destination. *)
 	on cp(src, dst) -- src can be a list of POSIX paths
 		local cmd
 		if src's class is text then
@@ -119,10 +152,12 @@ script TaskBase
 		sh(cmd & space & quoted form of dst)
 	end cp
 	
+	(*! @abstract Creates a new folder at the specified path. *)
 	on mkdir(dirname)
 		sh("mkdir -p" & space & quoted form of dirname)
 	end mkdir
 	
+	(*! @abstract Compiles one or more scripts. *)
 	on osacompile(src)
 		if src's class is text then
 			set src to {src}
@@ -134,6 +169,7 @@ script TaskBase
 		end repeat
 	end osacompile
 	
+	(*! @abstract Deletes one or more files. *)
 	on rm(patterns)
 		if patterns's class is text then
 			set patterns to {patterns}
@@ -145,6 +181,7 @@ script TaskBase
 		sh(cmd)
 	end rm
 	
+	(*! @abstract Executes a given command. *)
 	on sh(command)
 		local output
 		echo(command)
@@ -155,6 +192,7 @@ script TaskBase
 		if output is not equal to "" then echo(output)
 	end sh
 	
+	(*! @abstract Interface for the <tt>which</tt> command. *)
 	on which(command)
 		try
 			do shell script "which" & space & command
@@ -165,12 +203,22 @@ script TaskBase
 	end which
 end script
 
+(*!
+	@abstract
+		Registers a task.
+	@discussion
+		This handler is used to register a task at compile-time
+		and to set the parent of a script to @link TaskBase @/link.
+		Every task script must inherit from <tt>Task(me)</tt>.
+*)
 on Task(t)
-	set the end of TaskBase's TASKS to t -- Register task
+	set the end of TaskBase's TASKS to t
 	return TaskBase
 end Task
 
 -- Predefined tasks
+
+(*! @abstract Task to print the list of available tasks. *)
 script helpTask
 	property parent : Task(me)
 	property name : "help"
@@ -182,6 +230,7 @@ script helpTask
 	end repeat
 end script
 
+(*! @abstract Task to print the path of the working directory. *)
 script workDir
 	property parent : Task(me)
 	property name : "pwd"
@@ -191,7 +240,7 @@ script workDir
 	log my PWD
 end script
 
-
+(*! @abstract The parent of the top-level script. *)
 property parent : Stdout
 
 (*!
