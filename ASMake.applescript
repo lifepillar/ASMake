@@ -319,7 +319,9 @@ script CommandLineParser
 	on parse(commandLine)
 		set my stream to commandLine
 		set my streamLength to the length of my stream
-		set npos to 1
+		set currToken to missing value
+		set my state to UNQUOTED
+		set my npos to 1
 		optionList()
 		taskName()
 		argList()
