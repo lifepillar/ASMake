@@ -222,8 +222,8 @@ script |Test lexical analyzer|
 		assertEqual("key", parser's nextToken())
 		assertEqual("=", parser's nextToken())
 		assertEqual("value", parser's nextToken())
-		assertEqual(missing value, parser's nextToken())
-		assertEqual(missing value, parser's nextToken())
+		assertEqual(parser's NO_TOKEN, parser's nextToken())
+		assertEqual(parser's NO_TOKEN, parser's nextToken())
 	end script
 	
 	script |Test nextToken() with double-quoted string|
@@ -232,7 +232,7 @@ script |Test lexical analyzer|
 		assertEqual("key", parser's nextToken())
 		assertEqual("=", parser's nextToken())
 		assertEqual("val ue", parser's nextToken())
-		assertEqual(missing value, parser's nextToken())
+		assertEqual(parser's NO_TOKEN, parser's nextToken())
 		assertEqual(parser's UNQUOTED, parser's state)
 	end script
 	
