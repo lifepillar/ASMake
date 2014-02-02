@@ -1,7 +1,8 @@
 (*!
  @header ASMake
- 	A simple AppleScript build library with capabilities similar to rake.
- @abstract A draft of a primitive replacement for rake, make, etc…, in pure AppleScript.
+ 	A simple AppleScript build library.
+ @abstract
+ 	A draft of a primitive replacement for rake, make, etc…, in pure AppleScript.
  @author Lifepillar
  @copyright 2014 Lifepillar
  @version 0.0.1
@@ -11,6 +12,7 @@ property name : "ASMake"
 property version : "0.0.1"
 property id : "com.lifepillar.ASMake"
 
+(*! @abstract A script to help print colored output to the terminal. *)
 script Stdout
 	property parent : AppleScript
 	property esc : "\\033["
@@ -25,30 +27,51 @@ script Stdout
 	property white : esc & "0;37m"
 	property reset : esc & "0m"
 	
+	(*!
+		@abstract
+			Colors the given text using the specified color.
+		@param
+			s <em>[text]</em> Some text.
+		@param
+			kolor <em>[text]</em> One of the color constants.
+		@return
+			<em>[text]</em> The text with suitable ANSI escape codes.
+	*)
 	on col(s, kolor)
 		set s to kolor & s & reset
 	end col
 	
-	-- Make color bold
+	(*!
+		@abstract
+			Makes a bold color.
+		@param
+			kolor <em>[text]</em> One of the color constants.
+		@return
+			<em>[text]</em> The bold color corresponding to the given color.			
+	*)
 	on bb(kolor)
 		esc & "1;" & text -3 thru -1 of kolor
 	end bb
 	
+	(*! @abstract Sends a message to the terminal. *)
 	on echo(msg)
 		set msg to do shell script "echo " & quoted form of msg without altering line endings
 		log text 1 thru -2 of msg -- Remove last linefeed
 	end echo
 	
+	(*! @abstract Prints a notice. *)
 	on ohai(msg)
 		echo(green & "==>" & space & bb(white) & msg & reset)
 	end ohai
 	
+	(*! @abstract Prints a failure message, with details. *)
 	on ofail(msg, info)
 		set msg to red & "Fail:" & space & bb(white) & msg & reset
 		if info is not "" then set msg to msg & linefeed & info
 		echo(msg)
 	end ofail
 	
+	(*! @abstract Prints a warning. *)
 	on owarn(msg)
 		echo(red & "Warn:" & space & bb(white) & msg & reset)
 	end owarn
