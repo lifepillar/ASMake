@@ -131,19 +131,19 @@ script |Test command line parsing|
 		assertEqual("a", parser's getChar())
 		assertEqual(backslash, parser's getChar())
 		assertEqual("'", parser's getChar())
-		assertEqual("", parser's getChar())
+		assertEqual(parser's EOS, parser's getChar())
 		parser's setStream(backslash & backslash)
 		assertEqual(backslash, parser's getChar())
 		assertEqual(backslash, parser's getChar())
-		assertEqual("", parser's getChar())
-		assertEqual("", parser's getChar())
+		assertEqual(parser's EOS, parser's getChar())
+		assertEqual(parser's EOS, parser's getChar())
 	end script
 	
 	script |Test nextChar() with empty stream|
 		property parent : UnitTest(me)
 		parser's setStream("")
-		assertEqual("", parser's nextChar())
-		assertEqual("", parser's nextChar())
+		assertEqual(parser's EOS, parser's nextChar())
+		assertEqual(parser's EOS, parser's nextChar())
 	end script
 	
 	script |Test nextChar() with backslash|
@@ -151,7 +151,7 @@ script |Test command line parsing|
 		parser's setStream(backslash & backslash & backslash & space)
 		assertEqual(backslash, parser's nextChar())
 		assertEqual(space, parser's nextChar())
-		assertEqual("", parser's nextChar())
+		assertEqual(parser's EOS, parser's nextChar())
 	end script
 	
 	script |Test nextChar() with single-quoted string|
@@ -162,7 +162,7 @@ script |Test command line parsing|
 		assertEqual(backslash, parser's nextChar())
 		assertEqual(quote, parser's nextChar())
 		assertEqual(backslash, parser's nextChar())
-		assertEqual("", parser's nextChar())
+		assertEqual(parser's EOS, parser's nextChar())
 	end script
 	
 	script |Test nextChar() with double-quoted string|
@@ -174,7 +174,19 @@ script |Test command line parsing|
 		assertEqual(backslash, parser's nextChar())
 		assertEqual(parser's DOUBLE_QUOTED, parser's state)
 		assertEqual(space, parser's nextChar())
-		assertEqual("", parser's nextChar())
+		assertEqual(parser's EOS, parser's nextChar())
+	end script
+	
+	script |Test nextChar() with key and double-quoted value|
+		property parent : UnitTest(me)
+		parser's setStream("k =" & quote & "x y" & quote)
+		assertEqual("k", parser's nextChar())
+		assertEqual(space, parser's nextChar())
+		assertEqual("=", parser's nextChar())
+		assertEqual("x", parser's nextChar())
+		assertEqual(space, parser's nextChar())
+		assertEqual("y", parser's nextChar())
+		assertEqual(parser's EOS, parser's nextChar())
 	end script
 	
 	script |Test nextChar() with mixed quoting|
@@ -184,7 +196,7 @@ script |Test command line parsing|
 		assertEqual("'", parser's nextChar()) -- single quote between double quotes
 		assertEqual(quote, parser's nextChar()) -- double quote between single quotes
 		assertEqual(quote, parser's nextChar()) -- escaped double quote
-		assertEqual("", parser's nextChar()) -- The single backslash at the end is ignored
+		assertEqual(parser's EOS, parser's nextChar()) -- The single backslash at the end is ignored
 	end script
 	
 	script |Test resetStream()|
@@ -198,6 +210,29 @@ script |Test command line parsing|
 		parser's nextChar()
 		parser's resetStream()
 		assertEqual(1, parser's npos)
+		assertEqual(parser's UNQUOTED, parser's state)
+	end script
+	
+	script |Test nextToken() with no escaping|
+		property parent : UnitTest(me)
+		parser's setStream("--opt cmd key=value")
+		assertEqual(1, parser's npos)
+		assertEqual("--opt", parser's nextToken())
+		assertEqual("cmd", parser's nextToken())
+		assertEqual("key", parser's nextToken())
+		assertEqual("=", parser's nextToken())
+		assertEqual("value", parser's nextToken())
+		assertEqual(missing value, parser's nextToken())
+		assertEqual(missing value, parser's nextToken())
+	end script
+	
+	script |Test nextToken() with double-quoted string|
+		property parent : UnitTest(me)
+		parser's setStream("key =" & quote & "val ue" & quote)
+		assertEqual("key", parser's nextToken())
+		assertEqual("=", parser's nextToken())
+		assertEqual("val ue", parser's nextToken())
+		assertEqual(missing value, parser's nextToken())
 		assertEqual(parser's UNQUOTED, parser's state)
 	end script
 	

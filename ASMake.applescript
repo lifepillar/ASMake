@@ -230,10 +230,13 @@ end script
 (*! @abstract A script object for collecting and parsing command-line arguments. *)
 script CommandLineParser
 	property parent : Stdout
+	
 	(*! @abstract The full command string. *)
 	property stream : ""
+	
 	(*! @abstract The length of the command string. *)
 	property streamLength : 0
+	
 	(*!
 		@abstract
 			The index of the next character to be read from the command string.
@@ -241,13 +244,17 @@ script CommandLineParser
 			The invariant for this property is maintained by the @link nextChar@/link() handler.
 	*)
 	property npos : 1
+	
 	(*! @abstract The current parsed token. *)
-	property currToken : ""
+	property currToken : missing value
+	
+	(*! @abstract The character signalling that the stream has been consumed. *)
+	property EOS : ""
 	property UNQUOTED : space
 	property SINGLE_QUOTED : "'"
 	property DOUBLE_QUOTED : quote
 	(*! @abstract The state of the lexical analyzer. *)
-	property state : UNQUOTED
+	property state : my UNQUOTED
 	
 	(*!
 		@abstract
@@ -263,7 +270,9 @@ script CommandLineParser
 	
 	(*! @abstract Resets the stream to its initial state, ready to be parsed again. *)
 	on resetStream()
+		set currToken to missing value
 		set my npos to 1
+		set my state to my UNQUOTED
 	end resetStream
 	
 	(*!
@@ -337,39 +346,41 @@ script CommandLineParser
 	end arg
 	
 	on nextToken()
-		set n to my stream's length
-		set i to my npos
-		repeat while i ² n
-			if character i of my stream is not in {space, tab, "."} then exit repeat
-			set i to i + 1
+		local c
+		repeat -- skip white space
+			set c to nextChar()
+			if c is not in {space, tab, "."} then exit repeat
 		end repeat
-		if i > n then
+		if endOfStream() then
 			set my currToken to missing value
 			return my currToken
 		end if
-		set c to character i of my stream
-		set my npos to i + 1
-		if c is "=" then
-			set my currToken to c
-			return c
-		end if
-		if c is "\\" then
-			if npos > n then
-				set my currToken to missing value
-				return my currToken
-			else
-				set npos to npos + 1
+		set my currToken to c
+		if c is "=" then return my currToken
+		repeat
+			set c to nextChar()
+			if my state is UNQUOTED then
+				if c is in {space, tab, ".", "=", my EOS} then
+					exit repeat
+				else
+					set my currToken to my currToken & c
+				end if
+			else if my state is in {SINGLE_QUOTED, DOUBLE_QUOTED} then
+				if c is my EOS then
+					exit repeat
+				else
+					set my currToken to my currToken & c
+				end if
 			end if
-		end if
-		set i to my npos
-		repeat while i ² n
-			if character i of my stream is in {space, tab, ".", "="} then exit repeat
-			set i to i + 1
 		end repeat
-		set my currToken to text ((my npos) - 1) thru (i - 1) of my stream
-		set my npos to i
+		putBack()
+		return my currToken
 	end nextToken
 	
+	(*! @abstract Returns true if the end of the stream has been reached; returns false otherwise. *)
+	on endOfStream()
+		my npos > my streamLength
+	end endOfStream
 	
 	(*!
 		@abstract
@@ -390,7 +401,7 @@ script CommandLineParser
 	*)
 	on nextChar()
 		set c to getChar()
-		if c is "" then return c -- end of stream
+		if c is my EOS then return c -- end of stream
 		if my state is UNQUOTED then
 			if c is "'" then -- enter single-quoted state
 				set my state to SINGLE_QUOTED
@@ -433,7 +444,7 @@ script CommandLineParser
 			The next character to be read, or the empty string if the end of the stream has been reached.
 	*)
 	on getChar()
-		if my npos > my streamLength then return ""
+		if endOfStream() then return my EOS
 		set my npos to (my npos) + 1
 		character (npos - 1) of my stream
 	end getChar
@@ -447,7 +458,7 @@ script CommandLineParser
 			The value of @link npos@/link.
 	*)
 	on putBack()
-		if my npos > my streamLength then return my npos
+		if endOfStream() then return my npos
 		set my npos to (my npos) - 1
 	end putBack
 	
