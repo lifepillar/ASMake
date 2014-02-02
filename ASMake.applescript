@@ -237,7 +237,7 @@ end script
 
 (*! @abstract A script object for collecting and parsing command-line arguments. *)
 script CommandLineParser
-	property parent : Stdout
+	property parent : AppleScript
 	
 	(*! @abstract The full command string. *)
 	property stream : ""
@@ -253,8 +253,11 @@ script CommandLineParser
 	*)
 	property npos : 1
 	
+	(*! @abstract A constant denoting the absence of a token. *)
+	property NO_TOKEN : ""
+	
 	(*! @abstract The current parsed token. *)
-	property currToken : missing value
+	property currToken : my NO_TOKEN
 	
 	(*! @abstract The character signalling that the stream has been consumed. *)
 	property EOS : ""
@@ -278,7 +281,7 @@ script CommandLineParser
 	
 	(*! @abstract Resets the stream to its initial state, ready to be parsed again. *)
 	on resetStream()
-		set currToken to missing value
+		set currToken to my NO_TOKEN
 		set my npos to 1
 		set my state to my UNQUOTED
 	end resetStream
@@ -319,8 +322,8 @@ script CommandLineParser
 	on parse(commandLine)
 		set my stream to commandLine
 		set my streamLength to the length of my stream
-		set currToken to missing value
-		set my state to UNQUOTED
+		set currToken to my NO_TOKEN
+		set my state to my UNQUOTED
 		set my npos to 1
 		optionList()
 		taskName()
@@ -336,13 +339,18 @@ script CommandLineParser
 	end optionList
 	
 	on taskName()
-		if my currToken is missing value then syntaxError("Missing task name")
+		if my currToken is my NO_TOKEN then syntaxError("Missing task name")
+		if nextChar() is "=" then
+			putBack()
+			syntaxError("Missing task name")
+		end if
+		putBack()
 		set Args's command to my currToken
 	end taskName
 	
 	on argList()
 		nextToken()
-		if my currToken is missing value then return -- no arguments
+		if my currToken is my NO_TOKEN then return -- no arguments
 		arg()
 		argList()
 	end argList
@@ -362,7 +370,7 @@ script CommandLineParser
 			if c is not in {space, tab, "."} then exit repeat
 		end repeat
 		if endOfStream() then
-			set my currToken to missing value
+			set my currToken to my NO_TOKEN
 			return my currToken
 		end if
 		set my currToken to c
@@ -473,16 +481,18 @@ script CommandLineParser
 	end putBack
 	
 	on syntaxError(msg)
-		local sp
+		local sp, n
 		set sp to ""
-		repeat with i from 1 to npos - (length of my currToken) - 1
+		if my currToken is my NO_TOKEN then
+			set n to 0
+		else
+			set n to the length of my currToken
+		end if
+		repeat with i from 1 to (my npos) - n - 1
 			set sp to sp & space
 		end repeat
 		set sp to sp & "^"
-		log stream
-		log sp
-		log msg
-		error msg
+		error msg & linefeed & my stream & linefeed & sp
 	end syntaxError
 	
 end script
@@ -499,9 +509,14 @@ on runTask(action)
 	set TaskBase's PWD to POSIX path of (path to me) -- path of makefile.applescript
 	try
 		CommandLineParser's parse(action)
+	on error errMsg
+		ofail("Syntax error", errMsg)
+		error
+	end try
+	try
 		set t to findTask(Args's command)
 	on error errMsg number errNum
-		ofail("Wrong task specification: " & action, "")
+		ofail("Unknown task: " & Args's command, "")
 		error errMsg number errNum
 	end try
 	set t's arguments to Args
