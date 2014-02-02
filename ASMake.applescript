@@ -12,19 +12,31 @@ property name : "ASMake"
 property version : "0.0.1"
 property id : "com.lifepillar.ASMake"
 
-(*! @abstract A script to help print colored output to the terminal. *)
+(*! @abstract A script object to help print colored output to the terminal. *)
 script Stdout
+	(*! @abstract The parent of this object. *)
 	property parent : AppleScript
+	(*! @abstract The basic escape sequence. *)
 	property esc : "\\033["
+	(*! @abstract The escape sequence for black. *)
 	property black : esc & "0;30m"
+	(*! @abstract The escape sequence for blue. *)
 	property blue : esc & "0;34m"
+	(*! @abstract The escape sequence for cyan. *)
 	property cyan : esc & "0;36m"
+	(*! @abstract The escape sequence for green. *)
 	property green : esc & "0;32m"
+	(*! @abstract The escape sequence for magenta. *)
 	property magenta : esc & "0;35m"
+	(*! @abstract The escape sequence for purple. *)
 	property purple : esc & "0;35m"
+	(*! @abstract The escape sequence for red. *)
 	property red : esc & "0;31m"
+	(*! @abstract The escape sequence for yellow. *)
 	property yellow : esc & "0;33m"
+	(*! @abstract The escape sequence for white. *)
 	property white : esc & "0;37m"
+	(*! @abstract The reset escape sequence. *)
 	property reset : esc & "0m"
 	
 	(*!
@@ -33,9 +45,9 @@ script Stdout
 		@param
 			s <em>[text]</em> Some text.
 		@param
-			kolor <em>[text]</em> One of the color constants.
+			kolor <em>[text]</em> One of @link Stdout@/link's color constants.
 		@return
-			<em>[text]</em> The text with suitable ANSI escape codes.
+			<em>[text]</em> The text with suitable ANSI escape codes for the given color.
 	*)
 	on col(s, kolor)
 		set s to kolor & s & reset
@@ -47,13 +59,20 @@ script Stdout
 		@param
 			kolor <em>[text]</em> One of the color constants.
 		@return
-			<em>[text]</em> The bold color corresponding to the given color.			
+			<em>[text]</em> The escape sequence for the bold version of the given color.
 	*)
 	on bb(kolor)
 		esc & "1;" & text -3 thru -1 of kolor
 	end bb
 	
-	(*! @abstract Sends a message to the terminal. *)
+	(*!
+		@abstract
+			Sends a message to the terminal.
+		@discussion
+			This is the low-level procedure that is used to print anything.
+			It is implemented to support ASCII escape sequences, so that
+			colored terminal output can be obtained.
+	*)
 	on echo(msg)
 		set msg to do shell script "echo " & quoted form of msg without altering line endings
 		log text 1 thru -2 of msg -- Remove last linefeed
