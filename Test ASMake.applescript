@@ -108,7 +108,7 @@ script |Test task|
 	end script
 end script -- Test task
 
-script |Test command line parsing|
+script |Test lexical analyzer|
 	property parent : TestSet(me)
 	property parser : missing value
 	property backslash : "\\"
@@ -237,3 +237,36 @@ script |Test command line parsing|
 	end script
 	
 end script -- Test command line parsing
+
+script |Test parser|
+	property parent : TestSet(me)
+	property parser : missing value
+	property argObj : missing value
+	property backslash : "\\"
+	
+	on setUp()
+		set parser to a reference to ASMake's CommandLineParser
+		set argObj to a reference to ASMake's args
+		argObj's clear()
+	end setUp
+	
+	
+	script |Test simple parsing|
+		property parent : UnitTest(me)
+		parser's parse("--opt1 -o2 cmd key= value")
+		assertEqual("cmd", argObj's command)
+		assertEqual({"--opt1", "-o2"}, argObj's options)
+		assertEqual({"key"}, argObj's keys)
+		assertEqual({"value"}, argObj's values)
+	end script
+	
+	script |Test parsing quoted string|
+		property parent : UnitTest(me)
+		parser's parse("taskname k1=" & quote & backslash & quote & "=" & quote & "'a b'c")
+		assertEqual("taskname", argObj's command)
+		assertEqual({}, argObj's options)
+		assertEqual({"k1"}, argObj's keys)
+		assertEqual({quote & "=a bc"}, argObj's values)
+	end script
+	
+end script
