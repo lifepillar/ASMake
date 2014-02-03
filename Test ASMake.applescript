@@ -269,4 +269,14 @@ script |Test parser|
 		assertEqual({quote & "=a bc"}, argObj's values)
 	end script
 	
+	script |Parse and retrieve args|
+		property parent : UnitTest(me)
+		parser's parse("--opt1 -o2 taskname k1=v1 k2=v2")
+		assertEqual("v2", argObj's fetch("k2", "Not found"))
+		assertEqual("Not found", argObj's fetch("v2", "Not found"))
+		assertEqual("v1", argObj's fetchAndDelete("k1", "Not found"))
+		assertEqual("Not found", argObj's fetchAndDelete("k1", "Not found"))
+		assertEqual("v2", argObj's fetchAndDelete("k2", "Not found"))
+		assertEqual("Not found", argObj's fetchAndDelete("k2", "Not found"))
+	end script
 end script
