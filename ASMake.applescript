@@ -308,6 +308,26 @@ script Args
 	
 	(*! @abstract Like @link fetch @/link(), but removes the argument from the list of arguments. *)
 	on fetchAndDelete(key, default)
+		local i, n
+		set n to numberOfArguments()
+		repeat with i from 1 to n
+			if item i of my keys is key then
+				local val
+				set val to item i of my values
+				if i = 1 then
+					set my keys to the rest of my keys
+					set my values to the rest of my values
+				else if i = n then
+					set my keys to items 1 thru (i - 1) of my keys
+					set my values to items 1 thru (i - 1) of my values
+				else
+					set my keys to (items 1 thru (i - 1) of my keys) & (items (i + 1) thru -1 of my keys)
+					set my values to (items 1 thru (i - 1) of my values) & (items (i + 1) thru -1 of my values)
+				end if
+				return val
+			end if
+		end repeat
+		default
 	end fetchAndDelete
 	
 	(*!
