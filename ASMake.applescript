@@ -219,7 +219,7 @@ end Task
 -- Predefined tasks
 
 (*! @abstract Task to print the list of available tasks. *)
-script helpTask
+script HelpTask
 	property parent : Task(me)
 	property name : "help"
 	property synonyms : {"-help", "--help", "-h"}
@@ -231,7 +231,7 @@ script helpTask
 end script
 
 (*! @abstract Task to print the path of the working directory. *)
-script workDir
+script WorkDir
 	property parent : Task(me)
 	property name : "pwd"
 	property synonyms : {"wd"}
