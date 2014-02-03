@@ -110,9 +110,9 @@ script TaskBase
 		@abstract
 			The list of registered tasks.
 		@discussion
-			This is a read-only property shared by all tasks, and should not be overridden.
+			This is a read-only property that should not be overridden by inheriting tasks.
 			The value of this property is updated automatically at compile-time whenever
-			a task script is encountered.
+			a task script is compiled.
 	*)
 	property TASKS : {}
 	
@@ -120,7 +120,7 @@ script TaskBase
 		@abstract
 			The POSIX path of the working directory.
 		@discussion
-			This is a read-only property shared by all tasks, and should not be overridden.
+			This is a read-only property that should not be overridden by inheriting tasks.
 			The value of this property is set automatically when a makefile is executed.
 	*)
 	property PWD : missing value
@@ -128,7 +128,12 @@ script TaskBase
 	(*! @abstract Defines a list of aliases for this task. *)
 	property synonyms : {}
 	
-	(*! @abstract Stores a reference to the @link Args @/link script object. *)
+	(*!
+		@abstract
+			Stores a reference to the @link Args @/link script object.
+		@discussion
+			Tasks that expect arguments can fetch them through this property.
+	*)
 	property arguments : {}
 	
 	
@@ -139,7 +144,17 @@ script TaskBase
 	*)
 	property printSuccess : true
 	
-	(* @abstract Copies one or more files to the specified destination. *)
+	(*
+		@abstract
+			Copies one or more files to the specified destination.
+		@discussion
+			This is an interface to the <code>cp</code> command.
+		@param
+			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
+				Glob patterns are accepted.
+		@param
+			dst <em>[text]</em>: the destination path.
+	*)
 	on cp(src, dst) -- src can be a list of POSIX paths
 		local cmd
 		if src's class is text then
@@ -192,7 +207,7 @@ script TaskBase
 		if output is not equal to "" then echo(output)
 	end sh
 	
-	(*! @abstract Interface for the <tt>which</tt> command. *)
+	(*! @abstract Interface for the <code>which</code> command. *)
 	on which(command)
 		try
 			do shell script "which" & space & command
@@ -209,7 +224,7 @@ end script
 	@discussion
 		This handler is used to register a task at compile-time
 		and to set the parent of a script to @link TaskBase @/link.
-		Every task script must inherit from <tt>Task(me)</tt>.
+		Every task script must inherit from <code>Task(me)</code>.
 *)
 on Task(t)
 	set the end of TaskBase's TASKS to t
@@ -261,9 +276,9 @@ script Args
 		@abstract
 			A list of keys from command-line options.
 		@discussion
-			This property stores they keys of command-line options of the form <tt>key=value</tt>.
+			This property stores they keys of command-line options of the form <code>key=value</code>.
 			For flags and command-line switches, it stores their names as they are,
-			unless they start with <tt>no-</tt>, <tt>-no-</tt>, or <tt>--no-</tt>, in which case
+			unless they start with <code>no-</code>, <code>-no-</code>, or <code>--no-</code>, in which case
 			such prefix is removed.
 	*)
 	property keys : {}
@@ -271,10 +286,10 @@ script Args
 		@abstract
 			A list of values from command-line options.
 		@discussion
-			This property stores they values of command-line options of the form <tt>key=value</tt>.
-			For flags and command-line switches, it stores the value <tt>true</tt> unless the switch
-			starts with <tt>no-</tt>, <tt>-no-</tt>, or <tt>--no-</tt>, in which case it stores
-			the value <tt>false</tt>.
+			This property stores they values of command-line options of the form <code>key=value</code>.
+			For flags and command-line switches, it stores the value <code>true</code> unless the switch
+			starts with <code>no-</code>, <code>-no-</code>, or <code>--no-</code>, in which case it stores
+			the value <code>false</code>.
 	*)
 	property values : {}
 	
@@ -292,11 +307,15 @@ script Args
 	end clear
 	
 	(*!
-			@abstract
-				Retrieves the argument with the given key.
-			@return
-				The value associated with the key, or the specified default value if the key is not found.
-		*)
+		@abstract
+			Retrieves the argument with the given key.
+		@param
+			key <em>[text]</em> the key to look up.
+		@param
+			default <em>[text]</em> The value to be returned if the key is not found.
+		@return
+			The value associated with the key, or the specified default value if the key is not found.
+	*)
 	on fetch(key, default)
 		local i, n
 		set n to numberOfArguments()
@@ -331,13 +350,13 @@ script Args
 	end fetchAndDelete
 	
 	(*!
-			@abstract
-				Retrieves the first argument and removes it from the list of arguments.
-			@return
-				A pair {key, value}, or {missing value,missing value} if there are no arguments.
+		@abstract
+			Retrieves the first argument and removes it from the list of arguments.
+		@return
+			A pair {key, value}, or {missing value,missing value} if there are no arguments.
 		*)
 	on shift()
-		if num() is 0 then return {missing value, missing value}
+		if numberOfArguments() is 0 then return {missing value, missing value}
 		local k, v
 		set {k, v} to {the first item of my keys, the first item of my values}
 		set {my keys, my values} to {the rest of my keys, the rest of my values}
@@ -361,7 +380,7 @@ script CommandLineParser
 			asmake --debug taskname key=value
 			</pre>
 			
-			this property is set to <tt>--debug taskname key=value</tt>.
+			this property is set to <code>--debug taskname key=value</code>.
 	*)
 	property stream : ""
 	
@@ -553,14 +572,14 @@ script CommandLineParser
 			Gets the next character from the command string, considering quoted characters.
 		@discussion
 			A character may be <it>quoted</it> (that is, made to stand for itself) by preceding it
-			with a <tt>\</tt> (backslash). A backslash at the end of the command string is ignored.
+			with a <code>\</code> (backslash). A backslash at the end of the command string is ignored.
 			
-			All characters enclosed between a pair of single quotes (<tt>'</tt>) are quoted.
-			For example, <tt>'\\'</tt> stands for <tt>\\</tt>.
+			All characters enclosed between a pair of single quotes (<code>'</code>) are quoted.
+			For example, <code>'\\'</code> stands for <code>\\</code>.
 			A single quote cannot appear within single quotes.
 			
-			Inside double quotes (<tt>"</tt>), a <tt>\</tt> quotes the characters <tt>\</tt> and <tt>"</tt>.
-			That is, <tt>\\</tt> stands for <tt>\</tt> and <tt>\"</tt> stands for <tt>"</tt>.
+			Inside double quotes (<code>"</code>), a <code>\</code> quotes the characters <code>\</code> and <code>"</code>.
+			That is, <code>\\</code> stands for <code>\</code> and <code>\"</code> stands for <code>"</code>.
 
 		@return
 			<em>[text]</em> The next unread character (considering escaping)
@@ -652,13 +671,33 @@ script CommandLineParser
 	
 end script -- CommandLineParser
 
-on findTask(action)
+(*!
+	@abstract
+		Retrieves the task specified by the user.
+	@param
+		taskname <em>[text]</em> The task name.
+	@return
+		The task specified by the user, if found.
+	@throw
+		An exception if the task is not found.
+*)
+on findTask(taskName)
 	repeat with t in (a reference to TaskBase's TASKS)
-		if action = t's name or action is in t's synonyms then return t
+		if taskName = t's name or taskName is in t's synonyms then return t
 	end repeat
 	error
 end findTask
 
+(*!
+	@abstract
+		Executes a task.
+	@param
+		action <em>[text]</em> The command-line string.
+	@throw
+		An error if the command contains syntax error,
+		if the task with the specified name does not exist,
+		or if the task fails.
+*)
 on runTask(action)
 	local t
 	set TaskBase's PWD to POSIX path of (path to me) -- path of makefile.applescript
@@ -684,6 +723,7 @@ on runTask(action)
 	end try
 end runTask
 
+(*! @abstract The handler invoked by <tt>osascript</tt>. *)
 on run {action}
 	if action is "__ASMAKE__LOAD__" then -- Allow loading ASMake from text format with run script
 		return me
