@@ -136,6 +136,8 @@ script TaskBase
 	*)
 	property arguments : {}
 	
+	(*! @abstract A description for this task. *)
+	property description : "No description."
 	
 	(*!
 		@abstract
