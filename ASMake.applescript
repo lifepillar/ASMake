@@ -157,22 +157,38 @@ script TaskBase
 			Copies one or more files to the specified destination.
 		@discussion
 			This is an interface to the <code>cp</code> command.
+			The arguments may be POSIX paths or HFS+ paths.
+			A list of source paths can be used.
 		@param
 			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
 				Glob patterns are accepted.
 		@param
 			dst <em>[text]</em>: the destination path.
 	*)
-	on cp(src, dst) -- src can be a list of POSIX paths
+	on cp(src, dst)
 		local cmd
-		if src's class is text then
-			set src to {src}
-		end if
-		set cmd to "cp -r"
+		if src's class is text then set src to {src}
+		if src's class is not list then error "cp() expects a source path or a list of source paths"
+		if dst's class is in {file, alias, Çclass furlÈ} then set dst to POSIX path of dst
+		if dst's class is not text then error "cp(): The target path must be convertible to a POSIX path"
+		set cmd to "/bin/cp -r"
 		repeat with s in src
-			set cmd to cmd & space & quoted form of s & space
+			if s's class is in {file, alias, Çclass furlÈ} then
+				set s to {POSIX path of s}
+			else
+				set s to glob(s)
+			end if
+			repeat with f in s
+				set cmd to cmd & space & quoted form of f
+			end repeat
 		end repeat
-		sh(cmd & space & quoted form of dst)
+		set cmd to cmd & space & quoted form of dst
+		if my arguments's options contains "--dry" then
+			log cmd
+		else
+			sh(cmd)
+		end if
+		return cmd
 	end cp
 	
 	(*!
