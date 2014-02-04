@@ -743,7 +743,7 @@ end findTask
 *)
 on runTask(action)
 	local t
-	set TaskBase's PWD to POSIX path of (path to me) -- path of makefile.applescript
+	set TaskBase's PWD to do shell script "pwd"
 	try
 		CommandLineParser's parse(action)
 	on error errMsg
