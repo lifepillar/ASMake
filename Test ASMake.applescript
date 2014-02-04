@@ -33,10 +33,12 @@ script |ASMake core|
 	end script
 	
 	script |Check script data structures|
+		property parent : UnitTest(me)
 		assertInstanceOf(script, ASMake's Stdout)
-		assertInstanceOf(list, ASMake's tasks)
-		assertEqual({}, ASMake's tasks)
-		assertEqual(missing value, pwd)
+		assertInstanceOf("Task", ASMake's TaskBase)
+		assertKindOf(script, ASMake's TaskBase)
+		assertInstanceOf(script, ASMake's TaskArguments)
+		assertInstanceOf(script, ASMake's CommandLineParser)
 	end script
 	
 end script -- ASMake core
@@ -246,7 +248,7 @@ script |Test parser|
 	
 	on setUp()
 		set parser to a reference to ASMake's CommandLineParser
-		set argObj to a reference to ASMake's args
+		set argObj to a reference to ASMake's TaskArguments
 		argObj's clear()
 	end setUp
 	
@@ -269,7 +271,7 @@ script |Test parser|
 		assertEqual({quote & "=a bc"}, argObj's values)
 	end script
 	
-	script |Parse and retrieve args|
+	script |Parse and retrieve arguments|
 		property parent : UnitTest(me)
 		parser's parse("--opt1 -o2 taskname k1=v1 k2=v2")
 		assertEqual("v2", argObj's fetch("k2", "Not found"))
@@ -278,5 +280,29 @@ script |Test parser|
 		assertEqual("Not found", argObj's fetchAndDelete("k1", "Not found"))
 		assertEqual("v2", argObj's fetchAndDelete("k2", "Not found"))
 		assertEqual("Not found", argObj's fetchAndDelete("k2", "Not found"))
+	end script
+end script
+
+script |Test TaskBase|
+	property parent : TestSet(me)
+	property tb : missing value
+	
+	on setUp()
+		set opts to {"--dry"}
+		set ASMake's TaskArguments's options to opts
+		set tb to a reference to ASMake's TaskBase
+		set tb's PWD to POSIX path of ((folder of file (path to me) of application "Finder") as alias)
+		set tb's arguments to ASMake's TaskArguments
+	end setUp
+	
+	script |Test glob()|
+		property parent : UnitTest(me)
+		assertEqual({"ASMake.applescript"}, tb's glob("ASM*.applescript"))
+		assertEqual({"I/dont/exist/foobar"}, tb's glob("I/dont/exist/foobar"))
+	end script
+	
+	script |Test cp()|
+		property parent : UnitTest(me)
+		assert(tb's cp({"AS*.applescript", path to me}, "tmp") starts with "/bin/cp -r 'ASMake.applescript'", "Wrong copy command")
 	end script
 end script
