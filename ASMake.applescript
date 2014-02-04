@@ -167,6 +167,19 @@ script TaskBase
 		sh(cmd & space & quoted form of dst)
 	end cp
 	
+	(*!
+		@abstract
+			Expands a glob pattern.
+		@param
+			pattern <em>[text]</em> A glob pattern (e.g., "build/*.scpt")
+		@return
+			<em>[list]</em> The list of paths matching the pattern.
+	*)
+	on glob(pattern)
+		the paragraphs of (do shell script "cd" & space & quoted form of my PWD & Â
+			";list=(" & pattern & ");for f in \"${list[@]}\";do echo \"$f\";done")
+	end glob
+
 	(*! @abstract Creates a new folder at the specified path. *)
 	on mkdir(dirname)
 		sh("mkdir -p" & space & quoted form of dirname)
