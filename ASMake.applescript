@@ -144,6 +144,14 @@ script TaskBase
 	*)
 	property printSuccess : true
 	
+	(*!
+		@abstract
+			Set this to true for private tasks.
+		@discussion
+			A private task does is not registered (see @link Task @/link()), hence it is not visible to the user.
+	*)
+	property private : false
+	
 	(*
 		@abstract
 			Copies one or more files to the specified destination.
@@ -240,6 +248,9 @@ end script
 		Every task script must inherit from <code>Task(me)</code>.
 *)
 on Task(t)
+	try -- t may not define the private property at this time
+		if t's private then return TaskBase
+	end try
 	set the end of TaskBase's TASKS to t
 	return TaskBase
 end Task
