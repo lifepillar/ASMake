@@ -172,11 +172,11 @@ script TaskBase
 		local cmd
 		if src's class is text then set src to {src}
 		if src's class is not list then error "cp() expects a source path or a list of source paths"
-		if dst's class is in {file, alias, √áclass furl√à} then set dst to POSIX path of dst
+		if dst's class is in {file, alias, «class furl»} then set dst to POSIX path of dst
 		if dst's class is not text then error "cp(): The target path must be convertible to a POSIX path"
 		set cmd to "/bin/cp -r"
 		repeat with s in src
-			if s's class is in {file, alias, √áclass furl√à} then
+			if s's class is in {file, alias, «class furl»} then
 				set s to {POSIX path of s}
 			else
 				set s to glob(s)
@@ -203,10 +203,10 @@ script TaskBase
 			<em>[list]</em> The list of paths matching the pattern.
 	*)
 	on glob(pattern)
-		the paragraphs of (do shell script "cd" & space & quoted form of my PWD & √Ç
+		the paragraphs of (do shell script "cd" & space & quoted form of my PWD & ¬
 			";list=(" & pattern & ");for f in \"${list[@]}\";do echo \"$f\";done")
 	end glob
-
+	
 	(*! @abstract Creates a new folder at the specified path. *)
 	on mkdir(dirname)
 		sh("mkdir -p" & space & quoted form of dirname)
@@ -240,7 +240,7 @@ script TaskBase
 	on sh(command)
 		local output
 		echo(command)
-		-- Execute command in working directory
+		-- Execute the command in the working directory
 		set command to ¬
 			"cd" & space & quoted form of my PWD & ";" & space & command
 		set output to (do shell script command & space & "2>&1")
