@@ -130,7 +130,7 @@ script TaskBase
 	
 	(*!
 		@abstract
-			Stores a reference to the @link Args @/link script object.
+			Stores a reference to the @link TaskArguments @/link script object.
 		@discussion
 			Tasks that expect arguments can fetch them through this property.
 	*)
@@ -288,7 +288,7 @@ property parent : Stdout
 	@discussion
 		This is passed to the task.
 *)
-script Args
+script TaskArguments
 	property parent : AppleScript
 	
 	(*! @abstract The name of the task to be executed. *)
@@ -510,7 +510,7 @@ script CommandLineParser
 	on optionList()
 		nextToken()
 		if my currToken starts with "-" then
-			set the end of Args's options to my currToken
+			set the end of TaskArguments's options to my currToken
 			optionList()
 		end if
 	end optionList
@@ -523,7 +523,7 @@ script CommandLineParser
 			syntaxError("Missing task name")
 		end if
 		putBack()
-		set Args's command to my currToken
+		set TaskArguments's command to my currToken
 	end taskName
 	
 	(*! @abstract Parses a possibly empty list of key-value arguments. *)
@@ -536,11 +536,11 @@ script CommandLineParser
 	
 	(*! @abstract Parses a key-value argument. *)
 	on arg()
-		set the end of Args's keys to my currToken
+		set the end of TaskArguments's keys to my currToken
 		nextToken()
 		if my currToken is not "=" then syntaxError("Arguments must have the form key=value")
 		nextToken()
-		set the end of Args's values to my currToken
+		set the end of TaskArguments's values to my currToken
 	end arg
 	
 	(*!
@@ -732,12 +732,12 @@ on runTask(action)
 		error
 	end try
 	try
-		set t to findTask(Args's command)
+		set t to findTask(TaskArguments's command)
 	on error errMsg number errNum
-		ofail("Unknown task: " & Args's command, "")
+		ofail("Unknown task: " & TaskArguments's command, "")
 		error errMsg number errNum
 	end try
-	set t's arguments to Args
+	set t's arguments to TaskArguments
 	try
 		run t
 		if t's printSuccess then ohai("Success!")
