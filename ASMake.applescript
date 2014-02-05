@@ -155,6 +155,31 @@ script TaskBase
 	*)
 	property private : false
 	
+	(*!
+		@abstract
+			Removes the trailing newline from the text, if present.
+		@param
+			t <em>[text]</em> A string.
+		@return
+			<em>[text]</em> The string with the trailing newline removed,
+			or <code>t</code> itself if it does not have a trailing newline.
+	*)
+	on chomp(t)
+		if t ends with linefeed then
+			if t is linefeed then return ""
+			if character -2 of t is return then
+				if t is return & linefeed then return ""
+				return text 1 thru -3 of t
+			end if
+			return text 1 thru -2 of t
+		end if
+		if t ends with return then
+			if t is return then return ""
+			return text 1 thru -2 of t
+		end if
+		return t
+	end chomp
+	
 	(*
 		@abstract
 			Copies one or more files to the specified destination.

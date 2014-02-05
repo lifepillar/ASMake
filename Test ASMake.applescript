@@ -305,4 +305,22 @@ script |Test TaskBase|
 		property parent : UnitTest(me)
 		assert(tb's cp({"AS*.applescript", path to me}, "tmp") starts with "/bin/cp -r 'ASMake.applescript'", "Wrong copy command")
 	end script
+	
+	script |Test chomp()|
+		property parent : UnitTest(me)
+		assertEqual("", tb's chomp(""))
+		assertEqual("", tb's chomp(return))
+		assertEqual("", tb's chomp(linefeed))
+		assertEqual("", tb's chomp(return & linefeed))
+		assertEqual(linefeed, tb's chomp(linefeed & return))
+		assertEqual("z", tb's chomp("z" & linefeed))
+		assertEqual("z", tb's chomp("z" & return))
+		assertEqual("z", tb's chomp("z" & return & linefeed))
+		assertEqual("yz", tb's chomp("yz" & linefeed))
+		assertEqual("yz", tb's chomp("yz" & return))
+		assertEqual("yz", tb's chomp("yz" & return & linefeed))
+		assertEqual("yz", tb's chomp("yz"))
+		assertEqual("xywz", tb's chomp("xywz"))
+		
+	end script
 end script
