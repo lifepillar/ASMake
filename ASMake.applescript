@@ -150,7 +150,7 @@ script TaskBase
 		@abstract
 			Set this to true for private tasks.
 		@discussion
-			A private task does is not registered (see @link Task @/link()), hence it is not visible to the user.
+			A private task is not registered (see @link Task @/link()), hence it is not visible to the user.
 			If this property is overridden, it must appear <em>before</em> the <code>parent</code> property.
 	*)
 	property private : false
