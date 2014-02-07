@@ -518,15 +518,13 @@ script CommandLineParser
 			The full grammar for a command-line string is as follows (terminals are enclosed in quotes):
 			
 			<pre>
-			CommandLine ::= OptionList TaskName ArgList
-			OptionList ::= Option OptionList | ''
-			Option ::= '-<string>' | '--<string>'
-			TaskName ::= '<string>'
-			ArgList ::= Arg ArgList | ''
-			Arg ::= <string>' '=' '<string>' 
+--			CommandLine ::= OptionList TaskName ArgList
+--			OptionList ::= Option OptionList | ''
+--			Option ::= '-<string>' | '--<string>'
+--			TaskName ::= '<string>'
+--			ArgList ::= Arg ArgList | ''
+--			Arg ::= <string>' '=' '<string>'
 			</pre>
-
-			[ | <-- this bar is here because of a bug (#15956484) in AppleScript Editor. Ignore this line. ]
 
 		Since ASMake can accept only a single argument, the whole command line string
 		must be enclosed in quotes. Alternatively, ASMake interprets a dot as a space.
