@@ -303,7 +303,33 @@ script |Test TaskBase|
 	
 	script |Test cp()|
 		property parent : UnitTest(me)
-		assert(tb's cp({"AS*.applescript", path to me}, "tmp") starts with "/bin/cp -r 'ASMake.applescript'", "Wrong copy command")
+		set res to tb's cp({"AS*.applescript", POSIX file "doc/foo.txt", "examples/bar"}, "tmp/cp")
+		set expected to "/bin/cp" & space & quoted form of "-r" & space & Â
+			quoted form of "ASMake.applescript" & space & Â
+			quoted form of "doc/foo.txt" & space & Â
+			quoted form of "examples/bar" & space & Â
+			quoted form of "tmp/cp"
+		assertEqual(expected, res)
+	end script
+	
+	script |Test mkdir()|
+		property parent : UnitTest(me)
+		set res to tb's mkdir({"a", "b/c", POSIX file "d/e"})
+		set expected to "/bin/mkdir" & space & quoted form of "-p" & space & Â
+			quoted form of "a" & space & Â
+			quoted form of "b/c" & space & Â
+			quoted form of "d/e"
+		assertEqual(expected, res)
+	end script
+	
+	script |Test rm()|
+		property parent : UnitTest(me)
+		set res to tb's rm({"a", "b/c", POSIX file "d/e"})
+		set expected to "/bin/rm" & space & quoted form of "-fr" & space & Â
+			quoted form of "a" & space & Â
+			quoted form of "b/c" & space & Â
+			quoted form of "d/e"
+		assertEqual(expected, res)
 	end script
 	
 	script |Test chomp()|
@@ -321,6 +347,18 @@ script |Test TaskBase|
 		assertEqual("yz", tb's chomp("yz" & return & linefeed))
 		assertEqual("yz", tb's chomp("yz"))
 		assertEqual("xywz", tb's chomp("xywz"))
-		
+	end script
+	
+	script |Test osacompile()|
+		property parent : UnitTest(me)
+		set expected to "/usr/bin/osacompile '-o' 'ASMake.scpt' '-x' 'ASMake.applescript'"
+		assertEqual(expected, tb's osacompile("ASMake", "scpt", {"-x"}))
+	end script
+	
+	script |Test which()|
+		property parent : UnitTest(me)
+		set ASMake's TaskArguments's options to {} -- remove --dry
+		assertNil(tb's which("A-command-that-does-not-exist"))
+		assertEqual("/bin/bash", tb's which("bash"))
 	end script
 end script

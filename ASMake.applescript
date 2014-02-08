@@ -194,29 +194,7 @@ script TaskBase
 			dst <em>[text]</em>: the destination path.
 	*)
 	on cp(src, dst)
-		local cmd
-		if src's class is text then set src to {src}
-		if src's class is not list then error "cp() expects a source path or a list of source paths"
-		if dst's class is in {file, alias, Çclass furlÈ} then set dst to POSIX path of dst
-		if dst's class is not text then error "cp(): The target path must be convertible to a POSIX path"
-		set cmd to "/bin/cp -r"
-		repeat with s in src
-			if s's class is in {file, alias, Çclass furlÈ} then
-				set s to {POSIX path of s}
-			else
-				set s to glob(s)
-			end if
-			repeat with f in s
-				set cmd to cmd & space & quoted form of f
-			end repeat
-		end repeat
-		set cmd to cmd & space & quoted form of dst
-		if my arguments's options contains "--dry" then
-			log cmd
-		else
-			sh(cmd)
-		end if
-		return cmd
+		sh("/bin/cp", {"-r"} & normalizePaths(src) & normalizePaths(dst))
 	end cp
 	
 	(*!
@@ -232,53 +210,101 @@ script TaskBase
 			";list=(" & pattern & ");for f in \"${list[@]}\";do echo \"$f\";done")
 	end glob
 	
-	(*! @abstract Creates a new folder at the specified path. *)
-	on mkdir(dirname)
-		sh("mkdir -p" & space & quoted form of dirname)
+	(*!
+		@abstract
+			Creates one or more folders at the specified path(s).
+		@param
+			dst <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			A path or a list of paths.
+	*)
+	on mkdir(dst)
+		sh("/bin/mkdir", {"-p"} & normalizePaths(dst))
 	end mkdir
 	
-	(*! @abstract Compiles one or more scripts. *)
-	on osacompile(src)
-		if src's class is text then
-			set src to {src}
-		end if
+	(*!
+		@abstract
+			Normalizes paths.
+		@discussion
+			This handler receives a path or a list of paths, which may be
+			POSIX paths, HFS+ paths or glob patterns, and returns a list
+			of (absolute or relative) POSIX paths, where glob patterns
+			have been expanded to the appropriate paths.
+		@param
+			src <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			A path or a list of paths.
+		@return
+			<em>[list]</em> A list of POSIX paths.
+	*)
+	on normalizePaths(src)
+		local res
+		set res to {}
+		if src's class is not list then set src to {src}
 		repeat with s in src
-			sh("osacompile -x -o" & space & Â
-				quoted form of (s & ".scpt") & space & Â
-				quoted form of (s & ".applescript"))
+			if s's class is in {file, alias, Çclass furlÈ} then
+				set the end of res to POSIX path of s
+			else
+				set res to res & glob(s)
+			end if
+		end repeat
+		return res
+	end normalizePaths
+	
+	(*!
+		@abstract
+			Compiles one or more scripts.
+		@param
+			src <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			A path or a list of paths.
+		@param
+			target <em>[text]</em> The type of the result, which can be <code>scpt</code>, <code>scptd</code>, or <code>app</code>, for a script, script bundle, or applet, respectively.
+		@param
+			opts <em>[list]</em> A list of <code>osacompile</code> options
+			(see <code>man osacompile</code>).
+	*)
+	on osacompile(src, target, opts)
+		local basename
+		repeat with s in normalizePaths(src)
+			if s ends with ".applescript" then
+				set basename to text 1 thru -13 -- remove suffix
+			else
+				set basename to s
+			end if
+			sh("/usr/bin/osacompile", {"-o", basename & "." & target} & opts & {basename & ".applescript"})
 		end repeat
 	end osacompile
 	
-	(*! @abstract Deletes one or more files. *)
-	on rm(patterns)
-		if patterns's class is text then
-			set patterns to {patterns}
-		end if
-		set cmd to ""
-		repeat with p in patterns
-			set cmd to cmd & "rm -fr" & space & p & ";" & space
-		end repeat
-		sh(cmd)
+	(*! @abstract Deletes one or more paths. *)
+	on rm(dst)
+		sh("/bin/rm", {"-fr"} & normalizePaths(dst))
 	end rm
 	
 	(*! @abstract Executes a given command. *)
-	on sh(command)
+	on sh(command, opts)
 		local output
-		echo(command)
-		-- Execute the command in the working directory
-		set command to Â
-			"cd" & space & quoted form of my PWD & ";" & space & command
-		set output to (do shell script command & space & "2>&1")
-		if output is not equal to "" then echo(output)
+		if opts's class is not list then set opts to {opts}
+		repeat with opt in opts
+			set command to command & space & quoted form of opt
+		end repeat
+		if my arguments's options contains "--dry" then
+			echo(command)
+			return command
+		else
+			echo(command)
+			-- Execute the command in the working directory
+			set command to Â
+				"cd" & space & quoted form of my PWD & ";" & command & space & "2>&1"
+			set output to (do shell script command)
+			if output is not equal to "" then echo(output)
+			return output
+		end if
 	end sh
 	
 	(*! @abstract Interface for the <code>which</code> command. *)
 	on which(command)
 		try
-			do shell script "which" & space & command
-			true
+			sh("/usr/bin/which", command)
 		on error
-			false
+			missing value
 		end try
 	end which
 end script
