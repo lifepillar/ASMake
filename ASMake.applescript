@@ -334,7 +334,7 @@ script TaskBase
 		@return
 			<em>[text]</em> The output of the command.
 			If ASMake is run with <code>--dry</code>, returns the text of the command.
-		@throw
+		@throws
 			An error if the shell script exits with non-zero status.
 	*)
 	on sh(command, opts)
