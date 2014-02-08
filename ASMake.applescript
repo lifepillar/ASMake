@@ -267,7 +267,7 @@ script TaskBase
 		local basename
 		repeat with s in normalizePaths(src)
 			if s ends with ".applescript" then
-				set basename to text 1 thru -13 -- remove suffix
+				set basename to text 1 thru -13 of s -- remove suffix
 			else
 				set basename to s
 			end if
