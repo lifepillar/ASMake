@@ -320,6 +320,8 @@ script |Test TaskBase|
 			quoted form of "b/c" & space & Â
 			quoted form of "d/e"
 		assertEqual(expected, res)
+		set expected to "/bin/mkdir '-p' 'foo bar'"
+		assertEqual(expected, tb's mkdir("foo bar"))
 	end script
 	
 	script |Test rm()|

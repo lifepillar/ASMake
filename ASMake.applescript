@@ -242,8 +242,10 @@ script TaskBase
 		repeat with s in src
 			if s's class is in {file, alias, Çclass furlÈ} then
 				set the end of res to POSIX path of s
-			else
+			else if s contains "*" then -- assume it is a glob pattern
 				set res to res & glob(s)
+			else
+				set the end of res to s
 			end if
 		end repeat
 		return res
