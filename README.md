@@ -165,8 +165,10 @@ Private tasks are not shown by `asmake help`.
 Currently, ASMake has the following options:
 
 - `--dry`: do not really execute shell commands.
+- `--verbose`: be verbose.
 
-Options are specified between `asmake` and the name of the task. For example:
+Unknown options are silently ignored.
+Options are specified between `asmake` and the name of the task. For example,
 
     asmake --dry build
 

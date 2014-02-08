@@ -197,6 +197,11 @@ script TaskBase
 		sh("/bin/cp", {"-r"} & normalizePaths(src) & normalizePaths(dst))
 	end cp
 	
+	(* @abstract Returns true if this is a dry run; returns false otherwise. *)
+	on dry()
+		my arguments's options contains "--dry" or my arguments's options contains "-n"
+	end dry
+	
 	(*!
 		@abstract
 			Expands a glob pattern.
@@ -287,19 +292,24 @@ script TaskBase
 		repeat with opt in opts
 			set command to command & space & quoted form of opt
 		end repeat
-		if my arguments's options contains "--dry" then
-			echo(command)
-			return command
-		else
-			echo(command)
-			-- Execute the command in the working directory
-			set command to Â
-				"cd" & space & quoted form of my PWD & ";" & command & space & "2>&1"
-			set output to (do shell script command)
-			if output is not equal to "" then echo(output)
-			return output
-		end if
+		if verbose() then echo(command)
+		if dry() then return command
+		-- Execute the command in the working directory
+		set command to Â
+			"cd" & space & quoted form of my PWD & ";" & command & space & "2>&1"
+		set output to (do shell script command)
+		if verbose() and output is not equal to "" then echo(output)
+		return output
 	end sh
+	
+	(*!
+		@abstract
+			Returns true if the user has requested verbose output;
+			returns false otherwise.
+	*)
+	on verbose()
+		my arguments's options contains "--verbose" or my arguments's options contains "-v"
+	end verbose
 	
 	(*! @abstract Interface for the <code>which</code> command. *)
 	on which(command)
@@ -818,6 +828,7 @@ on runTask(action)
 	try
 		run t
 		if t's printSuccess then ohai("Success!")
+		if t's dry() then ohai("(This was a dry run)")
 	on error errMsg number errNum
 		ofail("Task failed", "")
 		error errMsg number errNum
