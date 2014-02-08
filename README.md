@@ -117,11 +117,11 @@ specify the type of build:
       property parent : Task(me)
       set tgt to my arguments's fetch("target", "default")
       if tgt is "dev" then
-        -- Make a dev build
+        echo("dev build")
       else if tgt is "production" then
-        -- Make a production build
+        echo("production build")
       else if tgt is "default" then
-        -- Do something else
+        echo("Default build")
       end if
     end script
 
