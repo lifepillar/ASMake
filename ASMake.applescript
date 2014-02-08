@@ -400,9 +400,6 @@ script TaskArguments
 			A list of values from command-line options.
 		@discussion
 			This property stores they values of command-line options of the form <code>key=value</code>.
-			For flags and command-line switches, it stores the value <code>true</code> unless the switch
-			starts with <code>no-</code>, <code>-no-</code>, or <code>--no-</code>, in which case it stores
-			the value <code>false</code>.
 	*)
 	property values : {}
 	
