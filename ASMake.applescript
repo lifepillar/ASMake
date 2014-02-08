@@ -356,7 +356,7 @@ script HelpTask
 		repeat with i from 1 to nameLen - (length of t's name)
 			set spaces to spaces & space
 		end repeat
-		echo(bb(my white) & t's name & my reset & spaces & t's description)
+		echo(my boldType & t's name & my reset & spaces & t's description)
 	end repeat
 end script
 
