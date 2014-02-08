@@ -303,23 +303,47 @@ script TaskBase
 		sh("/bin/rm", {"-fr"} & normalizePaths(dst))
 	end rm
 	
-	(*! @abstract Executes a given command. *)
+	(*!
+		@abstract
+			Executes a shell command.
+		@discussion
+			This handler provides an interface to run a shell script via
+			<code>do shell script</code>.
+			Redirection is supported, too: just pass, among the options, a record
+			containing a single <code>redirect</code> field. For example:
+			<pre>
+			sh("mycmd", {"--some", "--flag", {redirect: "2>&1"}})
+			</pre>
+		@param
+			command <em>[text]</em> The command name.
+		@param
+			opts <em>[text]</em> A list of arguments for the command.
+		@return
+			<em>[text]</em> The output of the command.
+			If ASMake is run with <code>--dry</code>, returns the text of the command.
+	*)
 	on sh(command, opts)
-		local output
+		local output, redirect
+		set redirect to ""
 		if opts's class is not list then set opts to {opts}
 		repeat with opt in opts
-			set command to command & space & quoted form of opt
+			if class of opt is record then
+				set redirect to space & redirect of opt
+			else
+				set command to command & space & quoted form of opt
+			end if
 		end repeat
+		set command to command & redirect
 		if verbose() then echo(command)
 		if dry() then return command
 		-- Execute the command in the working directory
 		set command to Â
-			"cd" & space & quoted form of my PWD & ";" & command & space & "2>&1"
+			"cd" & space & quoted form of my PWD & ";" & command
 		set output to (do shell script command)
 		if verbose() and output is not equal to "" then echo(output)
 		return output
 	end sh
-	
+
 	(*!
 		@abstract
 			Returns true if the user has requested verbose output;

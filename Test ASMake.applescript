@@ -323,6 +323,12 @@ script |Test TaskBase|
 		assertEqual({"I/dont/exist/foobar"}, tb's glob("I/dont/exist/foobar"))
 	end script
 	
+	script |Test sh()|
+		property parent : UnitTest(me)
+		set expected to "cmd" & space & "'-x' 2>&1"
+		assertEqual(expected, tb's sh("cmd", {"-x", {redirect:"2>&1"}}))
+	end script
+	
 	script |Test cp()|
 		property parent : UnitTest(me)
 		set res to tb's cp({"AS*.applescript", POSIX file "doc/foo.txt", "examples/bar"}, "tmp/cp")
