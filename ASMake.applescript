@@ -631,7 +631,7 @@ script CommandLineParser
 		@abstract
 			Gets the next token from the stream.
 		@return
-			<em>[text]</em> The next token or the constant @link NO_TOKEN	@/link no token can be retrieved.
+			<em>[text]</em> The next token, or the constant @link NO_TOKEN	@/link if no token can be retrieved.
 	*)
 	on nextToken()
 		local c
