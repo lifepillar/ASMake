@@ -36,6 +36,8 @@ script Stdout
 	property yellow : esc & "0;33m"
 	(*! @abstract The escape sequence for white. *)
 	property white : esc & "0;37m"
+	(*! @abstract The escape sequence for bold type. *)
+	property boldType : esc & "1m"
 	(*! @abstract The reset escape sequence. *)
 	property reset : esc & "0m"
 	
