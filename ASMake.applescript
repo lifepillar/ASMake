@@ -285,7 +285,7 @@ script TaskBase
 	
 	(*
 		@abstract
-			Reads the content to the given file as UTF8-encoded text.
+			Reads the content of the given file as UTF8-encoded text.
 		@param
 			filename <em>[text]</em> or <em>[file]</em> or <em>[alias]</em>: the file to read.
 		@return
