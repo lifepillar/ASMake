@@ -632,7 +632,7 @@ script CommandLineParser
 			set c to nextChar()
 			if c is not in {space, tab, "."} then exit repeat
 		end repeat
-		if endOfStream() then
+		if c is my EOS then
 			set my currToken to my NO_TOKEN
 			return my currToken
 		end if

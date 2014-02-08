@@ -238,6 +238,19 @@ script |Test lexical analyzer|
 		assertEqual(parser's UNQUOTED, parser's state)
 	end script
 	
+	script |Test nextToken() with one-letter tokens|
+		property parent : UnitTest(me)
+		parser's setStream("x")
+		assertEqual("x", parser's nextToken())
+		assertEqual(parser's NO_TOKEN, parser's nextToken())
+		parser's setStream("y.a = b")
+		assertEqual("y", parser's nextToken())
+		assertEqual("a", parser's nextToken())
+		assertEqual("=", parser's nextToken())
+		assertEqual("b", parser's nextToken())
+		assertEqual(parser's NO_TOKEN, parser's nextToken())
+	end script
+	
 end script -- Test command line parsing
 
 script |Test parser|
