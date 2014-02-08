@@ -275,6 +275,15 @@ script |Test parser|
 		assertEqual({"value"}, argObj's values)
 	end script
 	
+	script |Test parse command with option and task name|
+		property parent : UnitTest(me)
+		parser's parse("-n install")
+		assertEqual("install", argObj's command)
+		assertEqual({"-n"}, argObj's options)
+		assertEqual({}, argObj's keys)
+		assertEqual({}, argObj's values)
+	end script
+	
 	script |Test parsing quoted string|
 		property parent : UnitTest(me)
 		parser's parse("taskname k1=" & quote & backslash & quote & "=" & quote & "'a b'c")
