@@ -106,8 +106,8 @@ For example:
 ## Tasks with arguments
 
 Tasks may accept arguments from the command line. The arguments are automatically
-made available to every task through their `arguments` property, whose value is the `Args`
-script object defined in `ASMake.applescript`. The `Args` script defines a few
+made available to every task through their `arguments` property, whose value is the `TaskArguments`
+script object defined in `ASMake.applescript`. The `TaskArguments` script defines a few
 handlers that make it easy to process the arguments. See the source code for the details.
 
 For example, you may define a `build` task that accepts a `target` parameter to
