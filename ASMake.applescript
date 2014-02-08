@@ -365,7 +365,7 @@ script WorkDir
 	property synonyms : {"wd"}
 	property description : "Print the path of the working directory and exit."
 	property printSuccess : false
-	log my PWD
+	ohai(my PWD)
 end script
 
 (*! @abstract The parent of the top-level script. *)
