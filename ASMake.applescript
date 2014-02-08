@@ -333,11 +333,18 @@ end Task
 script HelpTask
 	property parent : Task(me)
 	property name : "help"
-	property synonyms : {"-help", "--help", "-h"}
 	property description : "Show the list of available tasks and exit."
 	property printSuccess : false
+	set nameLen to 0
+	repeat with t in my TASKS -- find the longest name
+		if the length of t's name > nameLen then set nameLen to the length of t's name
+	end repeat
 	repeat with t in my TASKS
-		echo(bb(my white) & t's name & my reset & tab & tab & t's description)
+		set spaces to space & space
+		repeat with i from 1 to nameLen - (length of t's name)
+			set spaces to spaces & space
+		end repeat
+		echo(bb(my white) & t's name & my reset & spaces & t's description)
 	end repeat
 end script
 
