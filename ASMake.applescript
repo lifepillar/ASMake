@@ -82,19 +82,19 @@ script Stdout
 	
 	(*! @abstract Prints a notice. *)
 	on ohai(msg)
-		echo(green & "==>" & space & bb(white) & msg & reset)
+		echo(col("==>", green) & space & boldType & msg & reset)
 	end ohai
 	
 	(*! @abstract Prints a failure message, with details. *)
 	on ofail(msg, info)
-		set msg to red & "Fail:" & space & bb(white) & msg & reset
+		set msg to col("Fail:", red) & space & boldType & msg & reset
 		if info is not "" then set msg to msg & linefeed & info
 		echo(msg)
 	end ofail
 	
 	(*! @abstract Prints a warning. *)
 	on owarn(msg)
-		echo(red & "Warn:" & space & bb(white) & msg & reset)
+		echo(col("Warn:", red) & space & boldType & msg & reset)
 	end owarn
 	
 end script -- Stdout
