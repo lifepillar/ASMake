@@ -62,7 +62,7 @@ end script
 script versionTask
 	property parent : Task(me)
 	property name : "version"
-	property synonyms : {"-version", "--version", "-v"}
+	property synonyms : {"v"}
 	property description : "Print ASMake's version and exit."
 	property printSuccess : false
 	set {n, v} to {name, version} of Â
