@@ -282,6 +282,22 @@ script TaskBase
 		end repeat
 	end osacompile
 	
+	
+	(*
+		@abstract
+			Reads the content to the given file as UTF8-encoded text.
+		@param
+			filename <em>[text]</em> or <em>[file]</em> or <em>[alias]</em>: the file to read.
+		@return
+			<em>[text]</em> The content of the file.
+	*)
+	on readUTF8(filename)
+		set f to the first item of normalizePaths(filename)
+		set fp to open for access POSIX file f without write permission
+		read fp as Çclass utf8È
+		close access fp
+	end readUTF8
+	
 	(*! @abstract Deletes one or more paths. *)
 	on rm(dst)
 		sh("/bin/rm", {"-fr"} & normalizePaths(dst))
@@ -321,7 +337,22 @@ script TaskBase
 			missing value
 		end try
 	end which
-end script
+	
+	(*
+		@abstract
+			Writes the specified UTF8-encoded content to the given file.
+		@param
+			filename <em>[text]</em> or <em>[file]</em> or <em>[alias]</em>: the file to write.
+		@param
+			content <em>[text]</em> The content to write.
+	*)
+	on writeUTF8(filename, content)
+		set f to the first item of normalizePaths(filename)
+		set fp to open for access POSIX file f with write permission
+		write content to fp as Çclass utf8È
+		close access fp
+	end writeUTF8
+end script -- TaskBase
 
 (*!
 	@abstract
