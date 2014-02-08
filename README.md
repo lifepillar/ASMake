@@ -168,12 +168,10 @@ Currently, ASMake has the following options:
 - `--verbose`: be verbose.
 
 Unknown options are silently ignored.
-Options are specified between `asmake` and the name of the task. For example,
+Options are specified between `asmake` and the name of the task. For example:
 
     asmake --dry build
 
-will print the commands that are used in the `build` task, but it will not
-actually execute them.
 
 ## License
 
