@@ -308,27 +308,58 @@ script TaskBase
 			Executes a shell command.
 		@discussion
 			This handler provides an interface to run a shell script via
-			<code>do shell script</code>.
-			Redirection is supported, too: just pass, among the options, a record
-			containing a single <code>redirect</code> field. For example:
+			<code>do shell script</code>. All the features of <code>do shell script</code>
+			are supported, including running a command with administrator privileges.
+			For example, a command run as user <code>nick</code>
+			with password <code>xyz123</code> may look as follows:
 			<pre>
-			sh("mycmd", {"--some", "--flag", {redirect: "2>&1"}})
+			sh("mycmd", {"--some", "--options", {super: true, user: "nick", password: "xyz123"}})
 			</pre>
+			Output redirection is supported, too, as well as altering line endings.
 		@param
 			command <em>[text]</em> The command name.
 		@param
-			opts <em>[text]</em> A list of arguments for the command.
+			opts <em>[text]</em> or <em>[list]</em> An argument or a list of arguments
+			for the command (internally, the handler always converts this
+			to a list). One of the elements of the list may be a record containing
+			one or more of the following keys: <code>redirect</code>, <code>super</code>,
+			<code>user</code>, <code>password</code>, and <code>alteringLineEndings</code>.
+			This record is not passed to the command, but it is used to configure
+			how the script is run. Consider for example:
+			<pre>
+			sh("mycmd", {"-a", "-b", {redirect: "2>&1", alteringLineEndings: false}})
+			</pre>
+			In this example, <code>-a</code> and <code>-b</code> are passed to <code>mycmd</code>.
+			Besides, stderr is redirected to stdout and the line endings in the command output are not modified.
 		@return
 			<em>[text]</em> The output of the command.
 			If ASMake is run with <code>--dry</code>, returns the text of the command.
+		@throw
+			An error if the shell script exits with non-zero status.
 	*)
 	on sh(command, opts)
-		local output, redirect
+		local output, redirect, superuser, username, pass, ale
 		set redirect to ""
+		set superuser to false
+		set username to system attribute "USER"
+		set pass to missing value
+		set ale to true
 		if opts's class is not list then set opts to {opts}
 		repeat with opt in opts
 			if class of opt is record then
-				set redirect to space & redirect of opt
+				try
+					set redirect to space & redirect of opt
+				end try
+				try
+					set ale to alteringLineEndings of opt
+				end try
+				try
+					set superuser to super of opt
+				end try
+				try
+					set pass to password of opt
+					set username to user of opt
+				end try
 			else
 				set command to command & space & quoted form of opt
 			end if
@@ -339,11 +370,15 @@ script TaskBase
 		-- Execute the command in the working directory
 		set command to Â
 			"cd" & space & quoted form of my PWD & ";" & command
-		set output to (do shell script command)
+		if pass is missing value then
+			set output to (do shell script command administrator privileges superuser altering line endings ale)
+		else
+			set output to (do shell script command administrator privileges superuser user name username password pass altering line endings ale)
+		end if
 		if verbose() and output is not equal to "" then echo(output)
 		return output
 	end sh
-
+	
 	(*!
 		@abstract
 			Returns true if the user has requested verbose output;
@@ -868,24 +903,24 @@ on runTask(action)
 	set TaskBase's PWD to do shell script "pwd"
 	try
 		CommandLineParser's parse(action)
-	on error errMsg
-		ofail("Syntax error", errMsg)
+	on error errmsg
+		ofail("Syntax error", errmsg)
 		error
 	end try
 	try
 		set t to findTask(TaskArguments's command)
-	on error errMsg number errNum
+	on error errmsg number errNum
 		ofail("Unknown task: " & TaskArguments's command, "")
-		error errMsg number errNum
+		error errmsg number errNum
 	end try
 	set t's arguments to TaskArguments
 	try
 		run t
 		if t's printSuccess then ohai("Success!")
 		if t's dry() then ohai("(This was a dry run)")
-	on error errMsg number errNum
+	on error errmsg number errNum
 		ofail("Task failed", "")
-		error errMsg number errNum
+		error errmsg number errNum
 	end try
 end runTask
 
