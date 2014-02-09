@@ -929,6 +929,8 @@ end findTask
 		or if the task fails.
 *)
 on runTask(action)
+	-- Allow loading ASMake from text format with run script
+	if action is "__ASMAKE__LOAD__" then return me
 	local t
 	set TaskBase's PWD to do shell script "pwd"
 	try
@@ -956,9 +958,5 @@ end runTask
 
 (*! @abstract The handler invoked by <tt>osascript</tt>. *)
 on run {action}
-	if action is "__ASMAKE__LOAD__" then -- Allow loading ASMake from text format with run script
-		return me
-	else
-		runTask(action)
-	end if
+	runTask(action)
 end run
