@@ -371,7 +371,7 @@ script TaskBase
 		local output, redirect, superuser, username, pass, ale
 		set redirect to ""
 		set superuser to false
-		set username to system attribute "USER"
+		set username to short user name of (system info)
 		set pass to missing value
 		set ale to true
 		if opts's class is not list then set opts to {opts}
