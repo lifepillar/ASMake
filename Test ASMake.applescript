@@ -340,6 +340,19 @@ script |Test TaskBase|
 		assertEqual(expected, res)
 	end script
 	
+	script |Test ditto()|
+		property parent : UnitTest(me)
+		set res to tb's ditto({"AS*.applescript", POSIX file "doc/foo.txt", "examples/bar"}, "tmp/ditto", {"-X", "--rsrc"})
+		set expected to "/usr/bin/ditto" & space & Â
+			quoted form of "-X" & space & Â
+			quoted form of "--rsrc" & space & Â
+			quoted form of "ASMake.applescript" & space & Â
+			quoted form of "doc/foo.txt" & space & Â
+			quoted form of "examples/bar" & space & Â
+			quoted form of "tmp/ditto"
+		assertEqual(expected, res)
+	end script
+	
 	script |Test mkdir()|
 		property parent : UnitTest(me)
 		set res to tb's mkdir({"a", "b/c", POSIX file "d/e"})

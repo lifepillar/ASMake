@@ -199,6 +199,36 @@ script TaskBase
 		sh("/bin/cp", {"-r"} & normalizePaths(src) & normalizePaths(dst))
 	end cp
 	
+	(*!
+		@abstract
+			Copies one or more source files or directories to a destination directory.
+		@discussion
+			This handler uses <code>ditto</code> to copy directory hierarchies.
+			See <code>man ditto</code> for further information and available options.
+			Note that <code>ditto</code> does not copy items the same way as
+			<code>cp</code> does. In particular, <code>ditto("foo", "bar")</code>
+			will copy the contents of directory <code>foo</code> into <code>bar</code>,
+			whereas <code>cp("foo", "bar")</code> will copy <code>foo</code> itself
+			into <code>bar</code>.
+		@param
+			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
+				Glob patterns are accepted.
+		@param
+			dst <em>[text]</em>: the destination path.
+		@param
+			opts <em>[text]</em> or <em>[list]</em>: a list of options
+			(see <code>man ditto</code>).
+	*)
+	on ditto(src, dst, opts)
+		if class of opts is list then
+			copy opts to flags
+		else
+			set flags to {opts}
+		end if
+		if verbose() then set the end of flags to "-V"
+		sh("/usr/bin/ditto", flags & normalizePaths(src) & normalizePaths(dst))
+	end ditto
+	
 	(* @abstract Returns true if this is a dry run; returns false otherwise. *)
 	on dry()
 		my arguments's options contains "--dry" or my arguments's options contains "-n"
