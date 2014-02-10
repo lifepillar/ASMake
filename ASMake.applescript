@@ -610,7 +610,7 @@ script CommandLineParser
 		@discussion
 			Typically, this is the full command string. For example, given this command:
 			<pre>
-			asmake --debug taskname key=value
+			asmake "--debug taskname key=value"
 			</pre>
 			
 			this property is set to <code>--debug taskname key=value</code>.
@@ -625,7 +625,7 @@ script CommandLineParser
 			The index of the next character to be read from the stream.
 		@discussion
 			This property always points to the next character to be read.
-			This invariant for is maintained by @link nextChar@/link().
+			This invariant is maintained by @link getChar@/link().
 	*)
 	property npos : 1
 	
