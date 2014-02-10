@@ -295,7 +295,8 @@ script TaskBase
 			src <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
 			A path or a list of paths.
 		@param
-			target <em>[text]</em> The type of the result, which can be <code>scpt</code>, <code>scptd</code>, or <code>app</code>, for a script, script bundle, or applet, respectively.
+			target <em>[text]</em> The type of the result, which can be <code>scpt</code>,
+			<code>scptd</code>, or <code>app</code>, for a script, script bundle, or applet, respectively.
 		@param
 			opts <em>[list]</em> A list of <code>osacompile</code> options
 			(see <code>man osacompile</code>).
