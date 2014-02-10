@@ -701,11 +701,7 @@ script CommandLineParser
 			</pre>
 	*)
 	on parse(commandLine)
-		set my stream to commandLine
-		set my streamLength to the length of my stream
-		set currToken to my NO_TOKEN
-		set my state to my UNQUOTED
-		set my npos to 1
+		setStream(commandLine)
 		optionList()
 		taskName()
 		argList()
