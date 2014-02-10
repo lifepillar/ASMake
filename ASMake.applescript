@@ -768,13 +768,13 @@ script CommandLineParser
 		if c is "=" then return my currToken
 		repeat
 			set c to nextChar()
-			if my state is UNQUOTED then
+			if my state is my UNQUOTED then
 				if c is in {space, tab, ".", "=", my EOS} then
 					exit repeat
 				else
 					set my currToken to my currToken & c
 				end if
-			else if my state is in {SINGLE_QUOTED, DOUBLE_QUOTED} then
+			else if my state is in {my SINGLE_QUOTED, my DOUBLE_QUOTED} then
 				if c is my EOS then
 					exit repeat
 				else
@@ -817,28 +817,28 @@ script CommandLineParser
 	on nextChar()
 		set c to getChar()
 		if c is my EOS then return c -- end of stream
-		if my state is UNQUOTED then
+		if my state is my UNQUOTED then
 			if c is "'" then -- enter single-quoted state
-				set my state to SINGLE_QUOTED
+				set my state to my SINGLE_QUOTED
 				return nextChar()
 			else if c is quote then -- enter double-quoted state
-				set my state to DOUBLE_QUOTED
+				set my state to my DOUBLE_QUOTED
 				return nextChar()
 			else if c is "\\" then -- escaped character
 				return getChar()
 			else
 				return c
 			end if
-		else if my state is SINGLE_QUOTED then
+		else if my state is my SINGLE_QUOTED then
 			if c is "'" then -- exit single-quoted state
-				set my state to UNQUOTED
+				set my state to my UNQUOTED
 				return nextChar()
 			else
 				return c
 			end if
-		else if my state is DOUBLE_QUOTED then
+		else if my state is my DOUBLE_QUOTED then
 			if c is quote then -- exit double-quoted state
-				set my state to UNQUOTED
+				set my state to my UNQUOTED
 				return nextChar()
 			else if c is "\\" then
 				set c to getChar()
