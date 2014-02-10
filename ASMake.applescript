@@ -513,9 +513,6 @@ script TaskArguments
 			A list of keys from command-line options.
 		@discussion
 			This property stores they keys of command-line options of the form <code>key=value</code>.
-			For flags and command-line switches, it stores their names as they are,
-			unless they start with <code>no-</code>, <code>-no-</code>, or <code>--no-</code>, in which case
-			such prefix is removed.
 	*)
 	property keys : {}
 	(*!
