@@ -468,6 +468,7 @@ script HelpTask
 	property description : "Show the list of available tasks and exit."
 	property printSuccess : false
 	set nameLen to 0
+	-- TODO: sort tasks alphabetically
 	repeat with t in my TASKS -- find the longest name
 		if the length of t's name > nameLen then set nameLen to the length of t's name
 	end repeat
@@ -945,7 +946,7 @@ on runTask(action)
 		ofail("Unknown task: " & TaskArguments's command, "")
 		error errmsg number errNum
 	end try
-	set t's arguments to TaskArguments
+	set t's arguments to TaskArguments -- TODO: move inside Task()?
 	try
 		run t
 		if t's printSuccess then ohai("Success!")
