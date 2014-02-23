@@ -152,7 +152,7 @@ script TaskBase
 		@abstract
 			Set this to true for private tasks.
 		@discussion
-			A private task is not registered (see @link Task @/link()), hence it is not visible to the user.
+			A private task is not registered (see @link Task() @/link), hence it is not visible to the user.
 			If this property is overridden, it must appear <em>before</em> the <code>parent</code> property.
 	*)
 	property private : false
@@ -263,7 +263,7 @@ script TaskBase
 			Moves one or more files to the specified path.
 		@discussion
 			This handler does not overwrite the target if it exists.
-			Use @link mv_f @/link() if you need that.
+			Use @link mv_f() @/link if you need that.
 		@param
 			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
 				Glob patterns are accepted.
@@ -292,7 +292,7 @@ script TaskBase
 		@abstract
 			Moves one or more files to the specified path.
 		@discussion
-			It is recommended that you use @link mv @/link() or @link mv_f @/link()
+			It is recommended that you use @link mv() @/link or @link mv_f() @/link
 			instead of this handler.
 		@param
 			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
