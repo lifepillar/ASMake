@@ -42,6 +42,12 @@ script clean
 	rm({"*.scpt", "*.scptd"})
 end script
 
+script doc
+	property parent : Task(me)
+	property description : "Compile the README."
+	sh("markdown", {"-o", "README.html", "README.md"})
+end script
+
 script install
 	property parent : Task(me)
 	property dir : POSIX path of Â
