@@ -260,7 +260,10 @@ script TaskBase
 	
 	(*!
 		@abstract
-			Move one or more files to the specified path.
+			Moves one or more files to the specified path.
+		@discussion
+			This handler does not overwrite the target if it exists.
+			Use @link mv_f @/link() if you need that.
 		@param
 			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
 				Glob patterns are accepted.
@@ -268,10 +271,51 @@ script TaskBase
 			dst <em>[text]</em>: the destination path.
 	*)
 	on mv(src, dst)
-		set dest to normalizePaths(dst)
-		if length of dest is not 1 then error "Target to mv() must be a single path"
-		sh("/bin/mv", normalizePaths(src) & dest)
+		moveOrRename(src, dst, "-n")
 	end mv
+	
+	(*!
+		@abstract
+			Move one or more files to the specified path.
+		@param
+			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
+				Glob patterns are accepted.
+		@param
+			dst <em>[text]</em>: the destination path.
+	*)
+	on mv_f(src, dst)
+		moveOrRename(src, dst, "-f")
+	end mv_f
+	
+	
+	(*!
+		@abstract
+			Moves one or more files to the specified path.
+		@discussion
+			It is recommended that you use @link mv @/link() or @link mv_f @/link()
+			instead of this handler.
+		@param
+			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
+				Glob patterns are accepted.
+		@param
+			dst <em>[text]</em>: the destination path.
+		@param
+			opts <em>[text]</em> or <em>[list]</em>: a list of options
+			(see <code>man mv</code>).
+	*)
+	on moveOrRename(src, dst, opts)
+		local flags, dest
+		if class of opts is list then
+			copy opts to flags
+		else
+			set flags to {opts}
+		end if
+		set dest to normalizePaths(dst)
+		if length of dest is not 1 then Â
+			error "The target of a move operation must be a single path"
+		if verbose() then set the end of flags to {"-v"}
+		sh("/bin/mv", flags & normalizePaths(src) & dest)
+	end moveOrRename
 	
 	(*!
 		@abstract

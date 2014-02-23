@@ -317,6 +317,12 @@ script |Test TaskBase|
 		set tb's arguments to ASMake's TaskArguments
 	end setUp
 	
+	script |Test normalizePaths()|
+		property parent : UnitTest(me)
+		set res to POSIX path of (path to library folder from user domain as alias)
+		assertEqual({res}, tb's normalizePaths(path to library folder from user domain as alias))
+	end script
+	
 	script |Test glob()|
 		property parent : UnitTest(me)
 		assertEqual({"ASMake.applescript"}, tb's glob("ASM*.applescript"))
@@ -368,7 +374,18 @@ script |Test TaskBase|
 	script |Test mv()|
 		property parent : UnitTest(me)
 		set res to tb's mv({"foo", "examples/bar"}, "tmp/mv")
-		set expected to "/bin/mv" & space & quoted form of "foo" & space & Â
+		set expected to "/bin/mv" & space & quoted form of "-n" & space &Â
+			quoted form of "foo" & space & Â
+			quoted form of "examples/bar" & space & Â
+			quoted form of "tmp/mv"
+		assertEqual(expected, res)
+	end script
+	
+	script |Test mv_f()|
+		property parent : UnitTest(me)
+		set res to tb's mv_f({"foo", "examples/bar"}, "tmp/mv")
+		set expected to "/bin/mv" & space & quoted form of "-f" & space & Â
+			quoted form of "foo" & space & Â
 			quoted form of "examples/bar" & space & Â
 			quoted form of "tmp/mv"
 		assertEqual(expected, res)
