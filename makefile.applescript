@@ -42,6 +42,13 @@ script clean
 	rm({"*.scpt", "*.scptd"})
 end script
 
+script clobber
+property parent : Task(me)
+property description : "Remove all temporary products."
+run clean
+rm("Documentation")
+end
+
 script doc
 	property parent : Task(me)
 	property description : "Compile the README."
