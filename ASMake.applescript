@@ -248,6 +248,36 @@ script TaskBase
 	end glob
 	
 	(*!
+	@abstract
+		Returns a new POSIX path formed by joining the given paths.
+	@discussion
+		This handler is adapted from <a href="http://applemods.sourceforge.net">AppleMods</a>.
+	@param
+		basePath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+		A path.
+	@param
+		relativePath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+		A relative path.
+	@return
+		<em>[text]</em> A POSIX path.
+	*)
+	on joinPath(basePath, relativePath)
+		set base to the first item of normalizePaths(basePath)
+		set tail to the first item of normalizePaths(relativePath)
+		try
+			considering hyphens, punctuation and white space
+				if base ends with "/" then
+					return base & tail
+				else
+					return base & "/" & tail
+				end if
+			end considering
+		on error eStr number eNum
+			error "Can't joinPath: " & eStr number eNum
+		end try
+	end joinPath
+	
+	(*!
 		@abstract
 			Creates one or more folders at the specified path(s).
 		@param
@@ -338,7 +368,6 @@ script TaskBase
 		end repeat
 	end osacompile
 	
-	
 	(*!
 		@abstract
 			Reads the content of the given file as UTF8-encoded text.
@@ -347,8 +376,8 @@ script TaskBase
 		@return
 			<em>[text]</em> The content of the file.
 	*)
-	on readUTF8(filename)
-		set f to the first item of normalizePaths(filename)
+	on readUTF8(fileName)
+		set f to the first item of normalizePaths(fileName)
 		set fp to open for access POSIX file f without write permission
 		read fp as Çclass utf8È
 		close access fp
@@ -437,6 +466,39 @@ script TaskBase
 	
 	(*!
 		@abstract
+			Splits the given path into a directory and a file component.
+		@discussion
+			This handler is adapted from <a href="http://applemods.sourceforge.net">AppleMods</a>.
+		@param
+			p <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
+			A path.
+		@return
+			<em>[list]</em> A two-element list.
+	*)
+	on splitPath(p)
+		set posixPath to the first item of normalizePaths(p)
+		considering hyphens, punctuation and white space
+			set oldTID to AppleScript's text item delimiters
+			set AppleScript's text item delimiters to "/"
+			try
+				if posixPath ends with "/" then
+					set basePath to text 1 thru text item -3 of posixPath
+					set fileName to text item -2 of posixPath
+				else
+					set basePath to text 1 thru text item -2 of posixPath
+					set fileName to text item -1 of posixPath
+				end if
+			on error eStr number eNum
+				set AppleScript's text item delimiters to oldTID
+				error "Can't splitPath: " & eStr number eNum
+			end try
+			set AppleScript's text item delimiters to oldTID
+		end considering
+		return {basePath, fileName}
+	end splitPath
+	
+	(*!
+		@abstract
 			Returns true if the user has requested verbose output;
 			returns false otherwise.
 	*)
@@ -461,8 +523,8 @@ script TaskBase
 		@param
 			content <em>[text]</em> The content to write.
 	*)
-	on writeUTF8(filename, content)
-		set f to the first item of normalizePaths(filename)
+	on writeUTF8(fileName, content)
+		set f to the first item of normalizePaths(fileName)
 		set fp to open for access POSIX file f with write permission
 		write content to fp as Çclass utf8È
 		close access fp

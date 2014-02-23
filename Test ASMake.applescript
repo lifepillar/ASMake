@@ -361,6 +361,24 @@ script |Test TaskBase|
 		assertEqual(expected, res)
 	end script
 	
+	script |Test joinPath() with text arguments|
+		property parent : UnitTest(me)
+		assertEqual("abc/defg", tb's joinPath("abc", "defg"))
+		assertEqual("abc/defg", tb's joinPath("abc/", "defg"))
+		assertEqual("abc/defg/", tb's joinPath("abc/", "defg/"))
+		assertEqual("/abc/defg", tb's joinPath("abc:", "defg"))
+		assertEqual("abc/defg", tb's joinPath(":abc:", "defg"))
+		assertEqual("abc/defg", tb's joinPath(":abc:", ":defg"))
+		assertEqual("abc/defg/", tb's joinPath(":abc:", ":defg:"))
+	end script
+	
+	script |Test joinPath() with aliases|
+		property parent : UnitTest(me)
+		set p to path to library folder from user domain as alias
+		assertEqual(POSIX path of p & "Scripts", tb's joinPath(p, "Scripts"))
+		assertEqual(POSIX path of p & "Scripts", tb's joinPath(p, ":Scripts"))
+	end script
+	
 	script |Test mkdir()|
 		property parent : UnitTest(me)
 		set res to tb's mkdir({"a", "b/c", POSIX file "d/e"})
@@ -414,6 +432,14 @@ script |Test TaskBase|
 		property parent : UnitTest(me)
 		set expected to "/usr/bin/osacompile '-o' 'ASMake.scpt' '-x' 'ASMake.applescript'"
 		assertEqual(expected, tb's osacompile("ASMake", "scpt", {"-x"}))
+	end script
+	
+	script |Test splitPath()|
+		property parent : UnitTest(me)
+		assertEqual({"a/b", "c"}, tb's splitPath("a/b/c"))
+		assertEqual({"/a/b", "c"}, tb's splitPath("/a/b/c"))
+		assertEqual({"/a/b", "c"}, tb's splitPath("a:b:c"))
+		assertEqual({"/a/b", "c"}, tb's splitPath("a:b:c:"))
 	end script
 	
 	script |Test which()|
