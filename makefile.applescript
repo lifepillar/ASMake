@@ -43,11 +43,11 @@ script clean
 end script
 
 script clobber
-property parent : Task(me)
-property description : "Remove all temporary products."
-run clean
-rm("Documentation")
-end
+	property parent : Task(me)
+	property description : "Remove all temporary products."
+	run clean
+	rm({"Documentation", "README.html"})
+end script
 
 script doc
 	property parent : Task(me)
