@@ -321,6 +321,8 @@ script |Test TaskBase|
 		property parent : UnitTest(me)
 		set res to POSIX path of (path to library folder from user domain as alias)
 		assertEqual({res}, tb's normalizePaths(path to library folder from user domain as alias))
+		set res to POSIX path of (path to library folder from user domain as text)
+		assertEqual({res}, tb's normalizePaths(path to library folder from user domain as text))
 	end script
 	
 	script |Test glob()|
