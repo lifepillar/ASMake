@@ -182,7 +182,7 @@ script TaskBase
 		return t
 	end chomp
 	
-	(*
+	(*!
 		@abstract
 			Copies one or more files to the specified destination.
 		@discussion
@@ -229,7 +229,7 @@ script TaskBase
 		sh("/usr/bin/ditto", flags & normalizePaths(src) & normalizePaths(dst))
 	end ditto
 	
-	(* @abstract Returns true if this is a dry run; returns false otherwise. *)
+	(*! @abstract Returns true if this is a dry run; returns false otherwise. *)
 	on dry()
 		my arguments's options contains "--dry" or my arguments's options contains "-n"
 	end dry
@@ -314,7 +314,7 @@ script TaskBase
 	end osacompile
 	
 	
-	(*
+	(*!
 		@abstract
 			Reads the content of the given file as UTF8-encoded text.
 		@param
@@ -428,7 +428,7 @@ script TaskBase
 		end try
 	end which
 	
-	(*
+	(*!
 		@abstract
 			Writes the specified UTF8-encoded content to the given file.
 		@param
