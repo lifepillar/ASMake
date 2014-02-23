@@ -313,7 +313,7 @@ script TaskBase
 		set dest to normalizePaths(dst)
 		if length of dest is not 1 then Â
 			error "The target of a move operation must be a single path"
-		if verbose() then set the end of flags to {"-v"}
+		if verbose() then set the end of flags to "-v"
 		sh("/bin/mv", flags & normalizePaths(src) & dest)
 	end moveOrRename
 	

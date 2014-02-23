@@ -374,7 +374,15 @@ script |Test TaskBase|
 	script |Test mv()|
 		property parent : UnitTest(me)
 		set res to tb's mv({"foo", "examples/bar"}, "tmp/mv")
-		set expected to "/bin/mv" & space & quoted form of "-n" & space &Â
+		set expected to "/bin/mv" & space & quoted form of "-n" & space & Â
+			quoted form of "foo" & space & Â
+			quoted form of "examples/bar" & space & Â
+			quoted form of "tmp/mv"
+		assertEqual(expected, res)
+		set the end of tb's arguments's options to "--verbose"
+		set res to tb's mv({"foo", "examples/bar"}, "tmp/mv")
+		set expected to "/bin/mv" & space & quoted form of "-n" & space & Â
+			quoted form of "-v" & space &Â
 			quoted form of "foo" & space & Â
 			quoted form of "examples/bar" & space & Â
 			quoted form of "tmp/mv"
