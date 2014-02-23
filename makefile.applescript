@@ -1,3 +1,4 @@
+#!/usr/bin/osascript
 (* Do not compile me into a .scpt file, run me from source! *)
 
 -- Load ASMake from source at compile time

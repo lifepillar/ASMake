@@ -14,14 +14,21 @@ To install ASMake in `~/Library/Script Libraries`:
 
 It is recommended that you also define an alias in `~/.bashrc`:
 
-    alias asmake='osascript makefile.applescript'
+    alias asmake='./makefile.applescript'
 
 ## Makefiles
 
-Tasks are defined in a script called `makefile.applescript`.
-If you use OS X 10.9 or later (AppleScript 2.3 or later), then your makefile
-should look like this:
+Tasks are defined in an executable script called `makefile.applescript`.
+To make the script executable, open the terminal and type:
 
+    chmod +x makefile.applescript
+
+inside your project directory.
+
+If you use OS X 10.9 or later (AppleScript 2.3 or later), then then content of
+your makefile should look like this:
+
+    #!/usr/bin/osascript
     use AppleScript version "2.3"
     use scripting additions
     use ASMake : script "ASMake"
@@ -36,6 +43,7 @@ should look like this:
 On the other hand, if you need compatibility with older systems, your makefile
 should look like this:
 
+    #!/usr/bin/osascript
     property parent : ¬
       load script (((path to library folder from user domain) as text) ¬
         & "Script Libraries:ASMake.scpt") as alias
@@ -55,6 +63,7 @@ This task can be executed from the terminal with
 
     asmake build
 
+(remember that `asmake` is just an alias to `./makefile.applescript`).
 The list of available tasks can be obtained with
 
     asmake help

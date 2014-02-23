@@ -1,2 +1,1 @@
-#!/bin/bash
-osascript makefile.applescript "$@"
+./makefile.applescript
