@@ -365,6 +365,15 @@ script |Test TaskBase|
 		assertEqual(expected, tb's mkdir("foo bar"))
 	end script
 	
+	script |Test mv()|
+		property parent : UnitTest(me)
+		set res to tb's mv({"foo", "examples/bar"}, "tmp/mv")
+		set expected to "/bin/mv" & space & quoted form of "foo" & space & Â
+			quoted form of "examples/bar" & space & Â
+			quoted form of "tmp/mv"
+		assertEqual(expected, res)
+	end script
+	
 	script |Test rm()|
 		property parent : UnitTest(me)
 		set res to tb's rm({"a", "b/c", POSIX file "d/e"})

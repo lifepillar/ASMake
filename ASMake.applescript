@@ -260,6 +260,21 @@ script TaskBase
 	
 	(*!
 		@abstract
+			Move one or more files to the specified path.
+		@param
+			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
+				Glob patterns are accepted.
+		@param
+			dst <em>[text]</em>: the destination path.
+	*)
+	on mv(src, dst)
+		set dest to normalizePaths(dst)
+		if length of dest is not 1 then error "Target to mv() must be a single path"
+		sh("/bin/mv", normalizePaths(src) & dest)
+	end mv
+	
+	(*!
+		@abstract
 			Normalizes paths.
 		@discussion
 			This handler receives a path or a list of paths, which may be
