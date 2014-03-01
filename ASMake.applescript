@@ -335,15 +335,17 @@ script TaskBase
 		set src to normalizePaths(source)
 		if src's length is not 1 then Â
 			error "makeAlias(): please specify a single source path"
+		set src to absolutePath(item 1 of src)
 		set tgt to normalizePaths(target)
 		if tgt's length is not 1 then Â
 			error "makeAlias(): please specify a single target path"
-		set {dir, base} to splitPath(item 1 of tgt)
+		set tgt to absolutePath(item 1 of tgt)
+		set {dir, base} to splitPath(tgt)
 		if verbose() then
-			log "make alias at " & dir & " to " & (item 1 of src) & " with name " & base
+			log "make alias at " & dir & " to " & src & " with name " & base
 		end if
 		if not dry() then
-			tell application "Finder" to make new alias file at POSIX file dir to POSIX file (item 1 of src) with properties {name:base}
+			tell application "Finder" to make new alias file at POSIX file dir to POSIX file src with properties {name:base}
 		end if
 	end makeAlias
 	
