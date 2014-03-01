@@ -157,6 +157,19 @@ script TaskBase
 	*)
 	property private : false
 	
+	
+	(*!
+		@abstract
+			Returns the last component of the given path.
+		@param
+			p <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+			A path.
+		@return
+			<em>[text]</em> The last component of the path.
+	*)
+	on basename(p)
+		the second item of splitPath(p)
+	end basename
 	(*!
 		@abstract
 			Removes the trailing newline from the text, if present.
@@ -198,6 +211,19 @@ script TaskBase
 	on cp(src, dst)
 		sh("/bin/cp", {"-r"} & normalizePaths(src) & normalizePaths(dst))
 	end cp
+	
+	(*!
+		@abstract
+			Returns all the components of the given path except the last.
+		@param
+			p <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+			A path.
+		@return
+			<em>[text]</em> A POSIX path.
+	*)
+	on dirname(p)
+		the first item of splitPath(p)
+	end dirname
 	
 	(*!
 		@abstract

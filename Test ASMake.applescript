@@ -336,7 +336,15 @@ script |Test TaskBase|
 		set expected to "cmd" & space & "'-x' 2>&1"
 		assertEqual(expected, tb's sh("cmd", {"-x", {redirect:"2>&1"}}))
 	end script
-	
+
+	script |Test basename()|
+		property parent : UnitTest(me)
+		assertEqual("c", tb's basename("a/b/c"))
+		assertEqual("c", tb's basename("/a/b/c"))
+		assertEqual("c", tb's basename("a:b:c"))
+		assertEqual("c", tb's basename("a:b:c:"))
+	end script
+		
 	script |Test cp()|
 		property parent : UnitTest(me)
 		set res to tb's cp({"AS*.applescript", POSIX file "doc/foo.txt", "examples/bar"}, "tmp/cp")
@@ -346,6 +354,14 @@ script |Test TaskBase|
 			quoted form of "examples/bar" & space & Â
 			quoted form of "tmp/cp"
 		assertEqual(expected, res)
+	end script
+
+	script |Test dirname()|
+		property parent : UnitTest(me)
+		assertEqual("a/b", tb's dirname("a/b/c"))
+		assertEqual("/a/b", tb's dirname("/a/b/c"))
+		assertEqual("/a/b", tb's dirname("a:b:c"))
+		assertEqual("/a/b", tb's dirname("a:b:c:"))
 	end script
 	
 	script |Test ditto()|
