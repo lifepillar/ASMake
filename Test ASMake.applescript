@@ -329,16 +329,6 @@ script |Test TaskBase|
 		property parent : UnitTest(me)
 		set res to "/a/b/c"
 		set v to item 1 of tb's normalizePaths(res)
-		assertNotReference(v)
-		refuteInstanceOf(file, v)
-		refuteInstanceOf(alias, v)
-		refuteInstanceOf(«class furl», v)
-		assertInstanceOf(text, v)
-		if res = v then
-			log "DEBUG: OK!"
-		else
-			log "DEBUG: RASK"
-		end if
 		assertEqual(res, v)
 	end script
 	
