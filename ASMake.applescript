@@ -499,6 +499,26 @@ script TaskBase
 	
 	(*!
 		@abstract
+			Creates a symbolic link.
+		@param
+			source <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
+			The souce path
+		@param
+			target <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
+			The symbolic link to be created.
+	*)
+	on symlink(source, target)
+		set src to normalizePaths(source)
+		if src's length is not 1 then Â
+			error "symlink(): please specify a single source path"
+		set tgt to normalizePaths(target)
+		if tgt's length is not 1 then Â
+			error "symlink(): please specify a single target path"
+		sh("/bin/ln", {"-s"} & src & tgt)
+	end symlink
+	
+	(*!
+		@abstract
 			Returns true if the user has requested verbose output;
 			returns false otherwise.
 	*)

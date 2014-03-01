@@ -442,6 +442,12 @@ script |Test TaskBase|
 		assertEqual({"/a/b", "c"}, tb's splitPath("a:b:c:"))
 	end script
 	
+	script |Test symlink()|
+		property parent : UnitTest(me)
+		set expected to "/bin/ln '-s' 'foo' 'bar'"
+		assertEqual(expected, tb's symlink("foo", "bar"))
+	end script
+	
 	script |Test which()|
 		property parent : UnitTest(me)
 		set ASMake's TaskArguments's options to {} -- remove --dry
