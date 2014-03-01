@@ -160,6 +160,23 @@ script TaskBase
 	
 	(*!
 		@abstract
+			Converts a path to an absolute POSIX path.
+		@param
+			p <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+			A relative or absolute path.
+		@return
+			<em>[text]</em> A full POSIX path.
+	*)
+	on absolutePath(p)
+		set pp to normalizePaths(p)
+		if pp's length is not 1 then Â
+			error "absolutePath(): please specify a single source path"
+		if item 1 of pp starts with "/" then return item 1 of pp
+		return joinPath(my PWD, item 1 of pp)
+	end absolutePath
+	
+	(*!
+		@abstract
 			Returns the last component of the given path.
 		@param
 			p <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
@@ -322,7 +339,12 @@ script TaskBase
 		if tgt's length is not 1 then Â
 			error "makeAlias(): please specify a single target path"
 		set {dir, base} to splitPath(item 1 of tgt)
-		tell application "Finder" to make new alias file at POSIX file dir to POSIX file (item 1 of src) with properties {name:base}
+		if verbose() then
+			log "make alias at " & dir & " to " & (item 1 of src) & " with name " & base
+		end if
+		if not dry() then
+			tell application "Finder" to make new alias file at POSIX file dir to POSIX file (item 1 of src) with properties {name:base}
+		end if
 	end makeAlias
 	
 	(*!
@@ -377,13 +399,15 @@ script TaskBase
 			if s's class is in {file, alias, Çclass furlÈ} then
 				set the end of res to POSIX path of s
 			else if s's class is text then
-				if s contains ":" then -- assume it is an HFS+ path
-					set the end of res to POSIX path of s
-				else if s contains "*" then -- assume it is a glob pattern
-					set res to res & glob(s)
-				else
-					set the end of res to s
-				end if
+				considering hyphens, punctuation and white space
+					if s contains ":" then -- assume it is an HFS+ path
+						set the end of res to POSIX path of s
+					else if s contains "*" then -- assume it is a glob pattern
+						set res to res & glob(s)
+					else
+						set the end of res to contents of s
+					end if
+				end considering
 			else
 				error "Wrong class for source path(s)"
 			end if

@@ -325,6 +325,23 @@ script |Test TaskBase|
 		assertEqual({res}, tb's normalizePaths(path to library folder from user domain as text))
 	end script
 	
+	script |Test normalizePaths() with POSIX absolute path|
+		property parent : UnitTest(me)
+		set res to "/a/b/c"
+		set v to item 1 of tb's normalizePaths(res)
+		assertNotReference(v)
+		refuteInstanceOf(file, v)
+		refuteInstanceOf(alias, v)
+		refuteInstanceOf(Çclass furlÈ, v)
+		assertInstanceOf(text, v)
+		if res = v then
+			log "DEBUG: OK!"
+		else
+			log "DEBUG: RASK"
+		end if
+		assertEqual(res, v)
+	end script
+	
 	script |Test glob()|
 		property parent : UnitTest(me)
 		assertEqual({"ASMake.applescript"}, tb's glob("ASM*.applescript"))
@@ -336,7 +353,21 @@ script |Test TaskBase|
 		set expected to "cmd" & space & "'-x' 2>&1"
 		assertEqual(expected, tb's sh("cmd", {"-x", {redirect:"2>&1"}}))
 	end script
-
+	
+	script |Test absolutePath()|
+		property parent : UnitTest(me)
+		assertEqual(tb's PWD & "a/b/c", tb's absolutePath("a/b/c"))
+		assertEqual(tb's PWD & "a/b/c", tb's absolutePath(":a:b:c"))
+		assertKindOf(text, tb's absolutePath("/a/b/c"))
+		assertEqual("/a/b/c/", tb's absolutePath("a:b:c:"))
+	end script
+	
+	script |Test absolutePath() with absolute POSIX path|
+		property parent : UnitTest(me)
+		assertEqual("/a/b/c", tb's absolutePath("/a/b/c"))
+	end script
+	
+	
 	script |Test basename()|
 		property parent : UnitTest(me)
 		assertEqual("c", tb's basename("a/b/c"))
@@ -344,7 +375,7 @@ script |Test TaskBase|
 		assertEqual("c", tb's basename("a:b:c"))
 		assertEqual("c", tb's basename("a:b:c:"))
 	end script
-		
+	
 	script |Test cp()|
 		property parent : UnitTest(me)
 		set res to tb's cp({"AS*.applescript", POSIX file "doc/foo.txt", "examples/bar"}, "tmp/cp")
@@ -355,7 +386,7 @@ script |Test TaskBase|
 			quoted form of "tmp/cp"
 		assertEqual(expected, res)
 	end script
-
+	
 	script |Test dirname()|
 		property parent : UnitTest(me)
 		assertEqual("a/b", tb's dirname("a/b/c"))
@@ -456,6 +487,11 @@ script |Test TaskBase|
 		assertEqual({"/a/b", "c"}, tb's splitPath("/a/b/c"))
 		assertEqual({"/a/b", "c"}, tb's splitPath("a:b:c"))
 		assertEqual({"/a/b", "c"}, tb's splitPath("a:b:c:"))
+	end script
+	
+	script |Test splitPath() with a single component|
+		property parent : UnitTest(me)
+		assertEqual({"", "c"}, tb's splitPath("c"))
 	end script
 	
 	script |Test symlink()|
