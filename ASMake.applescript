@@ -528,7 +528,7 @@ script TaskBase
 			Creates a symbolic link.
 		@param
 			source <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
-			The souce path
+			The source path.
 		@param
 			target <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
 			The symbolic link to be created.
