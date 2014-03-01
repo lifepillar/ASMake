@@ -305,6 +305,28 @@ script TaskBase
 	
 	(*!
 		@abstract
+			Creates a Finder alias.
+		@param
+			source <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
+			The source path.
+		@param
+			target <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
+			The alias to be created.
+	*)
+	on makeAlias(source, target)
+		local src, tgt, dir, base
+		set src to normalizePaths(source)
+		if src's length is not 1 then Â
+			error "makeAlias(): please specify a single source path"
+		set tgt to normalizePaths(target)
+		if tgt's length is not 1 then Â
+			error "makeAlias(): please specify a single target path"
+		set {dir, base} to splitPath(item 1 of tgt)
+		tell application "Finder" to make new alias file at POSIX file dir to POSIX file (item 1 of src) with properties {name:base}
+	end makeAlias
+	
+	(*!
+		@abstract
 			Creates one or more folders at the specified path(s).
 		@param
 			dst <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
