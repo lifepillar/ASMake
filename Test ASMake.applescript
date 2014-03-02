@@ -368,6 +368,11 @@ script |Test TaskBase|
 		assertEqual("/System/Library", tb's POSIXPath(POSIX file "/System/Library"))
 	end script
 	
+	script |Test POSIXPath() with reference to a POSIX path|
+		property parent : UnitTest(me)
+		assertEqual("a/b/c", tb's POSIXPath(a reference to "a/b/c"))
+	end script
+	
 	script |Test normalizePaths()|
 		property parent : UnitTest(me)
 		set res to POSIX path of (path to library folder from user domain as alias)
@@ -529,14 +534,22 @@ script |Test TaskBase|
 	script |Test splitPath()|
 		property parent : UnitTest(me)
 		assertEqual({"a/b", "c"}, tb's splitPath("a/b/c"))
+		assertEqual({"a/b", "c"}, tb's splitPath("a/b/c/"))
 		assertEqual({"/a/b", "c"}, tb's splitPath("/a/b/c"))
+		assertEqual({"/a/b", "c"}, tb's splitPath("/a/b/c/"))
 		assertEqual({"/a/b", "c"}, tb's splitPath("a:b:c"))
 		assertEqual({"/a/b", "c"}, tb's splitPath("a:b:c:"))
 	end script
 	
-	script |Test splitPath() with a single component|
+	script |Test splitPath() with short paths|
 		property parent : UnitTest(me)
-		assertEqual({"", "c"}, tb's splitPath("c"))
+		assertEqual({".", "c"}, tb's splitPath("c"))
+		assertEqual({".", "c"}, tb's splitPath("c/"))
+		assertEqual({".", "c"}, tb's splitPath(":c"))
+		assertEqual({".", "c"}, tb's splitPath(":c:"))
+		assertEqual({"/", "c"}, tb's splitPath("/c"))
+		assertEqual({"/", "c"}, tb's splitPath("/c/"))
+		assertEqual({"/", "c"}, tb's splitPath("c:"))
 	end script
 	
 	script |Test symlink()|

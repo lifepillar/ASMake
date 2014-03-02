@@ -593,23 +593,32 @@ script TaskBase
 			<em>[list]</em> A two-element list.
 	*)
 	on splitPath(p)
-		set posixPath to the first item of normalizePaths(p)
+		set pPath to POSIXPath(p)
 		considering hyphens, punctuation and white space
-			set oldTID to AppleScript's text item delimiters
-			set AppleScript's text item delimiters to "/"
+			set {tid, AppleScript's text item delimiters} to {AppleScript's text item delimiters, "/"}
 			try
-				if posixPath ends with "/" then
-					set basePath to text 1 thru text item -3 of posixPath
-					set fileName to text item -2 of posixPath
+				if pPath ends with "/" then
+					if (count text items of pPath) = 2 then
+						set basePath to "."
+						set fileName to text item -2 of pPath
+					else
+						set basePath to text 1 thru text item -3 of pPath
+						set fileName to text item -2 of pPath
+					end if
 				else
-					set basePath to text 1 thru text item -2 of posixPath
-					set fileName to text item -1 of posixPath
+					if (count text items of pPath) = 1 then
+						set basePath to "."
+						set fileName to text item -1 of pPath
+					else
+						set basePath to text 1 thru text item -2 of pPath
+						set fileName to text item -1 of pPath
+					end if
 				end if
 			on error eStr number eNum
-				set AppleScript's text item delimiters to oldTID
-				error "Can't splitPath: " & eStr number eNum
+				set AppleScript's text item delimiters to tid
+				error "Can't split path: " & eStr number eNum
 			end try
-			set AppleScript's text item delimiters to oldTID
+			set AppleScript's text item delimiters to tid
 		end considering
 		return {basePath, fileName}
 	end splitPath
