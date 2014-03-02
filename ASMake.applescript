@@ -417,14 +417,14 @@ script TaskBase
 	*)
 	on POSIXPath(src)
 		considering hyphens, punctuation and white space
-			if src's class is text and src does not contain ":" then return src
+			if src's class is text and src does not contain ":" then return the contents of src
 		end considering
 		return POSIX path of src
 	end POSIXPath
 	
 	(*!
 		@abstract
-			Normalizes paths.
+			Returns one or more paths as POSIX paths.
 		@discussion
 			This handler receives a path or a list of paths, which may be
 			POSIX paths, HFS+ paths or glob patterns, and returns a list
