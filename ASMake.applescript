@@ -332,8 +332,8 @@ script TaskBase
 		<em>[text]</em> A POSIX path.
 	*)
 	on joinPath(basePath, relativePath)
-		set base to the first item of normalizePaths(basePath)
-		set tail to the first item of normalizePaths(relativePath)
+		set base to POSIXPath(basePath)
+		set tail to POSIXPath(relativePath)
 		try
 			considering hyphens, punctuation and white space
 				if base ends with "/" then
