@@ -205,6 +205,7 @@ script TaskBase
 	on basename(p)
 		the second item of splitPath(p)
 	end basename
+	
 	(*!
 		@abstract
 			Removes the trailing newline from the text, if present.
@@ -301,6 +302,11 @@ script TaskBase
 	(*!
 		@abstract
 			Expands a glob pattern.
+		@discussion
+			Returns a list of POSIX paths obtained by expanding a glob pattern
+			according to the rules of the shell. Note that the argument of this
+			handler is not quoted: if quoting is necessary, it must be applied by
+			the caller (e.g., <code>glob("/some/'path with spaces'/*")</code>.
 		@param
 			pattern <em>[text]</em> A glob pattern (e.g., "build/*.scpt")
 		@return
