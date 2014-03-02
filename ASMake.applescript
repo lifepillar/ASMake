@@ -399,6 +399,31 @@ script TaskBase
 	
 	(*!
 		@abstract
+			Receives a path and returns it in POSIX form.
+		@discussion
+			This handler receives a path, in text form or as a file object or an alias,
+			and returns it as a (relative or absolute) POSIX path.
+			It does <em>not</em> perform any glob expansion
+			(cf. @link normalizePaths()@/link).
+			This handler generalizes AppleScript's <code>POSIX path of</code>:
+			in particular, it can be safely applied to POSIX paths
+			(for example, <code>POSIX path of "."</code> is <code>"/./"</code>,
+			but <code>POSIXPath(".")</code> is still <code>"."</code>).
+		@param
+			src <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+			A path.
+		@return
+			<em>[text]</em> A POSIX path.
+	*)
+	on POSIXPath(src)
+		considering hyphens, punctuation and white space
+			if src's class is text and src does not contain ":" then return src
+		end considering
+		return POSIX path of src
+	end POSIXPath
+	
+	(*!
+		@abstract
 			Normalizes paths.
 		@discussion
 			This handler receives a path or a list of paths, which may be

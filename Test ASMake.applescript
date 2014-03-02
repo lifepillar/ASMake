@@ -317,6 +317,57 @@ script |Test TaskBase|
 		set tb's arguments to ASMake's TaskArguments
 	end setUp
 	
+	script |Test POSIXPath() with absolute POSIX path without trailing slash|
+		property parent : UnitTest(me)
+		assertEqual("/a/b/c", tb's POSIXPath("/a/b/c"))
+	end script
+	
+	script |Test POSIXPath() with relative POSIX path without trailing slash|
+		property parent : UnitTest(me)
+		assertEqual("a/b/c", tb's POSIXPath("a/b/c"))
+	end script
+	
+	script |Test POSIXPath() with absolute POSIX path with trailing slash|
+		property parent : UnitTest(me)
+		assertEqual("/a/b/c/", tb's POSIXPath("/a/b/c/"))
+	end script
+	
+	script |Test POSIXPath() with relative POSIX path with trailing slash|
+		property parent : UnitTest(me)
+		assertEqual("a/b/c/", tb's POSIXPath("a/b/c/"))
+	end script
+	
+	script |Test POSIXPath() with absolute HFS path without trailing colon|
+		property parent : UnitTest(me)
+		assertEqual("/a/b/c", tb's POSIXPath("a:b:c"))
+	end script
+	
+	script |Test POSIXPath() with absolute HFS path with trailing colon|
+		property parent : UnitTest(me)
+		assertEqual("/a/b/c/", tb's POSIXPath("a:b:c:"))
+	end script
+	
+	script |Test POSIXPath() with relative POSIX path without trailing colon|
+		property parent : UnitTest(me)
+		assertEqual("a/b/c", tb's POSIXPath(":a:b:c"))
+	end script
+	
+	script |Test POSIXPath() with relative HFS path with trailing colon|
+		property parent : UnitTest(me)
+		assertEqual("a/b/c/", tb's POSIXPath(":a:b:c:"))
+	end script
+	
+	script |Test POSIXPath() with alias|
+		property parent : UnitTest(me)
+		set res to POSIX path of (path to library folder from user domain as alias)
+		assertEqual(res, tb's POSIXPath(path to library folder from user domain as alias))
+	end script
+	
+	script |Test POSIXPath() with file|
+		property parent : UnitTest(me)
+		assertEqual("/System/Library", tb's POSIXPath(POSIX file "/System/Library"))
+	end script
+	
 	script |Test normalizePaths()|
 		property parent : UnitTest(me)
 		set res to POSIX path of (path to library folder from user domain as alias)
@@ -356,7 +407,7 @@ script |Test TaskBase|
 		property parent : UnitTest(me)
 		assertEqual("/a/b/c", tb's absolutePath("/a/b/c"))
 	end script
-
+	
 	script |Test basename()|
 		property parent : UnitTest(me)
 		assertEqual("c", tb's basename("a/b/c"))
@@ -364,7 +415,7 @@ script |Test TaskBase|
 		assertEqual("c", tb's basename("a:b:c"))
 		assertEqual("c", tb's basename("a:b:c:"))
 	end script
-
+	
 	script |Test basename() with trailing slash|
 		property parent : UnitTest(me)
 		assertEqual("c", tb's basename("a/b/c/"))
