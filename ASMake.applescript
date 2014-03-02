@@ -186,11 +186,11 @@ script TaskBase
 			<em>[text]</em> A full POSIX path.
 	*)
 	on absolutePath(p)
-		set pp to normalizePaths(p)
-		if pp's length is not 1 then Â
-			error "absolutePath(): please specify a single source path"
-		if item 1 of pp starts with "/" then return item 1 of pp
-		return joinPath(my PWD, item 1 of pp)
+		set pPath to POSIXPath(p)
+		considering hyphens, punctuation and white space
+			if pPath starts with "/" then return the contents of pPath
+			return joinPath(my PWD, pPath)
+		end considering
 	end absolutePath
 	
 	(*!
