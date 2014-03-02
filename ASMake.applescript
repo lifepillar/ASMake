@@ -249,6 +249,15 @@ script TaskBase
 	
 	(*!
 		@abstract
+			Returns true if the user has requested debugging output;
+			returns false otherwise.
+	*)
+	on debug()
+		my arguments's options contains "--debug" or my arguments's options contains "-D"
+	end debug
+	
+	(*!
+		@abstract
 			Returns all the components of the given path except the last.
 		@param
 			p <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
