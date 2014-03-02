@@ -474,6 +474,14 @@ script |Test TaskBase|
 		assertEqual(POSIX path of p & "Scripts", tb's joinPath(p, ":Scripts"))
 	end script
 	
+	script |Test makeAlias()|
+		property parent : UnitTest(me)
+		set p to path to library folder from user domain as alias
+		set q to (POSIX path of (path to home folder))
+		set r to q & "SomeAlias"
+		assertEqual({POSIX path of p, tb's dirname(r), "SomeAlias"}, tb's makeAlias(p, r))
+	end script
+	
 	script |Test mkdir()|
 		property parent : UnitTest(me)
 		set res to tb's mkdir({"a", "b/c", POSIX file "d/e"})
