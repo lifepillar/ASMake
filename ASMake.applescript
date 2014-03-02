@@ -271,10 +271,11 @@ script TaskBase
 	
 	(*!
 		@abstract
-			Copies one or more source files or directories to a destination directory.
+			Copies one or more source files or directories to a destination directory,
+			or a source file to a destination file.
 		@discussion
 			This handler uses <code>ditto</code> to copy directory hierarchies.
-			See <code>man ditto</code> for further information and available options.
+			See <code>man ditto</code> for further information.
 			Note that <code>ditto</code> does not copy items the same way as
 			<code>cp</code> does. In particular, <code>ditto("foo", "bar")</code>
 			will copy the contents of directory <code>foo</code> into <code>bar</code>,
@@ -285,16 +286,9 @@ script TaskBase
 				Glob patterns are accepted.
 		@param
 			dst <em>[text]</em>: the destination path.
-		@param
-			opts <em>[text]</em> or <em>[list]</em>: a list of options
-			(see <code>man ditto</code>).
 	*)
-	on ditto(src, dst, opts)
-		if class of opts is list then
-			copy opts to flags
-		else
-			set flags to {opts}
-		end if
+	on ditto(src, dst)
+		set flags to {}
 		if verbose() then set the end of flags to "-V"
 		sh("/usr/bin/ditto", flags & normalizePaths(src) & normalizePaths(dst))
 	end ditto
