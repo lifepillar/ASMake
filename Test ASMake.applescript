@@ -356,14 +356,18 @@ script |Test TaskBase|
 		property parent : UnitTest(me)
 		assertEqual("/a/b/c", tb's absolutePath("/a/b/c"))
 	end script
-	
-	
+
 	script |Test basename()|
 		property parent : UnitTest(me)
 		assertEqual("c", tb's basename("a/b/c"))
 		assertEqual("c", tb's basename("/a/b/c"))
 		assertEqual("c", tb's basename("a:b:c"))
 		assertEqual("c", tb's basename("a:b:c:"))
+	end script
+
+	script |Test basename() with trailing slash|
+		property parent : UnitTest(me)
+		assertEqual("c", tb's basename("a/b/c/"))
 	end script
 	
 	script |Test cp()|
