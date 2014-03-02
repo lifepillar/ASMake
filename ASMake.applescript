@@ -97,6 +97,24 @@ script Stdout
 		echo(col("Warn:", red) & space & boldType & msg & reset)
 	end owarn
 	
+	(*!
+		@abstract
+			Prints a debugging message.
+		@param
+			msg <em>[text]</em> or <em>[list]</em>: a message or a list of messages.
+	*)
+	on odebug(info)
+		if class of info is not list then
+			echo(col("DEBUG:", red) & space & boldType & (info as text) & reset)
+			return
+		end if
+		set msg to (col("DEBUG:", red) & space & boldType & (item 1 of info) as text) & reset
+		repeat with i from 2 to count info
+			set msg to msg & linefeed & ((item i of info) as text)
+		end repeat
+		echo(msg)
+	end odebug
+	
 end script -- Stdout
 
 (*! @abstract The script object common to all tasks. *)
