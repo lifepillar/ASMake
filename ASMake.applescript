@@ -450,20 +450,10 @@ script TaskBase
 		set res to {}
 		if src's class is not list then set src to {src}
 		repeat with s in src
-			if s's class is in {file, alias, «class furl»} then
-				set the end of res to POSIX path of s
-			else if s's class is text then
-				considering hyphens, punctuation and white space
-					if s contains ":" then -- assume it is an HFS+ path
-						set the end of res to POSIX path of s
-					else if s contains "*" then -- assume it is a glob pattern
-						set res to res & glob(s)
-					else
-						set the end of res to contents of s
-					end if
-				end considering
+			if the class of s is text and s contains "*" then
+				set res to res & glob(s)
 			else
-				error "Wrong class for source path(s)"
+				set the end of res to POSIXPath(s)
 			end if
 		end repeat
 		return res
