@@ -259,6 +259,25 @@ script TaskBase
 	
 	(*!
 		@abstract
+			Removes a trailing slash from a POSIX path.
+		@param
+			p <em>[text]</p> A POSIX path.
+		@return
+			<em>[text]</em> A copy of <code>p</code> with the trailing slash removed,
+			or <code>p</code> itself if not trailing slash is present.
+	*)
+	on deslash(p)
+		if the last character of p is not "/" then return p
+		local i
+		set i to 0
+		repeat while the last character of text 1 thru ((count p) - i) of p is "/"
+			set i to i + 1
+		end repeat
+		text 1 thru ((count p) - i) of p
+	end deslash
+	
+	(*!
+		@abstract
 			Returns all the components of the given path except the last.
 		@param
 			p <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>

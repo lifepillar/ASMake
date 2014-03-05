@@ -436,6 +436,13 @@ script |Test TaskBase|
 			quoted form of "tmp/cp"
 		assertEqual(expected, res)
 	end script
+
+	script |Test deslash()|
+		property parent : UnitTest(me)
+		assertEqual("a", tb's deslash("a"))
+		assertEqual("a", tb's deslash("a/"))
+		assertEqual("a", tb's deslash("a//"))
+	end script
 	
 	script |Test dirname()|
 		property parent : UnitTest(me)
