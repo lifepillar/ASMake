@@ -23,7 +23,7 @@ script api
 	property description : "Build the API documentation."
 	property dir : "Documentation"
 	
-	owarn("HeaderDoc's support for AppleScript is definitely broken as of v8.9 (Xcode 5.0)")
+	owarn("Building the API with HeaderDoc requires OS X 10.10 (Xcode 6)")
 	--Set LANG to get rid of warnings about missing default encoding
 	sh("env LANG=en_US.UTF-8 headerdoc2html", {"-q", "-o", dir, "ASMake.applescript"})
 	sh("env LANG=en_US.UTF-8 gatherheaderdoc", dir)
