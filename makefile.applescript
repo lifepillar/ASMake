@@ -3,7 +3,7 @@
 
 -- Load ASMake from source at compile time
 on _setpath()
-	if current application's name is "AppleScript Editor" then
+	if current application's id is "com.apple.ScriptEditor2" then
 		(folder of file (document 1's path as POSIX file) of application "Finder") as text
 	else if current application's name is in {"osacompile", "osascript"} then
 		((POSIX file (do shell script "pwd")) as text) & ":"
