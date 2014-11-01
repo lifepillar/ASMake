@@ -70,7 +70,9 @@ script test
 	property parent : Task(me)
 	property description : "Run tests."
 	property printSuccess : false
-	run script "Test ASMake.applescript"
+	osacompile("Test ASMake.applescript", "scpt", {})
+	set testSuite to load script POSIX file (my PWD & "/Test ASMake.scpt")
+	run testSuite
 end script
 
 script versionTask
