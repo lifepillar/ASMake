@@ -5,12 +5,16 @@
  	A draft of a primitive replacement for rake, make, etc…, in pure AppleScript.
  @author Lifepillar
  @copyright 2014 Lifepillar
- @version 0.1.5
+ @version 0.2
  @charset macintosh
 *)
+use AppleScript version "2.4"
+use framework "Foundation"
+use scripting additions
+
 property name : "ASMake"
-property version : "0.1.5"
 property id : "com.lifepillar.ASMake"
+property version : "0.2"
 
 (*! @abstract A script object to help print colored output to the terminal. *)
 script Stdout
