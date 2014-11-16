@@ -436,7 +436,7 @@ script |Test TaskBase|
 			quoted form of "tmp/cp"
 		assertEqual(expected, res)
 	end script
-
+	
 	script |Test deslash()|
 		property parent : UnitTest(me)
 		assertEqual("a", tb's deslash("a"))
@@ -542,6 +542,38 @@ script |Test TaskBase|
 		property parent : UnitTest(me)
 		set expected to "/usr/bin/osacompile '-o' 'ASMake.scpt' '-x' 'ASMake.applescript'"
 		assertEqual(expected, tb's osacompile("ASMake", "scpt", {"-x"}))
+	end script
+	
+	script |Test relativizePath() with absolute paths|
+		property parent : UnitTest(me)
+		assertEqual("/a/b/c", tb's relativizePath("/a/b/c", ""))
+		assertEqual("a/b/c", tb's relativizePath("/a/b/c", "/"))
+		assertEqual("b/c", tb's relativizePath("/a/b/c", "/a"))
+		assertEqual("b/c", tb's relativizePath("/a/b/c", "/a/"))
+		assertEqual("c", tb's relativizePath("/a/b/c", "/a/b"))
+		assertEqual("c", tb's relativizePath("/a/b/c", "/a/b/"))
+		assertEqual(".", tb's relativizePath("/a/b/c", "/a/b/c"))
+		assertEqual(".", tb's relativizePath("/a/b/c", "/a/b/c/"))
+		assertEqual("./..", tb's relativizePath("/a/b/c", "/a/b/c/d"))
+		assertEqual("./..", tb's relativizePath("/a/b/c", "/a/b/c/d/"))
+		assertEqual("./../..", tb's relativizePath("/a/b/c", "/a/b/c/d/e"))
+		assertEqual("./../..", tb's relativizePath("/a/b/c", "/a/b/c/d/e/"))
+	end script
+	
+	script |Test relativizePath() with relative paths|
+		property parent : UnitTest(me)
+		assertEqual("a/b/c", tb's relativizePath("a/b/c", ""))
+		assertEqual("a/b/c", tb's relativizePath("a/b/c", "."))
+		assertEqual("b/c", tb's relativizePath("a/b/c", "a"))
+		assertEqual("b/c", tb's relativizePath("a/b/c", "a/"))
+		assertEqual("c", tb's relativizePath("a/b/c", "a/b"))
+		assertEqual("c", tb's relativizePath("a/b/c", "a/b/"))
+		assertEqual(".", tb's relativizePath("a/b/c", "a/b/c"))
+		assertEqual(".", tb's relativizePath("a/b/c", "a/b/c/"))
+		assertEqual("./..", tb's relativizePath("a/b/c", "a/b/c/d"))
+		assertEqual("./..", tb's relativizePath("a/b/c", "a/b/c/d/"))
+		assertEqual("./../..", tb's relativizePath("a/b/c", "a/b/c/d/e"))
+		assertEqual("./../..", tb's relativizePath("a/b/c", "a/b/c/d/e/"))
 	end script
 	
 	script |Test splitPath()|
