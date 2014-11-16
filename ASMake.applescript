@@ -101,7 +101,7 @@ script Stdout
 		@abstract
 			Prints a debugging message.
 		@param
-			msg <em>[text]</em> or <em>[list]</em>: a message or a list of messages.
+			info <em>[text]</em> or <em>[list]</em>: a message or a list of messages.
 	*)
 	on odebug(info)
 		if class of info is not list then
@@ -261,7 +261,7 @@ script TaskBase
 		@abstract
 			Removes a trailing slash from a POSIX path.
 		@param
-			p <em>[text]</p> A POSIX path.
+			p <em>[text]</em> A POSIX path.
 		@return
 			<em>[text]</em> A copy of <code>p</code> with the trailing slash removed,
 			or <code>p</code> itself if not trailing slash is present.
@@ -374,26 +374,97 @@ script TaskBase
 			The source path.
 		@param
 			target <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
-			The alias to be created.
+			The path to the Finder alias to be created.
 	*)
 	on makeAlias(source, target)
 		local src, tgt, dir, base
-		set src to normalizePaths(source)
-		if src's length is not 1 then Â
-			error "makeAlias(): please specify a single source path"
-		set src to absolutePath(item 1 of src)
-		set tgt to normalizePaths(target)
-		if tgt's length is not 1 then Â
-			error "makeAlias(): please specify a single target path"
-		set tgt to absolutePath(item 1 of tgt)
+		set src to absolutePath(POSIXPath(source))
+		set tgt to absolutePath(POSIXPath(target))
 		set {dir, base} to splitPath(tgt)
-		if verbose() then
-			log "make alias at " & dir & " to " & src & " with name " & base
-		end if
+		if verbose() then Â
+			echo("Make alias at" & space & (dir as text) & space & Â
+				"to" & space & (src as text) & space & Â
+				"with name" & space & (base as text))
 		if not dry() then
 			tell application "Finder" to make new alias file at POSIX file dir to POSIX file src with properties {name:base}
+		else
+			return {src, dir, base}
 		end if
 	end makeAlias
+	
+	(*!
+		@abstract
+			Builds a script bundle from source, including resources and script libraries.
+		@discussion
+			TODO
+		@param
+			sourceFile <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>:
+			path to the source file (a file with <code>.applescript</code> suffix).
+	*)
+	on makeScriptBundle(sourceFile)
+		set sharedLibFolder to joinPath(path to library folder from user domain, "Script Libraries")
+		set sourcePath to absolutePath(POSIXPath(sourceFile))
+		set {sourceFolder, scriptName} to splitPath(sourcePath)
+		set scriptLibrariesFolder to POSIX file joinPath(sourceFolder, "Resources/Script Libraries")
+		set scriptLibraries to {}
+		set compiledScriptLibraries to {}
+		odebug("Shared Folder: " & sharedLibFolder)
+		odebug("Project: " & projectFolder)
+		odebug("Name: " & scriptName)
+		odebug("Script Libraries folder: " & scriptLibrariesFolder)
+		-- Search for script libraries and build them recursively
+		odebug("Searching for script libraries...", "")
+		try
+			alias scriptLibrariesFolder -- does it exist?
+			set folderExists to true
+		on error
+			odebug("Folder does not exist")
+			set folderExists to false
+		end try
+		if folderExists then
+			tell application "Finder"
+				set scriptLibraries to Â
+					(every file of (entire contents of folder (scriptLibrariesFolder)) Â
+						whose name ends with ".applescript") as alias list
+			end tell
+			repeat with libSource in scriptLibraries
+				odebug("Building " & (libSource as text))
+				makeScriptBundle(libSource)
+			end repeat
+			odebug("Searching for compiled script libraries...")
+			tell application "Finder"
+				set compiledScriptLibraries to Â
+					(every file of (entire contents of folder (scriptLibrariesFolder)) Â
+						whose name ends with ".scptd" or name ends with ".scpt") as alias list
+			end tell
+		end if
+		odebug({"compiledScriptLibraries: ", compiledScriptLibraries})
+		try
+			-- Alias each script library in a shared Script Libraries folder
+			repeat with lib in compiledScriptLibraries
+				makeAlias(lib, joinPath(sharedLibFolder, basename(lib)))
+			end repeat
+			-- Compile the script bundle
+			osacompile(joinPath(projectFolder, scriptName & ".applescript"), "scptd", {"-x"})
+			-- Remove the aliases
+			repeat with lib in compiledScriptLibraries
+				rm(joinPath(sharedLibFolder, basename(lib)))
+			end repeat
+		on error errMsg number errNum
+			repeat with lib in compiledScriptLibraries
+				rm(joinPath(sharedLibFolder, basename(lib)))
+			end repeat
+			error errMsg number errNum
+		end try
+		-- Move the script libraries in the bundle's Script Libraries folder
+		repeat with lib in compiledScriptLibraries
+			set {dir, base} to splitPath(lib)
+			mv(joinPath(dir, base & ".scptd"), scriptLibrariesFolder)
+		end repeat
+		-- Prepare Info.plist (use PlistBuddy?)
+		-- Copy other resources
+		-- Move the built product one level up
+	end makeScriptBundle
 	
 	(*!
 		@abstract
@@ -419,9 +490,7 @@ script TaskBase
 	*)
 	on mv(src, dst)
 		local dest
-		set dest to normalizePaths(dst)
-		if length of dest is not 1 then Â
-			error "The target of a move operation must be a single path"
+		set dest to POSIXPath(dst)
 		sh("/bin/mv", normalizePaths(src) & dest)
 	end mv
 	
@@ -512,11 +581,51 @@ script TaskBase
 			<em>[text]</em> The content of the file.
 	*)
 	on readUTF8(fileName)
-		set f to the first item of normalizePaths(fileName)
+		set f to POSIXPath(fileName)
 		set fp to open for access POSIX file f without write permission
-		read fp as Çclass utf8È
-		close access fp
+		try
+			read fp as Çclass utf8È
+			close access fp
+		on error errMsg number errNum
+			close access fp
+			error errMsg number errNum
+		end try
 	end readUTF8
+	
+	(*!
+		@abstract
+			Returns a relative POSIX path.
+	*)
+	on relativizePath(p, base)
+		set {tid, AppleScript's text item delimiters} to {AppleScript's text item delimiters, "/"}
+		try
+			set pPath to text items of deslash(POSIXPath(p))
+			set pBase to text items of deslash(POSIXPath(base))
+			set AppleScript's text item delimiters to tid
+		on error errMsg number errNum
+			set AppleScript's text item delimiters to tid
+			error errMsg number errNum
+		end try
+		set m to count pPath
+		set n to count pBase
+		set i to 1
+		repeat while i ² m and i ² n and item i of pPath is equal to item i of pBase
+			set i to i + 1
+		end repeat
+		if i ² m and i ² n then
+			error "relativizePath(): incompatible paths"
+		end if
+		repeat while i ² m
+			
+		end repeat
+		repeat while i ² n
+			
+		end repeat
+		set {tid, AppleScript's text item delimiters} to {AppleScript's text item delimiters, "/"}
+		set relPath to (text items (i + 1) thru m of pPath) as text
+		set AppleScript's text item delimiters to tid
+		return relPath
+	end relativizePath
 	
 	(*! @abstract Deletes one or more paths. *)
 	on rm(dst)
@@ -619,7 +728,7 @@ script TaskBase
 					if (count text items of pPath) = 2 then
 						set basePath to "."
 						set fileName to text item -2 of pPath
-					else
+					else -- >2
 						set basePath to text 1 thru text item -3 of pPath
 						set fileName to text item -2 of pPath
 					end if
@@ -627,7 +736,7 @@ script TaskBase
 					if (count text items of pPath) = 1 then
 						set basePath to "."
 						set fileName to text item -1 of pPath
-					else
+					else -- >1
 						set basePath to text 1 thru text item -2 of pPath
 						set fileName to text item -1 of pPath
 					end if
@@ -652,12 +761,8 @@ script TaskBase
 			The symbolic link to be created.
 	*)
 	on symlink(source, target)
-		set src to normalizePaths(source)
-		if src's length is not 1 then Â
-			error "symlink(): please specify a single source path"
-		set tgt to normalizePaths(target)
-		if tgt's length is not 1 then Â
-			error "symlink(): please specify a single target path"
+		set src to POSIXPath(source)
+		set tgt to POSIXPath(target)
 		sh("/bin/ln", {"-s"} & src & tgt)
 	end symlink
 	
@@ -683,15 +788,20 @@ script TaskBase
 		@abstract
 			Writes the specified UTF8-encoded content to the given file.
 		@param
-			filename <em>[text]</em> or <em>[file]</em> or <em>[alias]</em>: the file to write.
+			fileName <em>[text]</em> or <em>[file]</em> or <em>[alias]</em>: the file to write.
 		@param
 			content <em>[text]</em> The content to write.
 	*)
 	on writeUTF8(fileName, content)
-		set f to the first item of normalizePaths(fileName)
+		set f to POSIXPath(fileName)
 		set fp to open for access POSIX file f with write permission
-		write content to fp as Çclass utf8È
-		close access fp
+		try
+			write content to fp as Çclass utf8È
+			close access fp
+		on error errMsg number errNum
+			close access fp
+			error errMsg number errNum
+		end try
 	end writeUTF8
 end script -- TaskBase
 
@@ -1151,7 +1261,7 @@ end script -- CommandLineParser
 	@abstract
 		Retrieves the task specified by the user.
 	@param
-		taskname <em>[text]</em> The task name.
+		taskName <em>[text]</em> The task name.
 	@return
 		The task specified by the user, if found.
 	@throw
@@ -1181,24 +1291,24 @@ on runTask(action)
 	set TaskBase's PWD to do shell script "pwd"
 	try
 		CommandLineParser's parse(action)
-	on error errmsg
-		ofail("Syntax error", errmsg)
+	on error errMsg
+		ofail("Syntax error", errMsg)
 		error
 	end try
 	try
 		set t to findTask(TaskArguments's command)
-	on error errmsg number errNum
+	on error errMsg number errNum
 		ofail("Unknown task: " & TaskArguments's command, "")
-		error errmsg number errNum
+		error errMsg number errNum
 	end try
 	set t's arguments to TaskArguments -- TODO: move inside Task()?
 	try
 		run t
 		if t's printSuccess then ohai("Success!")
 		if t's dry() then ohai("(This was a dry run)")
-	on error errmsg number errNum
+	on error errMsg number errNum
 		ofail("Task failed", "")
-		error errmsg number errNum
+		error errMsg number errNum
 	end try
 end runTask
 
