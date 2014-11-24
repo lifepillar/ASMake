@@ -5,16 +5,15 @@
  	A draft of a primitive replacement for rake, make, etcÉ, in pure AppleScript.
  @author Lifepillar
  @copyright 2014 Lifepillar
- @version 0.2
+ @version 0.2.1
  @charset macintosh
 *)
 use AppleScript version "2.4"
-use framework "Foundation"
 use scripting additions
 
 property name : "ASMake"
 property id : "com.lifepillar.ASMake"
-property version : "0.2"
+property version : "0.2.1"
 
 (*! @abstract A script object to help print colored output to the terminal. *)
 script Stdout
@@ -124,6 +123,8 @@ end script -- Stdout
 (*! @abstract The script object common to all tasks. *)
 script TaskBase
 	
+	use framework "Foundation"
+	
 	(*! @abstract The parent of this object. *)
 	property parent : Stdout
 	
@@ -190,11 +191,9 @@ script TaskBase
 			<em>[text]</em> A full POSIX path.
 	*)
 	on absolutePath(p)
-		set pPath to POSIXPath(p)
-		considering hyphens, punctuation and white space
-			if pPath starts with "/" then return the contents of pPath
-			return joinPath(my PWD, pPath)
-		end considering
+		local pPath
+		set pPath to posixPath(p)
+		((current application's NSURL's fileURLWithPath:pPath)'s absoluteURL's |path|) as text
 	end absolutePath
 	
 	(*!
@@ -207,7 +206,9 @@ script TaskBase
 			<em>[text]</em> The last component of the path.
 	*)
 	on basename(p)
-		the second item of splitPath(p)
+		local pPath
+		set pPath to posixPath(p)
+		((current application's NSURL's fileURLWithPath:pPath)'s lastPathComponent) as text
 	end basename
 	
 	(*!
@@ -244,12 +245,11 @@ script TaskBase
 			A list of source paths can be used.
 		@param
 			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
-				Glob patterns are accepted.
 		@param
 			dst <em>[text]</em>: the destination path.
 	*)
 	on cp(src, dst)
-		sh("/bin/cp", {"-r"} & normalizePaths(src) & normalizePaths(dst))
+		shell for "/bin/cp" given options:{"-r"} & posixPaths(src) & posixPaths(dst)
 	end cp
 	
 	(*!
@@ -290,7 +290,9 @@ script TaskBase
 			<em>[text]</em> A POSIX path.
 	*)
 	on dirname(p)
-		the first item of splitPath(p)
+		local pPath
+		set pPath to posixPath(p)
+		((current application's NSURL's fileURLWithPath:pPath)'s URLByDeletingLastPathComponent's |relativeString|) as text
 	end dirname
 	
 	(*!
@@ -307,14 +309,13 @@ script TaskBase
 			into <code>bar</code>.
 		@param
 			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
-				Glob patterns are accepted.
 		@param
 			dst <em>[text]</em>: the destination path.
 	*)
 	on ditto(src, dst)
 		set flags to {}
 		if verbose() then set the end of flags to "-V"
-		sh("/usr/bin/ditto", flags & normalizePaths(src) & normalizePaths(dst))
+		shell for "/usr/bin/ditto" given options:flags & posixPaths(src) & posixPaths(dst)
 	end ditto
 	
 	(*! @abstract Returns true if this is a dry run; returns false otherwise. *)
@@ -331,20 +332,43 @@ script TaskBase
 			handler is not quoted: if quoting is necessary, it must be applied by
 			the caller (e.g., <code>glob("/some/'path with spaces'/*")</code>.
 		@param
-			pattern <em>[text]</em> A glob pattern (e.g., "build/*.scpt")
+			pattern <em>[text]</em> or <em>[list]</em> A glob pattern (e.g., "build/*.scpt")
+			or a list of glob patterns.
 		@return
 			<em>[list]</em> The list of paths matching the pattern.
 	*)
 	on glob(pattern)
-		the paragraphs of (do shell script "cd" & space & quoted form of my PWD & Â
-			";list=(" & pattern & ");for f in \"${list[@]}\";do echo \"$f\";done")
+		if the class of pattern is not list then set pattern to {pattern}
+		local res
+		set res to {}
+		repeat with p in pattern
+			set res to res & the paragraphs of (do shell script "cd" & space & quoted form of my PWD & Â
+				";list=(" & p & ");for f in \"${list[@]}\";do echo \"$f\";done")
+		end repeat
+		return res
 	end glob
 	
 	(*!
+		@abstract
+			Joins the elements of a list separating them with the given delimiter.
+		@param
+			aList <em>[list]</em> A list.
+		@param
+			aDelimiter <em>[text]</em> A delimiter.
+		@return
+			<em>[text]</em> The string formed by concatenating the elements of the list,
+			separated by the given delimiter.
+	*)
+	on join(aList, aDelimiter)
+		set {tid, AppleScript's text item delimiters} to {AppleScript's text item delimiters, aDelimiter}
+		set theResult to aList as text
+		set AppleScript's text item delimiters to tid
+		return theResult
+	end join
+	
+	(*!
 	@abstract
-		Returns a new POSIX path formed by joining the given paths.
-	@discussion
-		This handler is adapted from <a href="http://applemods.sourceforge.net">AppleMods</a>.
+		Returns a new POSIX path formed by joining a base path and a relative path.
 	@param
 		basePath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
 		A path.
@@ -355,19 +379,9 @@ script TaskBase
 		<em>[text]</em> A POSIX path.
 	*)
 	on joinPath(basePath, relativePath)
-		set base to POSIXPath(basePath)
-		set tail to POSIXPath(relativePath)
-		try
-			considering hyphens, punctuation and white space
-				if base ends with "/" then
-					return base & tail
-				else
-					return base & "/" & tail
-				end if
-			end considering
-		on error eStr number eNum
-			error "Can't joinPath: " & eStr number eNum
-		end try
+		local base
+		set base to current application's NSURL's fileURLWithPath:(my posixPath(basePath))
+		(current application's NSURL's URLWithString:(my posixPath(relativePath)) relativeToURL:base)'s |path| as text
 	end joinPath
 	
 	(*!
@@ -382,8 +396,8 @@ script TaskBase
 	*)
 	on makeAlias(source, target)
 		local src, tgt, dir, base
-		set src to absolutePath(POSIXPath(source))
-		set tgt to absolutePath(POSIXPath(target))
+		set src to absolutePath(posixPath(source))
+		set tgt to absolutePath(posixPath(target))
 		set {dir, base} to splitPath(tgt)
 		if verbose() then Â
 			echo("Make alias at" & space & (dir as text) & space & Â
@@ -407,7 +421,7 @@ script TaskBase
 	*)
 	on makeScriptBundle(sourceFile)
 		set sharedLibFolder to joinPath(path to library folder from user domain, "Script Libraries")
-		set sourcePath to absolutePath(POSIXPath(sourceFile))
+		set sourcePath to absolutePath(posixPath(sourceFile))
 		set {sourceFolder, scriptName} to splitPath(sourcePath)
 		set scriptLibrariesFolder to POSIX file joinPath(sourceFolder, "Resources/Script Libraries")
 		set scriptLibraries to {}
@@ -470,6 +484,35 @@ script TaskBase
 		-- Move the built product one level up
 	end makeScriptBundle
 	
+	
+	(*!
+		@abstract
+			Applies a unary handler to every element of a list, returning a new list with the result.
+			The original list remains unchanged.
+		@discussion
+			For optimal performance, the list should be passed by reference:
+			<pre>
+			set myNewList to map:(a reference to myList) byApplying:myHandler
+			</pre>
+		@param
+			aList <em>[list]</em> (A reference to) a list.
+		@param
+			unaryHandler <em>[text]</em> A handler with a single positional parameter.
+		@return
+			<em>[list]</em> A new list obtained by applying the handler to each element
+			of the original list.
+	*)
+	on map(aList, unaryHandler as handler)
+		script theFunctor
+			property apply : unaryHandler
+		end script
+		set theResult to {}
+		repeat with e in every item of aList
+			copy theFunctor's apply(the contents of e) to the end of theResult
+		end repeat
+		theResult
+	end map
+	
 	(*!
 		@abstract
 			Creates one or more folders at the specified path(s).
@@ -478,7 +521,7 @@ script TaskBase
 			A path or a list of paths.
 	*)
 	on mkdir(dst)
-		sh("/bin/mkdir", {"-p"} & normalizePaths(dst))
+		shell for "/bin/mkdir" given options:{"-p"} & posixPaths(dst)
 	end mkdir
 	
 	(*!
@@ -494,62 +537,66 @@ script TaskBase
 	*)
 	on mv(src, dst)
 		local dest
-		set dest to POSIXPath(dst)
-		sh("/bin/mv", normalizePaths(src) & dest)
+		set dest to posixPath(dst)
+		shell for "/bin/mv" given options:posixPaths(src) & dest
 	end mv
 	
 	(*!
 		@abstract
-			Receives a path and returns it in POSIX form.
+			Turns (almost) any path specification into a POSIX path.
 		@discussion
 			This handler receives a path, in text form or as a file object or an alias,
 			and returns it as a (relative or absolute) POSIX path.
 			It does <em>not</em> perform any glob expansion
-			(cf. @link normalizePaths()@/link).
+			(cf. @link glob()@/link).
 			This handler generalizes AppleScript's <code>POSIX path of</code>:
-			in particular, it can be safely applied to POSIX paths
+			in particular, it can be safely applied to relative POSIX paths
 			(for example, <code>POSIX path of "."</code> is <code>"/./"</code>,
-			but <code>POSIXPath(".")</code> is still <code>"."</code>).
+			but <code>posixPath(".")</code> is still <code>"."</code>).
+		@seealso
+			posixPaths
 		@param
 			src <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
 			A path.
 		@return
 			<em>[text]</em> A POSIX path.
 	*)
-	on POSIXPath(src)
-		considering hyphens, punctuation and white space
+	on posixPath(src)
+		considering punctuation
 			if src's class is text and src does not contain ":" then return the contents of src
 		end considering
 		return POSIX path of src
-	end POSIXPath
+	end posixPath
 	
 	(*!
 		@abstract
 			Returns one or more paths as POSIX paths.
 		@discussion
 			This handler receives a path or a list of paths, which may be
-			POSIX paths, HFS+ paths or glob patterns, and returns a list
-			of (absolute or relative) POSIX paths, where glob patterns
-			have been expanded to the appropriate paths.
+			POSIX paths or HFS+ paths, and returns a list
+			of (absolute or relative) POSIX paths. Nested lists of paths are also
+			accepted, and they are flattened.
+		@seealso
+			posixPath
 		@param
 			src <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
 			A path or a list of paths.
 		@return
 			<em>[list]</em> A list of POSIX paths.
 	*)
-	on normalizePaths(src)
+	on posixPaths(src)
 		local res
 		set res to {}
 		if src's class is not list then set src to {src}
 		repeat with s in src
-			if the class of s is text and s contains "*" then
-				set res to res & glob(s)
+			if the class of s is list then
+				set res to res & posixPaths(s)
 			else
-				set the end of res to POSIXPath(s)
+				set the end of res to posixPath(s)
 			end if
 		end repeat
 		return res
-	end normalizePaths
+	end posixPaths
 	
 	(*!
 		@abstract
@@ -557,24 +604,31 @@ script TaskBase
 		@param
 			src <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
 			A path or a list of paths.
-		@param
+		@param 
 			target <em>[text]</em> The type of the result, which can be <code>scpt</code>,
 			<code>scptd</code>, or <code>app</code>, for a script, script bundle, or applet, respectively.
 		@param
-			opts <em>[list]</em> A list of <code>osacompile</code> options
+			options <em>[list]</em> A list of <code>osacompile</code> options
 			(see <code>man osacompile</code>).
 	*)
-	on osacompile(src, target, opts)
-		local basename
-		repeat with s in normalizePaths(src)
-			if s ends with ".applescript" then
+	on osacompile from sources given target:target : "scpt", options:options : {}
+		local basename, paths
+		set paths to posixPaths(sources)
+		if class of options is not list then set options to {options}
+		repeat with p in paths
+			if p ends with ".applescript" then
 				set basename to text 1 thru -13 of s -- remove suffix
 			else
-				set basename to s
+				set basename to p
 			end if
-			sh("/usr/bin/osacompile", {"-o", basename & "." & target} & opts & {basename & ".applescript"})
+			shell for "/usr/bin/osacompile" given options:{"-o", basename & "." & target} & options & {basename & ".applescript"}
 		end repeat
 	end osacompile
+	
+	(* @abstract A wrapper around <tt>quoted form of</tt>. *)
+	on quoteText(s)
+		quoted form of s
+	end quoteText
 	
 	(*!
 		@abstract
@@ -585,7 +639,7 @@ script TaskBase
 			<em>[text]</em> The content of the file.
 	*)
 	on readUTF8(fileName)
-		set f to POSIXPath(fileName)
+		set f to my posixPath(fileName)
 		set fp to open for access POSIX file f without write permission
 		try
 			read fp as Çclass utf8È
@@ -600,41 +654,50 @@ script TaskBase
 		@abstract
 			Returns a relative POSIX path.
 	*)
-	on relativizePath(p, base)
-		set {tid, AppleScript's text item delimiters} to {AppleScript's text item delimiters, "/"}
-		try
-			set pPath to text items of deslash(POSIXPath(p))
-			set pBase to text items of deslash(POSIXPath(base))
-			set AppleScript's text item delimiters to tid
-		on error errMsg number errNum
-			set AppleScript's text item delimiters to tid
-			error errMsg number errNum
-		end try
-		set m to count pPath
-		set n to count pBase
-		set i to 1
-		repeat while i ² m and i ² n and item i of pPath is equal to item i of pBase
-			set i to i + 1
-		end repeat
-		if i ² m and i ² n then
-			error "relativizePath(): incompatible paths"
-		end if
-		repeat while i ² m
-			
-		end repeat
-		repeat while i ² n
-			
-		end repeat
-		set {tid, AppleScript's text item delimiters} to {AppleScript's text item delimiters, "/"}
-		set relPath to (text items (i + 1) thru m of pPath) as text
-		set AppleScript's text item delimiters to tid
-		return relPath
+	on relativizePath(aPath, basePath)
+		local base
+		set base to current application's NSURL's fileURLWithPath:(my posixPath(basePath))
+		(current application's NSURL's URLWithString:aPath relativeToURL:base)'s relativePath as text
+		return "FIXME"
 	end relativizePath
 	
-	(*! @abstract Deletes one or more paths. *)
-	on rm(dst)
-		sh("/bin/rm", {"-fr"} & normalizePaths(dst))
+	(*!
+		@abstract
+			Deletes one or more paths.
+		@param
+			paths <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			A path or a list of paths.
+		@throws
+			An error if a file cannot be deleted, for example because it does not exist.
+		@seealso
+			rm_f
+	*)
+	on rm(paths)
+		local fm
+		set fm to current application's NSFileManager's defaultManager()
+		set ff to posixPaths(paths)
+		repeat with f in ff
+			set {succeeded, theError} to (fm's removeItemAtPath:f |error|:(reference))
+			if not succeeded then
+				error theError's localizedDescription as text number theError's code as integer
+			end if
+		end repeat
 	end rm
+	
+	(*!
+		@abstract
+			Deletes one or more paths without throwing errors.
+		@param
+			paths <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			A path or a list of paths.
+		@seealso
+ 			rm
+	*)
+	on rm_f(paths)
+		try
+			rm(paths)
+		end try
+	end rm_f
 	
 	(*!
 		@abstract
@@ -643,115 +706,91 @@ script TaskBase
 			This handler provides an interface to run a shell script via
 			<code>do shell script</code>. All the features of <code>do shell script</code>
 			are supported, including running a command with administrator privileges.
-			For example, a command run as user <code>nick</code>
+			For example, a command run as <code>nick</code>
 			with password <code>xyz123</code> may look as follows:
 			<pre>
-			sh("mycmd", {"--some", "--options", {super: true, user: "nick", password: "xyz123"}})
+			shell for "mycmd" with privileges given options:{"--some", "--options"},
+			  username:"nick", |password|:"xyz123"
 			</pre>
-			Output redirection is supported, too, as well as altering line endings.
-		@param
-			command <em>[text]</em> The command name.
-		@param
-			opts <em>[text]</em> or <em>[list]</em> An argument or a list of arguments
-			for the command (internally, the handler always converts this
-			to a list). One of the elements of the list may be a record containing
-			one or more of the following keys: <code>redirect</code>, <code>super</code>,
-			<code>user</code>, <code>password</code>, and <code>alteringLineEndings</code>.
-			This record is not passed to the command, but it is used to configure
-			how the script is run. Consider for example:
+			Output redirection is supported, too, as well as altering line endings, e.g.:
 			<pre>
-			sh("mycmd", {"-a", "-b", {redirect: "2>&1", alteringLineEndings: false}})
+			shell for "mycmd" given out:"/some/file", err:"&1", alteringLineEndings:false
 			</pre>
-			In this example, <code>-a</code> and <code>-b</code> are passed to <code>mycmd</code>.
-			Besides, stderr is redirected to stdout and the line endings in the command output are not modified.
+			This handler uses the syntax introduced is OS X 10.10 (Yosemite) for optional labeled parameters. 
+			Apart from the <tt>for</tt> parameter, all other arguments are optional (and may appear in any order).
+		@param
+			command <em>[text]</em> The command to be executed.
+		@param
+			options <em>[text]</em> or <em>[list]</em> An argument or a list of arguments
+			for the command (internally, the handler always converts this
+			to a list). Each option is quoted before the command is executed.
+		@param
+			privileges <em>[boolean]</em> A flag indicating whether the command should be executed as a different user.
+			The default is <tt>false</tt>.
+		@param
+			username <em>[text]</em> The username that should execute the command.
+			This argument is ignored unless <tt>privileges</tt> is set to <tt>true</tt>.
+		@param
+			pass <em>[text]</em> The password to be authenticated as <tt>username</tt>.
+		@param
+			out <em>[text]</em> Redirect the standard output to the specified file.
+		@param
+			err <em>[text]</em> Redirect the standard error to the specified file.
+			Pass <tt>&1</tt> to redirect to the standard output.
+		@param
+			ale <em>[boolean]</em> Whether line endings should be changed or not.
+			The default is <tt>true</tt>.
 		@return
 			<em>[text]</em> The output of the command.
 			If ASMake is run with <code>--dry</code>, returns the text of the command.
 		@throws
 			An error if the shell script exits with non-zero status.
+			The error number is the exit status of the command.
 	*)
-	on sh(command, opts)
-		local output, redirect, superuser, username, pass, ale
-		set redirect to ""
-		set superuser to false
-		set username to short user name of (system info)
-		set pass to missing value
-		set ale to true
-		if opts's class is not list then set opts to {opts}
-		repeat with opt in opts
-			if class of opt is record then
-				try
-					set redirect to space & redirect of opt
-				end try
-				try
-					set ale to alteringLineEndings of opt
-				end try
-				try
-					set superuser to super of opt
-				end try
-				try
-					set pass to password of opt
-					set username to user of opt
-				end try
+	on shell for command given options:options : {}, privileges:privileges : false, username:username : missing value, |password|:pass : missing value, out:out : "", err:err : "", alteringLineEndings:ale : true
+		if options's class is not list then set options to {options}
+		if out is not "" then set out to space & ">" & quoted form of out
+		if err is not "" then
+			if err is "&1" then -- Allow redirecting stderr to stdout
+				set err to space & "2>&1"
 			else
-				set command to command & space & quoted form of opt
+				set err to space & "2>" & quoted form of err
 			end if
-		end repeat
-		set command to command & redirect
-		if verbose() then echo(command)
-		if dry() then return command
-		-- Execute the command in the working directory
-		set command to Â
-			"cd" & space & quoted form of my PWD & ";" & command
-		if pass is missing value then
-			set output to (do shell script command administrator privileges superuser altering line endings ale)
-		else
-			set output to (do shell script command administrator privileges superuser user name username password pass altering line endings ale)
 		end if
-		if verbose() and output is not equal to "" then echo(output)
+		set command to command & space & (my join(my map(options, my quoteText), space)) & out & err
+		if my verbose() then my echo(command)
+		if my dry() then return command
+		set command to "cd" & space & quoted form of my PWD & ";" & command
+		if pass is missing value then
+			set output to (do shell script command administrator privileges privileges altering line endings ale)
+		else
+			if username is missing value then set username to short user name of (system info)
+			set output to (do shell script command administrator privileges privileges user name username password pass altering line endings ale)
+		end if
+		if my verbose() and output is not "" then my echo(output)
 		return output
-	end sh
+	end shell
+	
+	on split(theText, theDelim)
+		set {tid, AppleScript's text item delimiters} to {AppleScript's text item delimiters, theDelim}
+		set theResult to the text items of theText
+		set AppleScript's text item delimiters to tid
+		return theResult
+	end split
 	
 	(*!
 		@abstract
-			Splits the given path into a directory and a file component.
-		@discussion
-			This handler is adapted from <a href="http://applemods.sourceforge.net">AppleMods</a>.
+			Splits the given path into its components.
 		@param
 			p <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
 			A path.
 		@return
-			<em>[list]</em> A two-element list.
+			<em>[list]</em> The components of the given paths.
 	*)
 	on splitPath(p)
-		set pPath to POSIXPath(p)
-		considering hyphens, punctuation and white space
-			set {tid, AppleScript's text item delimiters} to {AppleScript's text item delimiters, "/"}
-			try
-				if pPath ends with "/" then
-					if (count text items of pPath) = 2 then
-						set basePath to "."
-						set fileName to text item -2 of pPath
-					else -- >2
-						set basePath to text 1 thru text item -3 of pPath
-						set fileName to text item -2 of pPath
-					end if
-				else
-					if (count text items of pPath) = 1 then
-						set basePath to "."
-						set fileName to text item -1 of pPath
-					else -- >1
-						set basePath to text 1 thru text item -2 of pPath
-						set fileName to text item -1 of pPath
-					end if
-				end if
-			on error eStr number eNum
-				set AppleScript's text item delimiters to tid
-				error "Can't split path: " & eStr number eNum
-			end try
-			set AppleScript's text item delimiters to tid
-		end considering
-		return {basePath, fileName}
+		local pPath
+		set pPath to posixPath(p)
+		((current application's NSURL's fileURLWithPath:pPath)'s pathComponents) as list
 	end splitPath
 	
 	(*!
@@ -765,9 +804,9 @@ script TaskBase
 			The symbolic link to be created.
 	*)
 	on symlink(source, target)
-		set src to POSIXPath(source)
-		set tgt to POSIXPath(target)
-		sh("/bin/ln", {"-s"} & src & tgt)
+		set src to posixPath(source)
+		set tgt to posixPath(target)
+		shell for "/bin/ln" given options:{"-s"} & src & tgt
 	end symlink
 	
 	(*!
@@ -779,10 +818,10 @@ script TaskBase
 		my arguments's options contains "--verbose" or my arguments's options contains "-v"
 	end verbose
 	
-	(*! @abstract Interface for the <code>which</code> command. *)
+	(*! @abstract Wrapper around <code>which</code>. *)
 	on which(command)
 		try
-			sh("/usr/bin/which", command)
+			shell for "/usr/bin/which" given options:command
 		on error
 			missing value
 		end try
@@ -797,7 +836,7 @@ script TaskBase
 			content <em>[text]</em> The content to write.
 	*)
 	on writeUTF8(fileName, content)
-		set f to POSIXPath(fileName)
+		set f to posixPath(fileName)
 		set fp to open for access POSIX file f with write permission
 		try
 			write content to fp as Çclass utf8È
@@ -850,8 +889,8 @@ end script
 (*! @abstract Task to print the path of the working directory. *)
 script WorkDir
 	property parent : Task(me)
-	property name : "pwd"
-	property synonyms : {"wd"}
+	property name : "wd"
+	property synonyms : {"pwd"}
 	property description : "Print the path of the working directory and exit."
 	property printSuccess : false
 	ohai(my PWD)
@@ -1289,10 +1328,10 @@ end findTask
 		or if the task fails.
 *)
 on runTask(action)
+	set TaskBase's PWD to do shell script "pwd"
 	-- Allow loading ASMake from text format with run script
 	if action is "__ASMAKE__LOAD__" then return me
 	local t
-	set TaskBase's PWD to do shell script "pwd"
 	try
 		CommandLineParser's parse(action)
 	on error errMsg

@@ -25,34 +25,34 @@ script api
 	
 	owarn("Building the API with HeaderDoc requires OS X 10.10 (Xcode 6)")
 	--Set LANG to get rid of warnings about missing default encoding
-	sh("env LANG=en_US.UTF-8 headerdoc2html", {"-q", "-o", dir, "ASMake.applescript"})
-	sh("env LANG=en_US.UTF-8 gatherheaderdoc", dir)
-	sh("open", dir & "/ASMake_applescript/index.html")
+	shell for "env LANG=en_US.UTF-8 headerdoc2html" given options:{"-q", "-o", dir, "ASMake.applescript"}
+	shell for "env LANG=en_US.UTF-8 gatherheaderdoc" given options:dir
+	shell for "open" given options:(dir & "/ASMake_applescript/index.html")
 end script
 
 script build
 	property parent : Task(me)
 	property description : "Build ASMake."
-	osacompile("ASMake", "scpt", {"-x"})
+	osacompile from "ASMake" given target:"scpt", options:"-x"
 end script
 
 script clean
 	property parent : Task(me)
 	property description : "Remove any generated products."
-	rm({"*.scpt", "*.scptd"})
+	rm_f(glob({"*.scpt", "*.scptd"}))
 end script
 
 script clobber
 	property parent : Task(me)
 	property description : "Remove all temporary products."
 	run clean
-	rm({"Documentation", "README.html"})
+	rm_f({"Documentation", "README.html"})
 end script
 
 script doc
 	property parent : Task(me)
 	property description : "Compile the README."
-	sh("markdown", {"-o", "README.html", "README.md"})
+	shell for "markdown" given options:{"-o", "README.html", "README.md"}
 end script
 
 script install
@@ -70,7 +70,7 @@ script test
 	property parent : Task(me)
 	property description : "Run tests."
 	property printSuccess : false
-	osacompile("Test ASMake.applescript", "scpt", {})
+	osacompile from "Test ASMake"
 	set testSuite to load script POSIX file (my PWD & "/Test ASMake.scpt")
 	run testSuite
 end script

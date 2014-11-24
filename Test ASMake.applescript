@@ -4,18 +4,32 @@
 		Unit tests for ASMake.
 	@charset macintosh
 *)
-use AppleScript version "2.3"
-use script "ASUnit" version "1.2.2"
+on wd()
+	if current application's id is "com.apple.ScriptEditor2" or Â
+		current application's name starts with "Script Debugger" then
+		(folder of file (document 1's path as POSIX file) of application "Finder") as text
+	else if current application's name is in {"osacompile", "osascript"} then
+		((POSIX file (do shell script "pwd")) as text) & ":"
+	else
+		error "This file cannot be compiled with this application: " & current application's name
+	end if
+end wd
+
+property TOPLEVEL : me
+-- We assume that either this script is run from source, or it is run
+-- from the same directory where it is compiled.
+property workingDir : wd()
+-- Run ASMake from source at compile time
+property ASMakePath : wd() & "ASMake.applescript"
+property ASMake : run script (ASMakePath as alias) with parameters {"__ASMAKE__LOAD__"}
+
+use AppleScript version "2.4"
 use scripting additions
-property parent : script "ASUnit"
+use ASUnit : script "ASUnit" version "1.2.2"
+property parent : ASUnit
 property suite : makeTestSuite("Suite of unit tests for ASMake")
-property ASMake : missing value -- The variable holding the script to be tested
 
-set ASMake to run script Â
-	((folder of file (path to me) of application "Finder" as text) Â
-		& "ASMake.applescript") as alias Â
-	with parameters {"__ASMAKE__LOAD__"}
-
+log "Testing ASMake v" & ASMake's version
 autorun(suite)
 
 ---------------------------------------------------------------------------------------
@@ -313,91 +327,94 @@ script |Test TaskBase|
 		set opts to {"--dry"}
 		set ASMake's TaskArguments's options to opts
 		set tb to a reference to ASMake's TaskBase
-		set tb's PWD to POSIX path of ((folder of file (path to me) of application "Finder") as alias)
+		set tb's PWD to POSIX path of TOPLEVEL's workingDir
 		set tb's arguments to ASMake's TaskArguments
 	end setUp
 	
-	script |Test POSIXPath() with absolute POSIX path without trailing slash|
+	script |Test posixPath() with absolute POSIX path without trailing slash|
 		property parent : UnitTest(me)
-		assertEqual("/a/b/c", tb's POSIXPath("/a/b/c"))
+		assertEqual("/a/b/c", tb's posixPath("/a/b/c"))
 	end script
 	
-	script |Test POSIXPath() with relative POSIX path without trailing slash|
+	script |Test posixPath() with relative POSIX path without trailing slash|
 		property parent : UnitTest(me)
-		assertEqual("a/b/c", tb's POSIXPath("a/b/c"))
+		assertEqual("a/b/c", tb's posixPath("a/b/c"))
 	end script
 	
-	script |Test POSIXPath() with absolute POSIX path with trailing slash|
+	script |Test posixPath() with absolute POSIX path with trailing slash|
 		property parent : UnitTest(me)
-		assertEqual("/a/b/c/", tb's POSIXPath("/a/b/c/"))
+		assertEqual("/a/b/c/", tb's posixPath("/a/b/c/"))
 	end script
 	
-	script |Test POSIXPath() with relative POSIX path with trailing slash|
+	script |Test posixPath() with relative POSIX path with trailing slash|
 		property parent : UnitTest(me)
-		assertEqual("a/b/c/", tb's POSIXPath("a/b/c/"))
+		assertEqual("a/b/c/", tb's posixPath("a/b/c/"))
 	end script
 	
-	script |Test POSIXPath() with absolute HFS path without trailing colon|
+	script |Test posixPath() with absolute HFS path without trailing colon|
 		property parent : UnitTest(me)
-		assertEqual("/a/b/c", tb's POSIXPath("a:b:c"))
+		assertEqual("/a/b/c", tb's posixPath("a:b:c"))
 	end script
 	
-	script |Test POSIXPath() with absolute HFS path with trailing colon|
+	script |Test posixPath() with absolute HFS path with trailing colon|
 		property parent : UnitTest(me)
-		assertEqual("/a/b/c/", tb's POSIXPath("a:b:c:"))
+		assertEqual("/a/b/c/", tb's posixPath("a:b:c:"))
 	end script
 	
-	script |Test POSIXPath() with relative POSIX path without trailing colon|
+	script |Test posixPath() with relative POSIX path without trailing colon|
 		property parent : UnitTest(me)
-		assertEqual("a/b/c", tb's POSIXPath(":a:b:c"))
+		assertEqual("a/b/c", tb's posixPath(":a:b:c"))
 	end script
 	
-	script |Test POSIXPath() with relative HFS path with trailing colon|
+	script |Test posixPath() with relative HFS path with trailing colon|
 		property parent : UnitTest(me)
-		assertEqual("a/b/c/", tb's POSIXPath(":a:b:c:"))
+		assertEqual("a/b/c/", tb's posixPath(":a:b:c:"))
 	end script
 	
-	script |Test POSIXPath() with alias|
+	script |Test posixPath() with alias|
 		property parent : UnitTest(me)
 		set res to POSIX path of (path to library folder from user domain as alias)
-		assertEqual(res, tb's POSIXPath(path to library folder from user domain as alias))
+		assertEqual(res, tb's posixPath(path to library folder from user domain as alias))
 	end script
 	
-	script |Test POSIXPath() with file|
+	script |Test posixPath() with file|
 		property parent : UnitTest(me)
-		assertEqual("/System/Library", tb's POSIXPath(POSIX file "/System/Library"))
+		assertEqual("/System/Library", tb's posixPath(POSIX file "/System/Library"))
 	end script
 	
-	script |Test POSIXPath() with reference to a POSIX path|
+	script |Test posixPath() with reference to a POSIX path|
 		property parent : UnitTest(me)
-		assertEqual("a/b/c", tb's POSIXPath(a reference to "a/b/c"))
+		assertEqual("a/b/c", tb's posixPath(a reference to "a/b/c"))
 	end script
 	
-	script |Test normalizePaths()|
+	script |Test posixPaths()|
 		property parent : UnitTest(me)
 		set res to POSIX path of (path to library folder from user domain as alias)
-		assertEqual({res}, tb's normalizePaths(path to library folder from user domain as alias))
+		assertEqual({res}, tb's posixPaths(path to library folder from user domain as alias))
 		set res to POSIX path of (path to library folder from user domain as text)
-		assertEqual({res}, tb's normalizePaths(path to library folder from user domain as text))
+		assertEqual({res}, tb's posixPaths(path to library folder from user domain as text))
 	end script
 	
-	script |Test normalizePaths() with POSIX absolute path|
+	script |Test posixPaths() with POSIX absolute path|
 		property parent : UnitTest(me)
 		set res to "/a/b/c"
-		set v to item 1 of tb's normalizePaths(res)
+		set v to item 1 of tb's posixPaths(res)
 		assertEqual(res, v)
 	end script
 	
 	script |Test glob()|
 		property parent : UnitTest(me)
+		assertInstanceOf(list, tb's glob({"*.scpt", "*.scptd"}))
+		assertInstanceOf(list, tb's glob("abc.scpt"))
+		assert(tb's glob({"*.scpt", "*.scptd"})'s length > 2, "Once there was a bug causing glob() to collapse its arguments")
 		assertEqual({"ASMake.applescript"}, tb's glob("ASM*.applescript"))
 		assertEqual({"I/dont/exist/foobar"}, tb's glob("I/dont/exist/foobar"))
 	end script
 	
-	script |Test sh()|
+	script |Test shell()|
 		property parent : UnitTest(me)
 		set expected to "cmd" & space & "'-x' 2>&1"
-		assertEqual(expected, tb's sh("cmd", {"-x", {redirect:"2>&1"}}))
+		assertEqual(expected, shell of tb for "cmd" without executing given options:"-x", err:"&1")
 	end script
 	
 	script |Test absolutePath()|
@@ -428,7 +445,7 @@ script |Test TaskBase|
 	
 	script |Test cp()|
 		property parent : UnitTest(me)
-		set res to tb's cp({"AS*.applescript", POSIX file "doc/foo.txt", "examples/bar"}, "tmp/cp")
+		set res to tb's cp({tb's glob("AS*.applescript"), POSIX file "doc/foo.txt", "examples/bar"}, "tmp/cp")
 		set expected to "/bin/cp" & space & quoted form of "-r" & space & Â
 			quoted form of "ASMake.applescript" & space & Â
 			quoted form of "doc/foo.txt" & space & Â
@@ -454,7 +471,7 @@ script |Test TaskBase|
 	
 	script |Test ditto()|
 		property parent : UnitTest(me)
-		set res to tb's ditto({"AS*.applescript", POSIX file "doc/foo.txt", "examples/bar"}, "tmp/ditto")
+		set res to tb's ditto({tb's glob("AS*.applescript"), POSIX file "doc/foo.txt", "examples/bar"}, "tmp/ditto")
 		set expected to "/usr/bin/ditto" & space & Â
 			quoted form of "ASMake.applescript" & space & Â
 			quoted form of "doc/foo.txt" & space & Â
@@ -541,7 +558,7 @@ script |Test TaskBase|
 	script |Test osacompile()|
 		property parent : UnitTest(me)
 		set expected to "/usr/bin/osacompile '-o' 'ASMake.scpt' '-x' 'ASMake.applescript'"
-		assertEqual(expected, tb's osacompile("ASMake", "scpt", {"-x"}))
+		assertEqual(expected, osacompile of tb from "ASMake" given target:"scpt", options:"-x")
 	end script
 	
 	script |Test relativizePath() with absolute paths|
