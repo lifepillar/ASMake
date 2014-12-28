@@ -529,12 +529,12 @@ script |Test TaskBase|
 		assertEqual(expected, res)
 	end script
 	
-	script |Test rm()|
+	script |Test dry rm()|
 		property parent : UnitTest(me)
 		set res to tb's rm({"a", "b/c", POSIX file "d/e"})
-		set expected to "/bin/rm" & space & quoted form of "-fr" & space & Â
-			quoted form of "a" & space & Â
-			quoted form of "b/c" & space & Â
+		set expected to "Deleting" & space & Â
+			quoted form of "a" & ", " & Â
+			quoted form of "b/c" & ", " & Â
 			quoted form of "d/e"
 		assertEqual(expected, res)
 	end script

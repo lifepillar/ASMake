@@ -729,42 +729,50 @@ script TaskBase
 			error errMsg number errNum
 		end try
 	end readUTF8
-
+	
 	(*!
 		@abstract
 			Deletes one or more paths.
 		@param
-			paths <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			somePaths <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
 			A path or a list of paths.
 		@throws
 			An error if a file cannot be deleted, for example because it does not exist.
 		@seealso
 			rm_f
 	*)
-	on rm(paths)
-		local fm
-		set fm to current application's NSFileManager's defaultManager()
-		set ff to posixPaths(paths)
-		repeat with f in ff
-			set {succeeded, theError} to (fm's removeItemAtPath:f |error|:(reference))
+	on rm(somePaths)
+		script PathWrapper
+			property paths : my posixPaths(somePaths)
+		end script
+		
+		if my dry() then
+			return "Deleting" & space & my join(my map(a reference to PathWrapper's paths, my quoteText), ", ")
+		end if
+		
+		local fileManager
+		set fileManager to current application's NSFileManager's defaultManager()
+		repeat with p in (a reference to PathWrapper's paths)
+			if verbose() then echo("Deleting" & space & p)
+			set {succeeded, theError} to (fm's removeItemAtPath:p |error|:(reference))
 			if not succeeded then
-				error theError's localizedDescription as text number theError's code as integer
+				error (theError's localizedDescription as text) number (theError's code as integer)
 			end if
 		end repeat
 	end rm
 	
 	(*!
 		@abstract
-			Deletes one or more paths without throwing errors.
+			Deletes one or more paths, suppressing errors.
 		@param
-			paths <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			somePaths <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
 			A path or a list of paths.
 		@seealso
  			rm
 	*)
-	on rm_f(paths)
+	on rm_f(somePaths)
 		try
-			rm(paths)
+			rm(somePaths)
 		end try
 	end rm_f
 	
