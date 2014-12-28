@@ -649,4 +649,88 @@ script |Test TaskBase|
 		assertNil(tb's which("A-command-that-does-not-exist"))
 		assertEqual("/bin/bash", tb's which("bash"))
 	end script
-end script
+	
+end script -- TaskBase
+
+
+script |ASMake functional handlers|
+	property parent : TestSet(me)
+	property TS : me
+	property tb : missing value
+	
+	on setUp()
+		set opts to {"--dry"}
+		set ASMake's TaskArguments's options to opts
+		set tb to a reference to ASMake's TaskBase
+		set tb's PWD to POSIX path of TOPLEVEL's workingDir
+		set tb's arguments to ASMake's TaskArguments
+	end setUp
+	
+	on increment(x)
+		x + 1
+	end increment
+	
+	on mirror(x)
+		set {tid, AppleScript's text item delimiters} to {AppleScript's text item delimiters, ""}
+		try
+			return ((text items of x)'s reverse) as text
+		end try
+		set AppleScript's text item delimiters to tid
+		return x
+	end mirror
+	
+	on isEven(x)
+		x mod 2 = 0
+	end isEven
+	
+	script |Test filter()|
+		property parent : UnitTest(me)
+		property pList : {1, 2, 3, 4, 6, 9, 13}
+		
+		copy pList to listCopy
+		set evenList to tb's filter(my pList, TS's isEven)
+		assertEqual(listCopy, pList) -- Original list should not change
+		assertEqual({2, 4, 6}, evenList)
+		set evenList to tb's filter(a reference to my pList, TS's isEven)
+		assertEqual(listCopy, pList) -- Original list should not change
+		assertEqual({2, 4, 6}, evenList)
+	end script
+	
+	script |Test map()|
+		property parent : UnitTest(me)
+		property pList : {"now", "here"}
+		
+		assertEqual({13, 2}, tb's map({12, 1}, TS's increment))
+		assertEqual({"won", "ereh"}, tb's map({"now", "here"}, TS's mirror))
+		assertEqual(tb's map(my pList, TS's mirror), tb's map(a reference to my pList, TS's mirror))
+	end script
+	
+	script |Test transform()|
+		property parent : UnitTest(me)
+		property l1 : {1, 5, 3}
+
+		tb's transform(l1, TS's increment)
+		assertEqual({2, 6, 4}, l1)
+		tb's transform(a reference to l1, TS's increment)
+		assertEqual({3, 7, 5}, l1)
+	end script
+	
+	---------------------------------------------------------------------------------
+	script Join_list
+		property name : "Join list"
+		property parent : UnitTest(me)
+		should(tb's join({}, "--") = "", "Cannot join empty list.")
+		should(tb's join({12}, "--") = "12" as text, "Cannot join singleton list.")
+		should(class of tb's join({12}, "") = text, "Joining a singleton list does not return text.")
+		should(tb's join({"now", "here"}, "") = "nowhere", "join() with empty delim failed.")
+		should(tb's join({"now", "here"}, " and ") = "now and here", "join() with delim has failed.")
+	end script
+	
+	---------------------------------------------------------------------------------
+	script |Split as inverse of join|
+		property parent : UnitTest(me)
+		should(tb's join(tb's split("This:is:a:path", ":"), ":") = "This:is:a:path", "join() does not reverse split().")
+		should(tb's split(tb's join({"now", "here"}, "/"), "/") = {"now", "here"}, "split() does not reverse join().")
+	end script
+	
+end script -- ASMake functional handlers
