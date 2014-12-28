@@ -406,7 +406,7 @@ script |Test TaskBase|
 		property parent : UnitTest(me)
 		assertInstanceOf(list, tb's glob({"*.scpt", "*.scptd"}))
 		assertInstanceOf(list, tb's glob("abc.scpt"))
-		assert(tb's glob({"*.scpt", "*.scptd"})'s length > 2, "Once there was a bug causing glob() to collapse its arguments")
+		assert(tb's glob({"*.applescript"})'s length > 2, "Once there was a bug causing glob() to collapse its arguments")
 		assertEqual({"ASMake.applescript"}, tb's glob("ASM*.applescript"))
 		assertEqual({"I/dont/exist/foobar"}, tb's glob("I/dont/exist/foobar"))
 	end script
