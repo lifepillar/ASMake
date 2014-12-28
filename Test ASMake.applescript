@@ -420,9 +420,10 @@ script |Test TaskBase|
 	script |Test absolutePath()|
 		property parent : UnitTest(me)
 		assertEqual(tb's PWD & "a/b/c", tb's absolutePath("a/b/c"))
+		assertEqual(tb's PWD & "a/b/c", tb's absolutePath("a/b/c/"))
 		assertEqual(tb's PWD & "a/b/c", tb's absolutePath(":a:b:c"))
 		assertKindOf(text, tb's absolutePath("/a/b/c"))
-		assertEqual("/a/b/c/", tb's absolutePath("a:b:c:"))
+		assertEqual("/a/b/c", tb's absolutePath("a:b:c:"))
 	end script
 	
 	script |Test absolutePath() with absolute POSIX path|
@@ -461,12 +462,12 @@ script |Test TaskBase|
 		assertEqual("a", tb's deslash("a//"))
 	end script
 	
-	script |Test dirname()|
+	script |Test directoryPath()|
 		property parent : UnitTest(me)
-		assertEqual("a/b", tb's dirname("a/b/c"))
-		assertEqual("/a/b", tb's dirname("/a/b/c"))
-		assertEqual("/a/b", tb's dirname("a:b:c"))
-		assertEqual("/a/b", tb's dirname("a:b:c:"))
+		assert(tb's directoryPath("a/b/c") ends with "a/b", "Assertion 1")
+		assert(tb's directoryPath("/a/b/c") ends with "/a/b", "Assertion 2")
+		assert(tb's directoryPath("a:b:c") ends with "/a/b", "Assertion 3")
+		assert(tb's directoryPath("a:b:c:") ends with "/a/b", "Assertion 4")
 	end script
 	
 	script |Test ditto()|
@@ -484,11 +485,11 @@ script |Test TaskBase|
 		property parent : UnitTest(me)
 		assertEqual("abc/defg", tb's joinPath("abc", "defg"))
 		assertEqual("abc/defg", tb's joinPath("abc/", "defg"))
-		assertEqual("abc/defg/", tb's joinPath("abc/", "defg/"))
+		assertEqual("abc/defg", tb's joinPath("abc/", "defg/"))
 		assertEqual("/abc/defg", tb's joinPath("abc:", "defg"))
 		assertEqual("abc/defg", tb's joinPath(":abc:", "defg"))
 		assertEqual("abc/defg", tb's joinPath(":abc:", ":defg"))
-		assertEqual("abc/defg/", tb's joinPath(":abc:", ":defg:"))
+		assertEqual("abc/defg", tb's joinPath(":abc:", ":defg:"))
 	end script
 	
 	script |Test joinPath() with aliases|
@@ -503,7 +504,7 @@ script |Test TaskBase|
 		set p to path to library folder from user domain as alias
 		set q to (POSIX path of (path to home folder))
 		set r to q & "SomeAlias"
-		assertEqual({POSIX path of p, tb's dirname(r), "SomeAlias"}, tb's makeAlias(p, r))
+		assertEqual({POSIX path of p, tb's directoryPath(r), "SomeAlias"}, tb's makeAlias(p, r))
 	end script
 	
 	script |Test mkdir()|
