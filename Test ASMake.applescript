@@ -562,6 +562,12 @@ script |Test TaskBase|
 		assertEqual(expected, osacompile of tb from "ASMake" given target:"scpt", options:"-x")
 	end script
 	
+	script |Test pathComponents()|
+		property parent : UnitTest(me)
+		assertInstanceOf(list, tb's pathComponents("a/b"))
+		assert(tb's pathComponents("a/b") ends with {"a", "b"}, "Path decomposed incorrectly")
+	end script
+	
 	script |Test pathExists() with absolute paths|
 		property parent : UnitTest(me)
 		assert(tb's pathExists(tb's PWD), "The working directory should exist")

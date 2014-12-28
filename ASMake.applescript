@@ -662,6 +662,23 @@ script TaskBase
 		end repeat
 	end osacompile
 	
+	(*!
+		@abstract
+			Splits the absolute version of the given path into its components.
+		@param
+			somePath <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
+			A path.
+		@return
+			<em>[list]</em> The components of the given paths.
+		@seealso
+			basename
+		@seealso
+			directoryPath
+	*)
+	on pathComponents(somePath)
+		(my _fileURL(somePath))'s pathComponents as list
+	end pathComponents
+	
 	(* @abstract A wrapper around <tt>quoted form of</tt>. *)
 	on quoteText(s)
 		quoted form of s
