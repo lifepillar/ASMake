@@ -719,8 +719,8 @@ script TaskBase
 			<em>[text]</em> The content of the file.
 	*)
 	on readUTF8(fileName)
-		set f to my posixPath(fileName)
-		set fp to open for access POSIX file f without write permission
+		set ff to my posixPath(fileName)
+		set fp to open for access POSIX file ff without write permission
 		try
 			read fp as Çclass utf8È
 			close access fp
@@ -941,8 +941,8 @@ script TaskBase
 			content <em>[text]</em> The content to write.
 	*)
 	on writeUTF8(fileName, content)
-		set f to posixPath(fileName)
-		set fp to open for access POSIX file f with write permission
+		set ff to my posixPath(fileName)
+		set fp to open for access POSIX file ff with write permission
 		try
 			write content to fp as Çclass utf8È
 			close access fp
