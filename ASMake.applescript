@@ -558,7 +558,51 @@ script TaskBase
 		set dest to posixPath(dst)
 		shell for "/bin/mv" given options:posixPaths(src) & dest
 	end mv
-
+	
+	(*!
+		@abstract
+			Compiles one or more scripts.
+		@param
+			src <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			A path or a list of paths.
+		@param
+			target <em>[text]</em> The type of the result, which can be <code>scpt</code>,
+			<code>scptd</code>, or <code>app</code>, for a script, script bundle, or applet, respectively.
+		@param
+			options <em>[list]</em> A list of <code>osacompile</code> options
+			(see <code>man osacompile</code>).
+	*)
+	on osacompile from sources given target:target : "scpt", options:options : {}
+		local basename, paths
+		set paths to posixPaths(sources)
+		if class of options is not list then set options to {options}
+		repeat with p in paths
+			if p ends with ".applescript" then
+				set basename to text 1 thru -13 of s -- remove suffix
+			else
+				set basename to p
+			end if
+			shell for "/usr/bin/osacompile" given options:{"-o", basename & "." & target} & options & {basename & ".applescript"}
+		end repeat
+	end osacompile
+	
+	(*!
+		@abstract
+			Splits the absolute version of the given path into its components.
+		@param
+			somePath <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
+			A path.
+		@return
+			<em>[list]</em> The components of the given paths.
+		@seealso
+			basename
+		@seealso
+			directoryPath
+	*)
+	on pathComponents(somePath)
+		(my _fileURL(somePath))'s pathComponents as list
+	end pathComponents
+	
 	(*!
 		@abstract
 			Checks whether the given file or directory exists on disk.
@@ -634,50 +678,6 @@ script TaskBase
 		end repeat
 		return res
 	end posixPaths
-	
-	(*!
-		@abstract
-			Compiles one or more scripts.
-		@param
-			src <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
-			A path or a list of paths.
-		@param 
-			target <em>[text]</em> The type of the result, which can be <code>scpt</code>,
-			<code>scptd</code>, or <code>app</code>, for a script, script bundle, or applet, respectively.
-		@param
-			options <em>[list]</em> A list of <code>osacompile</code> options
-			(see <code>man osacompile</code>).
-	*)
-	on osacompile from sources given target:target : "scpt", options:options : {}
-		local basename, paths
-		set paths to posixPaths(sources)
-		if class of options is not list then set options to {options}
-		repeat with p in paths
-			if p ends with ".applescript" then
-				set basename to text 1 thru -13 of s -- remove suffix
-			else
-				set basename to p
-			end if
-			shell for "/usr/bin/osacompile" given options:{"-o", basename & "." & target} & options & {basename & ".applescript"}
-		end repeat
-	end osacompile
-	
-	(*!
-		@abstract
-			Splits the absolute version of the given path into its components.
-		@param
-			somePath <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
-			A path.
-		@return
-			<em>[list]</em> The components of the given paths.
-		@seealso
-			basename
-		@seealso
-			directoryPath
-	*)
-	on pathComponents(somePath)
-		(my _fileURL(somePath))'s pathComponents as list
-	end pathComponents
 	
 	(* @abstract A wrapper around <tt>quoted form of</tt>. *)
 	on quoteText(s)
