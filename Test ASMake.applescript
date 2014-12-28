@@ -103,221 +103,31 @@ script |Test task|
 		set aTask to the result
 	end setUp
 	
-	script |Task's class|
+	script test_task_class
+		property name : "Task's class"
 		property parent : UnitTest(me)
 		assertInstanceOf("Task", aTask)
 	end script
 	
-	script |Task's name|
+	script test_task_name
+		property name : "Task's name"
 		property parent : UnitTest(me)
 		assertEqual("myTask", aTask's name)
 	end script
 	
-	script |Task's synonyms|
+	script test_task_synonyms
+		property name : "Task's synonyms"
 		property parent : UnitTest(me)
 		assertEqual({"yourTask"}, aTask's synonyms)
 	end script
 	
-	script |Task's printSuccess|
+	script test_task_printSuccess
+		property name : "Task's printSuccess"
 		property parent : UnitTest(me)
 		notOk(aTask's printSuccess)
 	end script
-end script -- Test task
+end script -- test_set_non_empty_task
 
-script |Test lexical analyzer|
-	property parent : TestSet(me)
-	property parser : missing value
-	property backslash : "\\"
-	
-	on setUp()
-		set parser to a reference to ASMake's CommandLineParser
-	end setUp
-	
-	script |Test setStream()|
-		property parent : UnitTest(me)
-		parser's setStream("abcde")
-		assertEqual("abcde", parser's stream)
-		assertEqual(5, parser's streamLength)
-		assertEqual(1, parser's npos)
-	end script
-	
-	script |Test getChar()|
-		property parent : UnitTest(me)
-		parser's setStream("a" & backslash & "'")
-		assertEqual("a", parser's getChar())
-		assertEqual(backslash, parser's getChar())
-		assertEqual("'", parser's getChar())
-		assertEqual(parser's EOS, parser's getChar())
-		parser's setStream(backslash & backslash)
-		assertEqual(backslash, parser's getChar())
-		assertEqual(backslash, parser's getChar())
-		assertEqual(parser's EOS, parser's getChar())
-		assertEqual(parser's EOS, parser's getChar())
-	end script
-	
-	script |Test nextChar() with empty stream|
-		property parent : UnitTest(me)
-		parser's setStream("")
-		assertEqual(parser's EOS, parser's nextChar())
-		assertEqual(parser's EOS, parser's nextChar())
-	end script
-	
-	script |Test nextChar() with backslash|
-		property parent : UnitTest(me)
-		parser's setStream(backslash & backslash & backslash & space)
-		assertEqual(backslash, parser's nextChar())
-		assertEqual(space, parser's nextChar())
-		assertEqual(parser's EOS, parser's nextChar())
-	end script
-	
-	script |Test nextChar() with single-quoted string|
-		property parent : UnitTest(me)
-		parser's setStream("'" & backslash & space & backslash & quote & backslash & "'")
-		assertEqual(backslash, parser's nextChar())
-		assertEqual(space, parser's nextChar())
-		assertEqual(backslash, parser's nextChar())
-		assertEqual(quote, parser's nextChar())
-		assertEqual(backslash, parser's nextChar())
-		assertEqual(parser's EOS, parser's nextChar())
-	end script
-	
-	script |Test nextChar() with double-quoted string|
-		property parent : UnitTest(me)
-		parser's setStream(quote & backslash & quote & backslash & backslash & backslash & space & quote)
-		assertEqual(quote, parser's nextChar())
-		assertEqual(parser's DOUBLE_QUOTED, parser's state)
-		assertEqual(backslash, parser's nextChar())
-		assertEqual(backslash, parser's nextChar())
-		assertEqual(parser's DOUBLE_QUOTED, parser's state)
-		assertEqual(space, parser's nextChar())
-		assertEqual(parser's EOS, parser's nextChar())
-	end script
-	
-	script |Test nextChar() with key and double-quoted value|
-		property parent : UnitTest(me)
-		parser's setStream("k =" & quote & "x y" & quote)
-		assertEqual("k", parser's nextChar())
-		assertEqual(space, parser's nextChar())
-		assertEqual("=", parser's nextChar())
-		assertEqual("x", parser's nextChar())
-		assertEqual(space, parser's nextChar())
-		assertEqual("y", parser's nextChar())
-		assertEqual(parser's EOS, parser's nextChar())
-	end script
-	
-	script |Test nextChar() with mixed quoting|
-		property parent : UnitTest(me)
-		parser's setStream("a" & quote & "'" & quote & "'" & quote & "'" & backslash & quote & backslash)
-		assertEqual("a", parser's nextChar())
-		assertEqual("'", parser's nextChar()) -- single quote between double quotes
-		assertEqual(quote, parser's nextChar()) -- double quote between single quotes
-		assertEqual(quote, parser's nextChar()) -- escaped double quote
-		assertEqual(parser's EOS, parser's nextChar()) -- The single backslash at the end is ignored
-	end script
-	
-	script |Test resetStream()|
-		property parent : UnitTest(me)
-		script Wrapper
-			parser's resetStream()
-		end script
-		shouldNotRaise({}, Wrapper, "resetStream() should not raise.")
-		parser's setStream("abc")
-		parser's nextChar()
-		parser's nextChar()
-		parser's resetStream()
-		assertEqual(1, parser's npos)
-		assertEqual(parser's UNQUOTED, parser's state)
-	end script
-	
-	script |Test nextToken() with no escaping|
-		property parent : UnitTest(me)
-		parser's setStream("--opt cmd key=value")
-		assertEqual(1, parser's npos)
-		assertEqual("--opt", parser's nextToken())
-		assertEqual("cmd", parser's nextToken())
-		assertEqual("key", parser's nextToken())
-		assertEqual("=", parser's nextToken())
-		assertEqual("value", parser's nextToken())
-		assertEqual(parser's NO_TOKEN, parser's nextToken())
-		assertEqual(parser's NO_TOKEN, parser's nextToken())
-	end script
-	
-	script |Test nextToken() with double-quoted string|
-		property parent : UnitTest(me)
-		parser's setStream("key =" & quote & "val ue" & quote)
-		assertEqual("key", parser's nextToken())
-		assertEqual("=", parser's nextToken())
-		assertEqual("val ue", parser's nextToken())
-		assertEqual(parser's NO_TOKEN, parser's nextToken())
-		assertEqual(parser's UNQUOTED, parser's state)
-	end script
-	
-	script |Test nextToken() with one-letter tokens|
-		property parent : UnitTest(me)
-		parser's setStream("x")
-		assertEqual("x", parser's nextToken())
-		assertEqual(parser's NO_TOKEN, parser's nextToken())
-		parser's setStream("y.a = b")
-		assertEqual("y", parser's nextToken())
-		assertEqual("a", parser's nextToken())
-		assertEqual("=", parser's nextToken())
-		assertEqual("b", parser's nextToken())
-		assertEqual(parser's NO_TOKEN, parser's nextToken())
-	end script
-	
-end script -- Test command line parsing
-
-script |Test parser|
-	property parent : TestSet(me)
-	property parser : missing value
-	property argObj : missing value
-	property backslash : "\\"
-	
-	on setUp()
-		set parser to a reference to ASMake's CommandLineParser
-		set argObj to a reference to ASMake's TaskArguments
-		argObj's clear()
-	end setUp
-	
-	
-	script |Test simple parsing|
-		property parent : UnitTest(me)
-		parser's parse("--opt1 -o2 cmd key= value")
-		assertEqual("cmd", argObj's command)
-		assertEqual({"--opt1", "-o2"}, argObj's options)
-		assertEqual({"key"}, argObj's keys)
-		assertEqual({"value"}, argObj's values)
-	end script
-	
-	script |Test parse command with option and task name|
-		property parent : UnitTest(me)
-		parser's parse("-n install")
-		assertEqual("install", argObj's command)
-		assertEqual({"-n"}, argObj's options)
-		assertEqual({}, argObj's keys)
-		assertEqual({}, argObj's values)
-	end script
-	
-	script |Test parsing quoted string|
-		property parent : UnitTest(me)
-		parser's parse("taskname k1=" & quote & backslash & quote & "=" & quote & "'a b'c")
-		assertEqual("taskname", argObj's command)
-		assertEqual({}, argObj's options)
-		assertEqual({"k1"}, argObj's keys)
-		assertEqual({quote & "=a bc"}, argObj's values)
-	end script
-	
-	script |Parse and retrieve arguments|
-		property parent : UnitTest(me)
-		parser's parse("--opt1 -o2 taskname k1=v1 k2=v2")
-		assertEqual("v2", argObj's fetch("k2", "Not found"))
-		assertEqual("Not found", argObj's fetch("v2", "Not found"))
-		assertEqual("v1", argObj's fetchAndDelete("k1", "Not found"))
-		assertEqual("Not found", argObj's fetchAndDelete("k1", "Not found"))
-		assertEqual("v2", argObj's fetchAndDelete("k2", "Not found"))
-		assertEqual("Not found", argObj's fetchAndDelete("k2", "Not found"))
-	end script
-end script
 
 script |Test TaskBase|
 	property parent : TestSet(me)
