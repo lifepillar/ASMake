@@ -36,7 +36,6 @@ The general structure of a makefile is as follows:
 
     #!/usr/bin/osascript
     use AppleScript version "2.4"
-    use scripting additions
     use ASMake : script "ASMake"
     property parent : ASMake
 
