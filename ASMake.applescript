@@ -558,6 +558,25 @@ script TaskBase
 		set dest to posixPath(dst)
 		shell for "/bin/mv" given options:posixPaths(src) & dest
 	end mv
+
+	(*!
+		@abstract
+			Checks whether the given file or directory exists on disk.
+			Relative paths are resolved with respect to the working directory.
+		@param
+			somePath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+			A relative or absolute path.
+		@return
+			<em>[boolean]</em> <tt>true</tt> is the path exists, <tt>false</tt> otherwise.
+	*)
+	on pathExists(somePath)
+		try
+			(my posixPath(somePath) as POSIX file) as alias
+			true
+		on error
+			false
+		end try
+	end pathExists
 	
 	(*!
 		@abstract

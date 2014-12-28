@@ -562,6 +562,20 @@ script |Test TaskBase|
 		assertEqual(expected, osacompile of tb from "ASMake" given target:"scpt", options:"-x")
 	end script
 	
+	script |Test pathExists() with absolute paths|
+		property parent : UnitTest(me)
+		assert(tb's pathExists(tb's PWD), "The working directory should exist")
+		assert(tb's pathExists(tb's PWD & "ASMake.applescript"), "ASMake.applescript should exist")
+		refute(tb's pathExists(tb's PWD & "Idontexists"), "The file should not exist!")
+	end script
+
+	script |Test pathExists() with relative paths|
+		property parent : UnitTest(me)
+		assert(tb's pathExists("."), "The working directory should exist")
+		assert(tb's pathExists("ASMake.applescript"), "ASMake.applescript should exist")
+		refute(tb's pathExists("Idontexists"), "The file should not exist!")
+	end script
+	
 	script |Test relativizePath() with absolute paths|
 		property parent : UnitTest(me)
 		skip("Not implemented yet")
