@@ -923,7 +923,15 @@ script TaskBase
 		my arguments's options contains "--verbose" or my arguments's options contains "-v"
 	end verbose
 	
-	(*! @abstract Wrapper around <code>which</code>. *)
+	(*!
+		@abstract
+			Wrapper around the Unix program <code>which</code>.
+		@param
+			command <em>[text]</em> The name of a command.
+		@return
+			<em>[text]<em> The POSIX path of the executable, if found;
+			otherwise, returns <tt>missing value</tt>.		
+	*)
 	on which(command)
 		try
 			shell for "/usr/bin/which" given options:command
