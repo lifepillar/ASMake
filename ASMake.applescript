@@ -341,6 +341,32 @@ script TaskBase
 		my arguments's options contains "--dry" or my arguments's options contains "-n"
 	end dry
 	
+	(*
+		@abstract
+			Filters the elements of a list using a boolean predicate.
+		@discussion
+			Returns a new list containing all and only the elements of the original list
+			for which the predicate returns <tt>true</tt>. The original list remains unchanged.
+			A predicate is a unary handler that returns a boolean value.
+			
+			For optimal performance, the list should be passed by reference, e.g.:
+			<pre>
+			set filteredList to filter(a reference to myList, myPredicate)
+			</pre>
+	*)
+	on filter(aList, predicate as handler)
+		script theFunctor
+			property apply : predicate
+		end script
+		set theResult to {}
+		repeat with e in aList
+			if theFunctor's apply(the contents of e) then
+				copy the contents of e to the end of theResult
+			end if
+		end repeat
+		theResult
+	end filter
+	
 	(*!
 		@abstract
 			Expands a glob pattern.
@@ -856,6 +882,26 @@ script TaskBase
 		set tgt to posixPath(target)
 		shell for "/bin/ln" given options:{"-s"} & src & tgt
 	end symlink
+	
+	(*
+		@abstract
+			Applies a unary handler to every element of a list, replacing the element with the result.
+		@discussion
+			For optimal performance, the list should be passed by reference, e.g.:
+			<pre>
+			transform(a reference to myList, myHandler)
+			</pre>
+	*)
+	on transform(aList, unaryHandler as handler)
+		script theFunctor
+			property apply : unaryHandler
+		end script
+		local n
+		set n to count aList
+		repeat with i from 1 to n
+			set item i of aList to theFunctor's apply(item i of aList)
+		end repeat
+	end transform
 	
 	(*!
 		@abstract
