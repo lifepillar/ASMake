@@ -1060,392 +1060,41 @@ script TaskArguments
 	
 	(*! @abstract A list of ASMake options. *)
 	property options : {}
-	(*!
-		@abstract
-			A list of keys from command-line options.
-		@discussion
-			This property stores they keys of command-line options of the form <code>key=value</code>.
-	*)
-	property keys : {}
-	(*!
-		@abstract
-			A list of values from command-line options.
-		@discussion
-			This property stores they values of command-line options of the form <code>key=value</code>.
-	*)
-	property values : {}
 	
-	(*! @abstract Returns the number of arguments. *)
+	(*!
+		@abstract
+			A list of task options.
+		@discussion
+			This property stores the values of the command-line options after the task name.
+	*)
+	property taskOptions : {}
+	
+	(*! @abstract Returns the number of task arguments. *)
 	on numberOfArguments()
-		my values's length
+		my taskOptions's length
 	end numberOfArguments
 	
 	(*! @abstract Clears the arguments. *)
 	on clear()
 		set command to ""
 		set options to {}
-		set keys to {}
-		set values to {}
+		set taskOptions to {}
 	end clear
 	
 	(*!
 		@abstract
-			Retrieves the argument with the given key.
-		@param
-			key <em>[text]</em> the key to look up.
-		@param
-			default <em>[text]</em> The value to be returned if the key is not found.
-		@return
-			The value associated with the key, or the specified default value if the key is not found.
-	*)
-	on fetch(key, default)
-		local i, n
-		set n to numberOfArguments()
-		repeat with i from 1 to n
-			if item i of my keys is key then return item i of my values
-		end repeat
-		default
-	end fetch
-	
-	(*! @abstract Like @link fetch @/link(), but removes the argument from the list of arguments. *)
-	on fetchAndDelete(key, default)
-		local i, n
-		set n to numberOfArguments()
-		repeat with i from 1 to n
-			if item i of my keys is key then
-				local val
-				set val to item i of my values
-				if i = 1 then
-					set my keys to the rest of my keys
-					set my values to the rest of my values
-				else if i = n then
-					set my keys to items 1 thru (i - 1) of my keys
-					set my values to items 1 thru (i - 1) of my values
-				else
-					set my keys to (items 1 thru (i - 1) of my keys) & (items (i + 1) thru -1 of my keys)
-					set my values to (items 1 thru (i - 1) of my values) & (items (i + 1) thru -1 of my values)
-				end if
-				return val
-			end if
-		end repeat
-		default
-	end fetchAndDelete
-	
-	(*!
-		@abstract
-			Retrieves the first argument and removes it from the list of arguments.
+			Retrieves the first task argument and removes it from the list of arguments.
 		@return
 			A pair {key, value}, or {missing value,missing value} if there are no arguments.
 		*)
 	on shift()
-		if numberOfArguments() is 0 then return {missing value, missing value}
-		local k, v
-		set {k, v} to {the first item of my keys, the first item of my values}
-		set {my keys, my values} to {the rest of my keys, the rest of my values}
-		{k, v}
+		local v
+		if my numberOfArguments() is 0 then return missing value
+		set {v, my taskOptions} to {the first item of my taskOptions, the rest of my keys}
+		v
 	end shift
 	
 end script
-
-(*! @abstract A script object for collecting and parsing command-line arguments. *)
-script CommandLineParser
-	
-	(*! @abstract The parent of this object. *)
-	property parent : AppleScript
-	
-	(*!
-		@abstract
-			The string to be parsed.
-		@discussion
-			Typically, this is the full command string. For example, given this command:
-			<pre>
-			asmake "--debug taskname key=value"
-			</pre>
-			
-			this property is set to <code>--debug taskname key=value</code>.
-	*)
-	property stream : ""
-	
-	(*! @abstract The length of the command string. *)
-	property streamLength : 0
-	
-	(*!
-		@abstract
-			The index of the next character to be read from the stream.
-		@discussion
-			This property always points to the next character to be read.
-			This invariant is maintained by @link getChar@/link().
-	*)
-	property npos : 1
-	
-	(*! @abstract A constant denoting the absence of a token. *)
-	property NO_TOKEN : ""
-	
-	(*! @abstract The current token. *)
-	property currToken : my NO_TOKEN
-	
-	(*! @abstract The character signalling that the stream has been consumed. *)
-	property EOS : ""
-	
-	(*! @abstract A constant used by the lexical analyzer to denote an unquoted state. *)
-	property UNQUOTED : space
-	
-	(*! @abstract A constant used by the lexical analyzer to denote a single-quoted state. *)
-	property SINGLE_QUOTED : "'"
-	
-	(*! @abstract A constant used by the lexical analyzer to denote a double-quoted state. *)
-	property DOUBLE_QUOTED : quote
-	
-	(*! @abstract The state of the lexical analyzer. *)
-	property state : my UNQUOTED
-	
-	(*!
-		@abstract
-			Sets the stream to be parsed to the given value.
-		@param
-			newStream <em>[text]</em> The string to be parsed.
-	*)
-	on setStream(newStream)
-		set my stream to newStream
-		set my streamLength to the length of newStream
-		resetStream()
-	end setStream
-	
-	(*! @abstract Resets the stream to its initial state, ready to be parsed again. *)
-	on resetStream()
-		set currToken to my NO_TOKEN
-		set my npos to 1
-		set my state to my UNQUOTED
-	end resetStream
-	
-	(*!
-		@abstract
-			Parses the given command-line string.
-		@discussion
-			A command-line string has the following syntax:
-			
-			<pre>
-			[<ASMake options>] <task name> [<key>=<value> ...]
-			</pre>
-			
-			Only the name of the task is mandatory.
-			The full grammar for a command-line string is as follows (terminals are enclosed in quotes):
-			
-			<pre>
---			CommandLine ::= OptionList TaskName ArgList
---			OptionList ::= Option OptionList | ''
---			Option ::= '-<string>' | '--<string>'
---			TaskName ::= '<string>'
---			ArgList ::= Arg ArgList | ''
---			Arg ::= <string>' '=' '<string>'
-			</pre>
-
-		Since ASMake can accept only a single argument, the whole command line string
-		must be enclosed in quotes. Alternatively, ASMake interprets a dot as a space.
-		Examples:
-
-			<pre>
-			asmake help
-			asmake "build target=dev"
-			asmake build.target=dev
-			asmake 'build targets="dev test"'
-			</pre>
-	*)
-	on parse(commandLine)
-		setStream(commandLine)
-		optionList()
-		taskName()
-		argList()
-	end parse
-	
-	(*! @abstract Parses a possibly empty list of ASMake options. *)
-	on optionList()
-		nextToken()
-		if my currToken starts with "-" then
-			set the end of TaskArguments's options to my currToken
-			optionList()
-		end if
-	end optionList
-	
-	(*! @abstract Parses a task name. *)
-	on taskName()
-		if my currToken is my NO_TOKEN then syntaxError("Missing task name")
-		if nextChar() is "=" then
-			putBack()
-			syntaxError("Missing task name")
-		end if
-		putBack()
-		set TaskArguments's command to my currToken
-	end taskName
-	
-	(*! @abstract Parses a possibly empty list of key-value arguments. *)
-	on argList()
-		nextToken()
-		if my currToken is my NO_TOKEN then return -- no arguments
-		arg()
-		argList()
-	end argList
-	
-	(*! @abstract Parses a key-value argument. *)
-	on arg()
-		set the end of TaskArguments's keys to my currToken
-		nextToken()
-		if my currToken is not "=" then syntaxError("Arguments must have the form key=value")
-		nextToken()
-		set the end of TaskArguments's values to my currToken
-	end arg
-	
-	(*!
-		@abstract
-			Gets the next token from the stream.
-		@return
-			<em>[text]</em> The next token, or the constant @link NO_TOKEN	@/link if no token can be retrieved.
-	*)
-	on nextToken()
-		local c
-		repeat -- skip white space
-			set c to nextChar()
-			if c is not in {space, tab, "."} then exit repeat
-		end repeat
-		if c is my EOS then
-			set my currToken to my NO_TOKEN
-			return my currToken
-		end if
-		set my currToken to c
-		if c is "=" then return my currToken
-		repeat
-			set c to nextChar()
-			if my state is my UNQUOTED then
-				if c is in {space, tab, ".", "=", my EOS} then
-					exit repeat
-				else
-					set my currToken to my currToken & c
-				end if
-			else if my state is in {my SINGLE_QUOTED, my DOUBLE_QUOTED} then
-				if c is my EOS then
-					exit repeat
-				else
-					set my currToken to my currToken & c
-				end if
-			end if
-		end repeat
-		putBack()
-		return my currToken
-	end nextToken
-	
-	(*!
-		@abstract
-			Tests whether the stream has been consumed.
-		@return
-			<em>[boolean]</em> True if the end of the stream has been reached; false otherwise.
-	*)
-	on endOfStream()
-		my npos > my streamLength
-	end endOfStream
-	
-	(*!
-		@abstract
-			Gets the next character from the command string, considering quoted characters.
-		@discussion
-			A character may be <it>quoted</it> (that is, made to stand for itself) by preceding it
-			with a <code>\</code> (backslash). A backslash at the end of the command string is ignored.
-			
-			All characters enclosed between a pair of single quotes (<code>'</code>) are quoted.
-			For example, <code>'\\'</code> stands for <code>\\</code>.
-			A single quote cannot appear within single quotes.
-			
-			Inside double quotes (<code>"</code>), a <code>\</code> quotes the characters <code>\</code> and <code>"</code>.
-			That is, <code>\\</code> stands for <code>\</code> and <code>\"</code> stands for <code>"</code>.
-
-		@return
-			<em>[text]</em> The next unread character (considering escaping)
-			or @link EOS @/link if at the end of the stream.
-	*)
-	on nextChar()
-		set c to getChar()
-		if c is my EOS then return c -- end of stream
-		if my state is my UNQUOTED then
-			if c is "'" then -- enter single-quoted state
-				set my state to my SINGLE_QUOTED
-				return nextChar()
-			else if c is quote then -- enter double-quoted state
-				set my state to my DOUBLE_QUOTED
-				return nextChar()
-			else if c is "\\" then -- escaped character
-				return getChar()
-			else
-				return c
-			end if
-		else if my state is my SINGLE_QUOTED then
-			if c is "'" then -- exit single-quoted state
-				set my state to my UNQUOTED
-				return nextChar()
-			else
-				return c
-			end if
-		else if my state is my DOUBLE_QUOTED then
-			if c is quote then -- exit double-quoted state
-				set my state to my UNQUOTED
-				return nextChar()
-			else if c is "\\" then
-				set c to getChar()
-				if c is in {quote, "\\"} then return c
-				putBack()
-				return "\\"
-			else
-				return c
-			end if
-		end if
-		error "nextChar(): Internal error (lexical analyzer)"
-	end nextChar
-	
-	(*!
-		@abstract
-			Gets a character from the command string.
-		@discussion
-			This is the low-level procedure that extracts the next character from the stream.
-			This handler treats the stream as a sequence of characters without interpreting them.
-			In other words, it does not take quoting into account.
-		@returns
-			<em>[text]</em> The next unread character,
-			or @link EOS @/link if the end of the stream has been reached.
-	*)
-	on getChar()
-		if endOfStream() then return my EOS
-		set my npos to (my npos) + 1
-		character (npos - 1) of my stream
-	end getChar
-	
-	(*!
-		@abstract
-			Puts the last read character back into the stream.
-		@discussion
-			If the end of the stream has been reached, this handler is a no-op.
-		@return
-			The value of @link npos@/link.
-	*)
-	on putBack()
-		if endOfStream() then return my npos
-		set my npos to (my npos) - 1
-	end putBack
-	
-	(*! @abstract The handler called when a syntax error occurs. *)
-	on syntaxError(msg)
-		local sp, n
-		set sp to ""
-		if my currToken is my NO_TOKEN then
-			set n to 0
-		else
-			set n to the length of my currToken
-		end if
-		repeat with i from 1 to (my npos) - n - 1
-			set sp to sp & space
-		end repeat
-		set sp to sp & "^"
-		error msg & linefeed & my stream & linefeed & sp
-	end syntaxError
-	
-end script -- CommandLineParser
 
 (*!
 	@abstract
@@ -1474,17 +1123,11 @@ end findTask
 		if the task with the specified name does not exist,
 		or if the task fails.
 *)
-on runTask(action)
+on runTask()
 	set TaskBase's PWD to do shell script "pwd"
 	-- Allow loading ASMake from text format with run script
-	if action is "__ASMAKE__LOAD__" then return me
+	if TaskArguments's command is "__ASMAKE__LOAD__" then return me
 	local t
-	try
-		CommandLineParser's parse(action)
-	on error errMsg
-		ofail("Syntax error", errMsg)
-		error
-	end try
 	try
 		set t to findTask(TaskArguments's command)
 	on error errMsg number errNum
@@ -1502,7 +1145,51 @@ on runTask(action)
 	end try
 end runTask
 
+
+(*!
+	@abstract
+		Parses the command-line.
+	@discussion
+		The general syntax for invoking a task is:
+		<pre>
+		asmake <options> <task name> <task options>
+		</pre>
+		where <tt>options</tt> can be one of the following:
+		<ul>
+			<li><tt>-v</tt> or <tt>--verbose</tt>: be verbose;</li>
+			<li><tt>-n</tt><tt>--dry</tt>: dry run.</li>
+		</ul>
+		The <task options> are made available to the task
+		through its <tt>arguments</tt> property.
+		It is the task's responsibility to deal with them
+		appropriately.
+	@param
+		argv <em>[list]</em> The command-line arguments.
+*)
+on parseCommandLineOptions(argv)
+	local i, argc
+	TaskArguments's clear()
+	set argc to count (argv)
+	set i to 1
+	-- Process ASMake options
+	repeat while i ² argc and item i of argv starts with "-"
+		set the end of TaskArguments's options to item i of argv
+		set i to i + 1
+	end repeat
+	-- Process command name
+	if i ² argc then
+		set TaskArguments's command to item i of argv
+		set i to i + 1
+	end if
+	-- Process task's options
+	repeat while i ² argc
+		set the end of TaskArguments's taskOptions to item i of argv
+		set i to i + 1
+	end repeat
+end parseCommandLineOptions
+
 (*! @abstract The handler invoked by <tt>osascript</tt>. *)
-on run {action}
-	runTask(action)
+on run argv
+	parseCommandLineOptions(argv)
+	runTask()
 end run
