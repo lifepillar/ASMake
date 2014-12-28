@@ -1090,7 +1090,7 @@ script TaskArguments
 	on shift()
 		local v
 		if my numberOfArguments() is 0 then return missing value
-		set {v, my taskOptions} to {the first item of my taskOptions, the rest of my keys}
+		set {v, my taskOptions} to {the first item of my taskOptions, the rest of my taskOptions}
 		v
 	end shift
 	
