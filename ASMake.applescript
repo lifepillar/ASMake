@@ -667,18 +667,7 @@ script TaskBase
 			error errMsg number errNum
 		end try
 	end readUTF8
-	
-	(*!
-		@abstract
-			Returns a relative POSIX path.
-	*)
-	on relativizePath(aPath, basePath)
-		local base
-		set base to current application's NSURL's fileURLWithPath:(my posixPath(basePath))
-		(current application's NSURL's URLWithString:aPath relativeToURL:base)'s relativePath as text
-		return "FIXME"
-	end relativizePath
-	
+
 	(*!
 		@abstract
 			Deletes one or more paths.

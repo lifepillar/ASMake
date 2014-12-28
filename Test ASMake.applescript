@@ -564,6 +564,7 @@ script |Test TaskBase|
 	
 	script |Test relativizePath() with absolute paths|
 		property parent : UnitTest(me)
+		skip("Not implemented yet")
 		assertEqual("/a/b/c", tb's relativizePath("/a/b/c", ""))
 		assertEqual("a/b/c", tb's relativizePath("/a/b/c", "/"))
 		assertEqual("b/c", tb's relativizePath("/a/b/c", "/a"))
@@ -580,6 +581,7 @@ script |Test TaskBase|
 	
 	script |Test relativizePath() with relative paths|
 		property parent : UnitTest(me)
+		skip("Not implemented yet")
 		assertEqual("a/b/c", tb's relativizePath("a/b/c", ""))
 		assertEqual("a/b/c", tb's relativizePath("a/b/c", "."))
 		assertEqual("b/c", tb's relativizePath("a/b/c", "a"))
