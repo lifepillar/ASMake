@@ -180,35 +180,54 @@ script TaskBase
 	*)
 	property private : false
 	
+	(*!
+		@abstract
+			Builds an NSURL object from the given path.
+		@discussion
+			This handler assumes that <tt>somePath</tt> is a directory if its POSIX version ends with a slash.
+			If it does not end with a slash, the handler examines the file system to determine
+			if <tt>somePath</tt> is a file or a directory. If <tt>somePath</tt> exists in the
+			file system and is a directory, the method appends a trailing slash.
+			If <tt>somePath</tt> does not exist in the file system, the handler assumes that
+			it represents a file and does not append a trailing slash.
+			This handler also removes all instances of <tt>.</tt> and <tt>..</tt>.
+
+			This handler is used internally by ASMake to build an NSURL. User code
+			should never call this directly.
+		@param
+			somePath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+			A relative or absolute path.
+		@return
+			<em>[current application's NSURL]</em> An NSURL object.
+	*)
+	on _fileURL(somePath)
+		(current application's NSURL's fileURLWithPath:(my posixPath(somePath)))'s standardizedURL
+	end _fileURL
 	
 	(*!
 		@abstract
-			Converts a path to an absolute POSIX path.
+			Converts a path to an absolute POSIX path. An existing trailing slash is stripped.
 		@param
-			p <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+			somePath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
 			A relative or absolute path.
 		@return
 			<em>[text]</em> A full POSIX path.
 	*)
-	on absolutePath(p)
-		local pPath
-		set pPath to posixPath(p)
-		((current application's NSURL's fileURLWithPath:pPath)'s absoluteURL's |path|) as text
+	on absolutePath(somePath)
+		(my _fileURL(somePath))'s |path| as text
 	end absolutePath
 	
 	(*!
 		@abstract
 			Returns the last component of the given path.
 		@param
-			p <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+			somePath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
 			A path.
 		@return
 			<em>[text]</em> The last component of the path.
 	*)
-	on basename(p)
-		local pPath
-		set pPath to posixPath(p)
-		((current application's NSURL's fileURLWithPath:pPath)'s lastPathComponent) as text
+	on basename(somePath)
+		(my _fileURL(somePath))'s lastPathComponent as text
 	end basename
 	
 	(*!
@@ -282,18 +301,17 @@ script TaskBase
 	
 	(*!
 		@abstract
-			Returns all the components of the given path except the last.
+			Returns the absolute path of the directory containing the given path.
+			If the path has a trailing slash, it is stripped.
 		@param
-			p <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+			somePath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
 			A path.
 		@return
 			<em>[text]</em> A POSIX path.
 	*)
-	on dirname(p)
-		local pPath
-		set pPath to posixPath(p)
-		((current application's NSURL's fileURLWithPath:pPath)'s URLByDeletingLastPathComponent's |relativeString|) as text
-	end dirname
+	on directoryPath(somePath)
+		(my _fileURL(somePath))'s URLByDeletingLastPathComponent's relativePath as text
+	end directoryPath
 	
 	(*!
 		@abstract
@@ -369,19 +387,19 @@ script TaskBase
 	(*!
 	@abstract
 		Returns a new POSIX path formed by joining a base path and a relative path.
+		If the relative path has a trailing slash, it is stripped.
+		The resulting path is relative is base path is relative.
 	@param
 		basePath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
 		A path.
 	@param
-		relativePath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+		relPath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
 		A relative path.
 	@return
 		<em>[text]</em> A POSIX path.
 	*)
-	on joinPath(basePath, relativePath)
-		local base
-		set base to current application's NSURL's fileURLWithPath:(my posixPath(basePath))
-		(current application's NSURL's URLWithString:(my posixPath(relativePath)) relativeToURL:base)'s |path| as text
+	on joinPath(basePath, relPath)
+		((my _fileURL(basePath))'s URLByAppendingPathComponent:(my posixPath(relPath)))'s relativePath as text
 	end joinPath
 	
 	(*!
@@ -780,17 +798,22 @@ script TaskBase
 	
 	(*!
 		@abstract
-			Splits the given path into its components.
+			Splits the given path into a directory and a file component.
+			If the given path is relative then the directory component is relative, too.
 		@param
-			p <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
+			somePath <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
 			A path.
 		@return
-			<em>[list]</em> The components of the given paths.
+			<em>[list]</em> A two-element list.
+		@seealso
+			basename
+		@seealso
+			directoryPath
 	*)
-	on splitPath(p)
-		local pPath
-		set pPath to posixPath(p)
-		((current application's NSURL's fileURLWithPath:pPath)'s pathComponents) as list
+	on splitPath(somePath)
+		local base
+		set base to my _fileURL(somePath)
+		{base's URLByDeletingLastPathComponent's relativePath as text, base's lastPathComponent as text}
 	end splitPath
 	
 	(*!
