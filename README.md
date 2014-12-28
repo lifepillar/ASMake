@@ -2,7 +2,12 @@
 
 ASMake is an AppleScript script library that aims to provide functionality
 similar to Ruby's [rake](http://rake.rubyforge.org)
-or GNU [make](https://www.gnu.org/software/make/manual/make.html).
+or GNU [make](https://www.gnu.org/software/make/manual/make.html), but tailored
+especially for AppleScript-related tasks.
+
+## Requirements
+
+ASMake requires AppleScript 2.4 or later (OS X 10.10 or later).
 
 ## Installation
 
@@ -16,37 +21,24 @@ It is recommended that you also define an alias in `~/.bashrc`:
 
     alias asmake='./makefile.applescript'
 
+
 ## Makefiles
 
-Tasks are defined in an executable script called `makefile.applescript`.
+Tasks are defined in an executable script conventionally called `makefile.applescript`
+(the script can be named as you like, but this is the convention I have adopted).
 To make the script executable, open the terminal and type:
 
     chmod +x makefile.applescript
 
 inside your project directory.
 
-If you use OS X 10.9 or later (AppleScript 2.3 or later), then then content of
-your makefile should look like this:
+The general structure of a makefile is as follows:
 
     #!/usr/bin/osascript
-    use AppleScript version "2.3"
+    use AppleScript version "2.4"
     use scripting additions
     use ASMake : script "ASMake"
     property parent : ASMake
-
-    on run {action}
-      runTask(action)
-    end run
-
-    (* Tasks go here *)
-
-On the other hand, if you need compatibility with older systems, your makefile
-should look like this:
-
-    #!/usr/bin/osascript
-    property parent : ¬
-      load script (((path to library folder from user domain) as text) ¬
-        & "Script Libraries:ASMake.scpt") as alias
 
     (* Tasks go here *)
 
@@ -95,6 +87,7 @@ To suppress this message, set the `printSuccess` property to `false`.
 There is a number of handlers that one can use in a task, such as `osacompile()`
 and `echo()` shown above. They are all documented in the ASMake's source file.
 
+
 ## Tasks with dependencies
 
 A task may depend on other tasks. For example, an `install` task may depend on a
@@ -112,43 +105,40 @@ For example:
       (* other commands *)
     end
 
+
 ## Tasks with arguments
 
 Tasks may accept arguments from the command line. The arguments are automatically
 made available to every task through their `arguments` property, whose value is the `TaskArguments`
-script object defined in `ASMake.applescript`. The `TaskArguments` script defines a few
-handlers that make it easy to process the arguments. See the source code for the details.
+script object defined in `ASMake.applescript`. The `TaskArguments` script defines a
+`shift()` handler to help processing the arguments (see the source code for the details),
+but other than that it is the responsibility of the task to deal correctly with its arguments.
 
-For example, you may define a `build` task that accepts a `target` parameter to
-specify the type of build:
+For example, you may define a `build` task that accepts a parameter that
+specifies the type of build:
 
     script build
       property parent : Task(me)
-      set tgt to my arguments's fetch("target", "default")
+      set tgt to my arguments's shift()
       if tgt is "dev" then
         echo("dev build")
       else if tgt is "production" then
         echo("production build")
-      else if tgt is "default" then
+      else
         echo("Default build")
       end if
     end script
 
-You may run this task as follows:
+For example, you may run this task as follows:
 
-    asmake "build target=dev"
-
-Note that you _must_ enclose the command in (single or double) quotes if it contains
-spaces. Alternatively, ASMake interprets a dot as a space, so you may equivalently
-write:
-
-    asmake build.target=dev
+    asmake build dev
 
 You may also call this task without arguments:
 
     asmake build
 
-In this case, the `tgt` variable will assume the value `default`.
+In this case, the `tgt` variable will be `missing value`.
+
 
 ## Private tasks
 
@@ -173,8 +163,8 @@ Private tasks are not shown by `asmake help`.
 
 Currently, ASMake has the following options:
 
-- `--dry`: do not really execute shell commands.
-- `--verbose`: be verbose.
+- `--dry` or `-n`: do not really execute shell commands.
+- `--verbose` or `-v`: be verbose.
 
 Unknown options are silently ignored.
 Options are specified between `asmake` and the name of the task. For example:
@@ -184,7 +174,7 @@ Options are specified between `asmake` and the name of the task. For example:
 
 ## License
 
-Copyright (c) 2014 Lifepillar
+Copyright (c) 2014–2015 Lifepillar
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
