@@ -574,7 +574,7 @@ script |Test TaskBase|
 		assert(tb's pathExists(tb's PWD & "ASMake.applescript"), "ASMake.applescript should exist")
 		refute(tb's pathExists(tb's PWD & "Idontexists"), "The file should not exist!")
 	end script
-
+	
 	script |Test pathExists() with relative paths|
 		property parent : UnitTest(me)
 		assert(tb's pathExists("."), "The working directory should exist")
