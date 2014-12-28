@@ -598,12 +598,15 @@ script test_set_functional_handlers
 	end increment
 	
 	on mirror(x)
+		local res
 		set {tid, AppleScript's text item delimiters} to {AppleScript's text item delimiters, ""}
 		try
-			return ((text items of x)'s reverse) as text
+			set res to ((text items of x)'s reverse) as text
+		on error
+			set res to x
 		end try
 		set AppleScript's text item delimiters to tid
-		return x
+		return res
 	end mirror
 	
 	on isEven(x)
