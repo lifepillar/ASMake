@@ -840,8 +840,19 @@ script TaskBase
 		return output
 	end shell
 	
-	on split(theText, theDelim)
-		set {tid, AppleScript's text item delimiters} to {AppleScript's text item delimiters, theDelim}
+	(*!
+		@abstract
+			Splits a string at the given delimiter.
+		@param
+			theText <em>[text]</em> A string.
+		@param
+			aDelimiter <em>[text]</em> A delimiter.
+		@return
+			<em>[list]</em> The list formed by splitting the string.
+	*)
+	on split(theText, aDelimiter)
+		-- TODO: NSArray* components = [urlAsString componentsSeparatedByString:@"#"];
+		set {tid, AppleScript's text item delimiters} to {AppleScript's text item delimiters, aDelimiter}
 		set theResult to the text items of theText
 		set AppleScript's text item delimiters to tid
 		return theResult
