@@ -40,6 +40,10 @@ The general structure of a makefile is as follows:
     use ASMake : script "ASMake"
     property parent : ASMake
 
+    on run argv
+	    continue run argv
+    end run
+
     (* Tasks go here *)
 
 Each task is a script that inherits from `Task(me)`. For example, the following
