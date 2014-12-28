@@ -501,10 +501,10 @@ script |Test TaskBase|
 	
 	script |Test makeAlias()|
 		property parent : UnitTest(me)
-		set p to path to library folder from user domain as alias
-		set q to (POSIX path of (path to home folder))
-		set r to q & "SomeAlias"
-		assertEqual({POSIX path of p, tb's directoryPath(r), "SomeAlias"}, tb's makeAlias(p, r))
+		set p to "/a/b/c"
+		set q to "/x/y"
+		set r to q & "/SomeAlias"
+		assertEqual({p, q, "SomeAlias"}, tb's makeAlias(p, r))
 	end script
 	
 	script |Test mkdir()|
@@ -708,7 +708,7 @@ script |ASMake functional handlers|
 	script |Test transform()|
 		property parent : UnitTest(me)
 		property l1 : {1, 5, 3}
-
+		
 		tb's transform(l1, TS's increment)
 		assertEqual({2, 6, 4}, l1)
 		tb's transform(a reference to l1, TS's increment)

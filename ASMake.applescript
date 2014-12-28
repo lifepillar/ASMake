@@ -440,9 +440,9 @@ script TaskBase
 	*)
 	on makeAlias(source, target)
 		local src, tgt, dir, base
-		set src to absolutePath(posixPath(source))
-		set tgt to absolutePath(posixPath(target))
-		set {dir, base} to splitPath(tgt)
+		set src to my absolutePath(source)
+		set tgt to my absolutePath(target)
+		set {dir, base} to my splitPath(tgt)
 		if verbose() then Â
 			echo("Make alias at" & space & (dir as text) & space & Â
 				"to" & space & (src as text) & space & Â
