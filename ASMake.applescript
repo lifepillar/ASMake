@@ -263,8 +263,8 @@ script TaskBase
 		@abstract
 			Set this to true for private tasks.
 		@discussion
-			A private task is not registered (see @link Task() @/link), hence it is not visible to the user.
-			If this property is overridden, it must appear <em>before</em> the <code>parent</code> property.
+			A private task is not shown by the `help` task and it cannot be invoked
+			directly from the command line, but it can be called by other tasks.
 	*)
 	property private : false
 	
