@@ -120,6 +120,101 @@ script Stdout
 	
 end script -- Stdout
 
+(*! @abstract The parent of the top-level script. *)
+property parent : Stdout
+
+(*!
+	@abstract
+		A script object representing the command-line arguments.
+	@discussion
+		This is passed to the task.
+*)
+script CommandLine
+	property parent : AppleScript
+	property availableOptions : {Â
+		"--debug", "-D", Â
+		"--dry", "-n", Â
+		"--verbose", Â
+		"-v"}
+	
+	(*! @abstract The name of the task to be executed. *)
+	property command : ""
+	
+	(*! @abstract A list of ASMake options. *)
+	property options : {}
+	
+	(*! @abstract Clears the arguments. *)
+	on clear()
+		set command to ""
+		set options to {}
+	end clear
+	
+	(*!
+	@abstract
+		Parses the command-line.
+	@discussion
+		The general syntax for invoking a task is:
+		<pre>
+		asmake <options> <task name> <task options>
+		</pre>
+		where <tt>options</tt> are among the @link availableOptions@/link.
+		The <task options> are passed to the task when it is executed.
+		It is the task's responsibility to deal with them appropriately.
+	@param
+		argv <em>[list]</em> The command-line arguments.
+	@return
+		<em>[list]</em> A (possibly empty) list of arguments for the task.
+*)
+	on parse(argv)
+		local i, argc
+		my clear()
+		set argc to count (argv)
+		set i to 1
+		-- Process ASMake options
+		repeat while i ² argc and item i of argv starts with "-"
+			set the end of my options to item i of argv
+			set i to i + 1
+		end repeat
+		verifyOptions()
+		-- Process command name
+		if i ² argc then
+			set my command to item i of argv
+			set i to i + 1
+		end if
+		-- Process task's options
+		local taskOptions
+		set taskOptions to {}
+		repeat while i ² argc
+			set the end of taskOptions to item i of argv
+			set i to i + 1
+		end repeat
+		return taskOptions
+	end parse
+	
+	(*! @abstract Checks whether the user has specified undefined options. *)
+	on verifyOptions()
+		repeat with opt in (a reference to my options)
+			if opt is not in my availableOptions then error "Unknown option: " & opt
+		end repeat
+	end verifyOptions
+	
+	(*! @abstract Returns true if debugging is on; returns false otherwise. *)
+	on debug()
+		my options contains "--debug" or my options contains "-D"
+	end debug
+	
+	(*! @abstract Returns true if the user has requested a dry run, returns false otherwise. *)
+	on dry()
+		my options contains "--dry" or my options contains "-n"
+	end dry
+	
+	(*! @abstract Returns true if verbose mode is on; returns false otherwise. *)
+	on verbose()
+		my options contains "--verbose" or my options contains "-v"
+	end verbose
+end script -- CommandLine
+
+
 (*! @abstract The script object common to all tasks. *)
 script TaskBase
 	
@@ -153,14 +248,6 @@ script TaskBase
 	
 	(*! @abstract Defines a list of aliases for this task. *)
 	property synonyms : {}
-	
-	(*!
-		@abstract
-			Stores a reference to the @link TaskArguments @/link script object.
-		@discussion
-			Tasks that expect arguments can fetch them through this property.
-	*)
-	property arguments : {}
 	
 	(*! @abstract A description for this task. *)
 	property description : "No description."
@@ -211,12 +298,12 @@ script TaskBase
 			returns false otherwise.
 	*)
 	on debug()
-		my arguments's debug()
+		CommandLine's debug()
 	end debug
 	
 	(*! @abstract Returns true if this is a dry run; returns false otherwise. *)
 	on dry()
-		my arguments's dry()
+		CommandLine's dry()
 	end dry
 	
 	(*!
@@ -225,7 +312,7 @@ script TaskBase
 			returns false otherwise.
 	*)
 	on verbose()
-		my arguments's verbose()
+		CommandLine's verbose()
 	end verbose
 	
 	
@@ -1022,17 +1109,37 @@ end script -- TaskBase
 (*!
 	@abstract
 		Registers a task.
+	@param
+		t <em>[script]</em> A task script.
 	@discussion
 		This handler is used to register a task at compile-time
 		and to set the parent of a script to @link TaskBase @/link.
 		Every task script must inherit from <code>Task(me)</code>.
 *)
 on Task(t)
+	script NewTask
+		property parent : TaskBase
+		property argv : {} -- Task parameters
+		
+		on exec:(argv as list)
+			set my argv to argv
+			set my PWD to do shell script "pwd"
+			run me
+		end exec:
+		
+		on shift()
+			if my argv's length is 0 then return missing value
+			local v
+			set {v, my argv} to {the first item of my argv, the rest of my argv}
+			return v
+		end shift
+	end script
+	
 	try -- t may not define the private property at this time
-		if t's private then return TaskBase
+		if t's private then return NewTask
 	end try
 	set the end of TaskBase's TASKS to t
-	return TaskBase
+	return NewTask
 end Task
 
 -- Predefined tasks
@@ -1043,6 +1150,7 @@ script HelpTask
 	property name : "help"
 	property description : "Show the list of available tasks and exit."
 	property printSuccess : false
+	
 	set nameLen to 0
 	-- TODO: sort tasks alphabetically
 	repeat with t in my TASKS -- find the longest name
@@ -1067,134 +1175,6 @@ script WorkDir
 	ohai(my PWD)
 end script
 
-(*! @abstract The parent of the top-level script. *)
-property parent : Stdout
-
-(*!
-	@abstract
-		A script object representing the command-line arguments.
-	@discussion
-		This is passed to the task.
-*)
-script TaskArguments
-	property parent : AppleScript
-	
-	(*! @abstract The name of the task to be executed. *)
-	property command : ""
-	
-	(*! @abstract A list of ASMake options. *)
-	property options : {}
-	
-	(*!
-		@abstract
-			A list of task options.
-		@discussion
-			This property stores the values of the command-line options after the task name.
-	*)
-	property taskOptions : {}
-	
-	(*! @abstract Returns the number of task arguments. *)
-	on numberOfArguments()
-		my taskOptions's length
-	end numberOfArguments
-	
-	(*! @abstract Clears the arguments. *)
-	on clear()
-		set command to ""
-		set options to {}
-		set taskOptions to {}
-	end clear
-	
-	(*!
-	@abstract
-		Parses the command-line.
-	@discussion
-		The general syntax for invoking a task is:
-		<pre>
-		asmake <options> <task name> <task options>
-		</pre>
-		where <tt>options</tt> can be one of the following:
-		<ul>
-			<li><tt>-v</tt> or <tt>--verbose</tt>: be verbose;</li>
-			<li><tt>-n</tt><tt>--dry</tt>: dry run.</li>
-		</ul>
-		The <task options> are made available to the task
-		through its <tt>arguments</tt> property.
-		It is the task's responsibility to deal with them
-		appropriately.
-	@param
-		argv <em>[list]</em> The command-line arguments.
-*)
-	on parse(argv)
-		local i, argc
-		my clear()
-		set argc to count (argv)
-		set i to 1
-		-- Process ASMake options
-		repeat while i ² argc and item i of argv starts with "-"
-			set the end of my options to item i of argv
-			set i to i + 1
-		end repeat
-		verifyOptions()
-		-- Process command name
-		if i ² argc then
-			set my command to item i of argv
-			set i to i + 1
-		end if
-		-- Process task's options
-		repeat while i ² argc
-			set the end of my taskOptions to item i of argv
-			set i to i + 1
-		end repeat
-	end parse
-	
-	(*! @abstract Checks whether the user has specified undefined options. *)
-	on verifyOptions()
-		local availableOptions
-		set availableOptions to {"--debug", "-D", "--dry", "-n", "--verbose", "-v"}
-		repeat with opt in my options
-			if opt is not in availableOptions then error "Unknown option: " & opt
-		end repeat
-	end verifyOptions
-	
-	(*!
-		@abstract
-			Returns true if the user has requested debugging output;
-			returns false otherwise.
-	*)
-	on debug()
-		my options contains "--debug" or my options contains "-D"
-	end debug
-	
-	(*! @abstract Returns true if the user has requested a dry run, returns false otherwise. *)
-	on dry()
-		my options contains "--dry" or my options contains "-n"
-	end dry
-	
-	(*!
-		@abstract
-			Returns true if the user has requested verbose output;
-			returns false otherwise.
-	*)
-	on verbose()
-		my options contains "--verbose" or my options contains "-v"
-	end verbose
-	
-	(*!
-		@abstract
-			Retrieves the first task argument and removes it from the list of arguments.
-		@return
-			A pair {key, value}, or {missing value,missing value} if there are no arguments.
-		*)
-	on shift()
-		local v
-		if my numberOfArguments() is 0 then return missing value
-		set {v, my taskOptions} to {the first item of my taskOptions, the rest of my taskOptions}
-		v
-	end shift
-	
-end script
-
 (*!
 	@abstract
 		Retrieves the task specified by the user.
@@ -1216,26 +1196,24 @@ end findTask
 	@abstract
 		Executes a task.
 	@param
-		action <em>[text]</em> The command-line string.
+		taskOptions <em>[list]</em> A (possibly empty) list of arguments for the task.
 	@throw
-		An error if the command contains syntax error,
+		An error if the command contains a syntax error,
 		if the task with the specified name does not exist,
 		or if the task fails.
 *)
-on runTask()
-	set TaskBase's PWD to do shell script "pwd"
-	-- Allow loading ASMake from text format with run script
-	if TaskArguments's command is "__ASMAKE__LOAD__" then return me
+on runTask(taskOptions)
 	local t
+	
 	try
-		set t to findTask(TaskArguments's command)
+		set t to findTask(CommandLine's command)
 	on error errMsg number errNum
-		ofail("Unknown task: " & TaskArguments's command, "")
+		ofail("Unknown task: " & CommandLine's command, "")
 		error errMsg number errNum
 	end try
-	set t's arguments to TaskArguments -- TODO: move inside Task()?
+	
 	try
-		run t
+		t's exec:taskOptions
 		if t's printSuccess then ohai("Success!")
 		if t's dry() then ohai("(This was a dry run)")
 	on error errMsg number errNum
@@ -1246,6 +1224,8 @@ end runTask
 
 (*! @abstract The handler invoked by <tt>osascript</tt>. *)
 on run argv
-	TaskArguments's parse(argv)
-	runTask()
+	set taskOptions to CommandLine's parse(argv)
+	-- Allow loading ASMake from text format with run script
+	if CommandLine's command is "__ASMAKE__LOAD__" then return me
+	runTask(taskOptions)
 end run
