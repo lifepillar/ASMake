@@ -813,7 +813,7 @@ script TaskBase
 		set fileManager to current application's NSFileManager's defaultManager()
 		repeat with p in every item of (a reference to PathWrapper's paths)
 			if verbose() then echo("Deleting" & space & p)
-			set {succeeded, theError} to (fm's removeItemAtPath:(contents of p) |error|:(reference))
+			set {succeeded, theError} to (fileManager's removeItemAtPath:(contents of p) |error|:(reference))
 			if not succeeded then
 				error (theError's localizedDescription as text) number (theError's code as integer)
 			end if
