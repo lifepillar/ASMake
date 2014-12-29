@@ -207,6 +207,111 @@ script TaskBase
 	
 	(*!
 		@abstract
+			Returns true if the user has requested debugging output;
+			returns false otherwise.
+	*)
+	on debug()
+		my arguments's options contains "--debug" or my arguments's options contains "-D"
+	end debug
+	
+	(*! @abstract Returns true if this is a dry run; returns false otherwise. *)
+	on dry()
+		my arguments's options contains "--dry" or my arguments's options contains "-n"
+	end dry
+	
+	(*!
+		@abstract
+			Returns true if the user has requested verbose output;
+			returns false otherwise.
+	*)
+	on verbose()
+		my arguments's options contains "--verbose" or my arguments's options contains "-v"
+	end verbose
+	
+	
+	---------------------------------------------------------------------------------------
+	-- Shell commands
+	---------------------------------------------------------------------------------------
+	
+	(*!
+		@abstract
+			Executes a shell command.
+		@discussion
+			This handler provides an interface to run a shell script via
+			<code>do shell script</code>. All the features of <code>do shell script</code>
+			are supported, including running a command with administrator privileges.
+			For example, a command run as <code>nick</code>
+			with password <code>xyz123</code> may look as follows:
+			<pre>
+			shell for "mycmd" with privileges given options:{"--some", "--options"},
+			  username:"nick", |password|:"xyz123"
+			</pre>
+			Output redirection is supported, too, as well as altering line endings, e.g.:
+			<pre>
+			shell for "mycmd" given out:"/some/file", err:"&1", alteringLineEndings:false
+			</pre>
+			This handler uses the syntax introduced is OS X 10.10 (Yosemite) for optional labeled parameters. 
+			Apart from the <tt>for</tt> parameter, all other arguments are optional (and may appear in any order).
+		@param
+			command <em>[text]</em> The command to be executed.
+		@param
+			options <em>[text]</em> or <em>[list]</em> An argument or a list of arguments
+			for the command (internally, the handler always converts this
+			to a list). Each option is quoted before the command is executed.
+		@param
+			privileges <em>[boolean]</em> A flag indicating whether the command should be executed as a different user.
+			The default is <tt>false</tt>.
+		@param
+			username <em>[text]</em> The username that should execute the command.
+			This argument is ignored unless <tt>privileges</tt> is set to <tt>true</tt>.
+		@param
+			pass <em>[text]</em> The password to be authenticated as <tt>username</tt>.
+		@param
+			out <em>[text]</em> Redirect the standard output to the specified file.
+		@param
+			err <em>[text]</em> Redirect the standard error to the specified file.
+			Pass <tt>&1</tt> to redirect to the standard output.
+		@param
+			ale <em>[boolean]</em> Whether line endings should be changed or not.
+			The default is <tt>true</tt>.
+		@return
+			<em>[text]</em> The output of the command.
+			If ASMake is run with <code>--dry</code>, returns the text of the command.
+		@throws
+			An error if the shell script exits with non-zero status.
+			The error number is the exit status of the command.
+	*)
+	on shell for command given options:options : {}, privileges:privileges : false, username:username : missing value, |password|:pass : missing value, out:out : "", err:err : "", alteringLineEndings:ale : true
+		if options's class is not list then set options to {options}
+		if out is not "" then set out to space & ">" & quoted form of out
+		if err is not "" then
+			if err is "&1" then -- Allow redirecting stderr to stdout
+				set err to space & "2>&1"
+			else
+				set err to space & "2>" & quoted form of err
+			end if
+		end if
+		set command to command & space & (my join(my map(options, my quoteText), space)) & out & err
+		if my verbose() then my echo(command)
+		if my dry() then return command
+		set command to "cd" & space & quoted form of my PWD & ";" & command
+		if pass is missing value then
+			set output to (do shell script command administrator privileges privileges altering line endings ale)
+		else
+			if username is missing value then set username to short user name of (system info)
+			set output to (do shell script command administrator privileges privileges user name username password pass altering line endings ale)
+		end if
+		if my verbose() and output is not "" then my echo(output)
+		return output
+	end shell
+	
+	
+	---------------------------------------------------------------------------------------
+	-- Path manipulation
+	---------------------------------------------------------------------------------------
+	
+	(*!
+		@abstract
 			Converts a path to an absolute POSIX path. An existing trailing slash is stripped.
 		@param
 			somePath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
@@ -258,31 +363,6 @@ script TaskBase
 	
 	(*!
 		@abstract
-			Copies one or more files to the specified destination.
-		@discussion
-			This is an interface to the <code>cp</code> command.
-			The arguments may be POSIX paths or HFS+ paths.
-			A list of source paths can be used.
-		@param
-			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
-		@param
-			dst <em>[text]</em>: the destination path.
-	*)
-	on cp(src, dst)
-		shell for "/bin/cp" given options:{"-r"} & posixPaths(src) & posixPaths(dst)
-	end cp
-	
-	(*!
-		@abstract
-			Returns true if the user has requested debugging output;
-			returns false otherwise.
-	*)
-	on debug()
-		my arguments's options contains "--debug" or my arguments's options contains "-D"
-	end debug
-	
-	(*!
-		@abstract
 			Removes a trailing slash from a POSIX path.
 		@param
 			p <em>[text]</em> A POSIX path.
@@ -316,85 +396,6 @@ script TaskBase
 	
 	(*!
 		@abstract
-			Copies one or more source files or directories to a destination directory,
-			or a source file to a destination file.
-		@discussion
-			This handler uses <code>ditto</code> to copy directory hierarchies.
-			See <code>man ditto</code> for further information.
-			Note that <code>ditto</code> does not copy items the same way as
-			<code>cp</code> does. In particular, <code>ditto("foo", "bar")</code>
-			will copy the contents of directory <code>foo</code> into <code>bar</code>,
-			whereas <code>cp("foo", "bar")</code> will copy <code>foo</code> itself
-			into <code>bar</code>.
-		@param
-			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
-		@param
-			dst <em>[text]</em>: the destination path.
-	*)
-	on ditto(src, dst)
-		set flags to {}
-		if verbose() then set the end of flags to "-V"
-		shell for "/usr/bin/ditto" given options:flags & posixPaths(src) & posixPaths(dst)
-	end ditto
-	
-	(*! @abstract Returns true if this is a dry run; returns false otherwise. *)
-	on dry()
-		my arguments's options contains "--dry" or my arguments's options contains "-n"
-	end dry
-	
-	(*
-		@abstract
-			Creates an empty script bundle.
-		@param
-			buildPath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
-			The directory where the script bundle should be created.
-		@param
-			name <em>[text]</em> The name of the script bundle (with or without suffix).
-	*)
-	on emptyBundle at buildPath given name:bundleName : text
-		local scriptPath, dummyScript, didSucceed, theError
-		if bundleName does not end with ".scptd" then set bundleName to bundleName & ".scptd"
-		set scriptPath to current application's NSURL's fileURLWithPath:(my joinPath(my posixPath(buildPath), bundleName))
-		set dummyScript to current application's OSAScript's alloc's Â
-			initWithSource:"" fromURL:(missing value) Â
-				languageInstance:(current application's OSALanguage's defaultLanguage()'s sharedLanguageInstance()) Â
-				usingStorageOptions:(current application's OSANull)
-		set {didSucceed, theError} to dummyScript's compileAndReturnError:(reference)
-		if not didSucceed then error theError
-		set {didSucceed, theError} to dummyScript's Â
-			writeToURL:scriptPath ofType:(current application's OSAStorageScriptBundleType) Â
-				usingStorageOptions:(current application's OSANull) |error|:(reference)
-		if not didSucceed then error theError
-	end emptyBundle
-	
-	(*
-		@abstract
-			Filters the elements of a list using a boolean predicate.
-		@discussion
-			Returns a new list containing all and only the elements of the original list
-			for which the predicate returns <tt>true</tt>. The original list remains unchanged.
-			A predicate is a unary handler that returns a boolean value.
-			
-			For optimal performance, the list should be passed by reference, e.g.:
-			<pre>
-			set filteredList to filter(a reference to myList, myPredicate)
-			</pre>
-	*)
-	on filter(aList, predicate as handler)
-		script theFunctor
-			property apply : predicate
-		end script
-		set theResult to {}
-		repeat with e in aList
-			if theFunctor's apply(the contents of e) then
-				copy the contents of e to the end of theResult
-			end if
-		end repeat
-		theResult
-	end filter
-	
-	(*!
-		@abstract
 			Expands a glob pattern.
 		@discussion
 			Returns a list of POSIX paths obtained by expanding a glob pattern
@@ -419,24 +420,6 @@ script TaskBase
 	end glob
 	
 	(*!
-		@abstract
-			Joins the elements of a list separating them with the given delimiter.
-		@param
-			aList <em>[list]</em> A list.
-		@param
-			aDelimiter <em>[text]</em> A delimiter.
-		@return
-			<em>[text]</em> The string formed by concatenating the elements of the list,
-			separated by the given delimiter.
-	*)
-	on join(aList, aDelimiter)
-		set {tid, AppleScript's text item delimiters} to {AppleScript's text item delimiters, aDelimiter}
-		set theResult to aList as text
-		set AppleScript's text item delimiters to tid
-		return theResult
-	end join
-	
-	(*!
 	@abstract
 		Returns a new POSIX path formed by joining a base path and a relative path.
 		If the relative path has a trailing slash, it is stripped.
@@ -453,190 +436,6 @@ script TaskBase
 	on joinPath(basePath, relPath)
 		((my _fileURL(basePath))'s URLByAppendingPathComponent:(my posixPath(relPath)))'s relativePath as text
 	end joinPath
-	
-	(*!
-		@abstract
-			Creates a Finder alias.
-		@param
-			source <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
-			The source path.
-		@param
-			target <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
-			The path to the Finder alias to be created.
-	*)
-	on makeAlias(source, target)
-		local src, tgt, dir, base
-		set src to my absolutePath(source)
-		set tgt to my absolutePath(target)
-		set {dir, base} to my splitPath(tgt)
-		if verbose() then Â
-			echo("Make alias at" & space & (dir as text) & space & Â
-				"to" & space & (src as text) & space & Â
-				"with name" & space & (base as text))
-		if not dry() then
-			tell application "Finder" to make new alias file at POSIX file dir to POSIX file src with properties {name:base}
-		else
-			return {src, dir, base}
-		end if
-	end makeAlias
-	
-	(*!
-		@abstract
-			Builds a script bundle from source, including resources and script libraries.
-		@discussion
-			TODO
-		@param
-			sourceFile <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>:
-			path to the source file (a file with <code>.applescript</code> suffix).
-	*)
-	on makeScriptBundle(sourceFile)
-		set sharedLibFolder to joinPath(path to library folder from user domain, "Script Libraries")
-		set sourcePath to absolutePath(posixPath(sourceFile))
-		set {sourceFolder, scriptName} to splitPath(sourcePath)
-		set scriptLibrariesFolder to POSIX file joinPath(sourceFolder, "Resources/Script Libraries")
-		set scriptLibraries to {}
-		set compiledScriptLibraries to {}
-		odebug("Shared Folder: " & sharedLibFolder)
-		odebug("Project: " & projectFolder)
-		odebug("Name: " & scriptName)
-		odebug("Script Libraries folder: " & scriptLibrariesFolder)
-		-- Search for script libraries and build them recursively
-		odebug("Searching for script libraries...", "")
-		try
-			alias scriptLibrariesFolder -- does it exist?
-			set folderExists to true
-		on error
-			odebug("Folder does not exist")
-			set folderExists to false
-		end try
-		if folderExists then
-			tell application "Finder"
-				set scriptLibraries to Â
-					(every file of (entire contents of folder (scriptLibrariesFolder)) Â
-						whose name ends with ".applescript") as alias list
-			end tell
-			repeat with libSource in scriptLibraries
-				odebug("Building " & (libSource as text))
-				makeScriptBundle(libSource)
-			end repeat
-			odebug("Searching for compiled script libraries...")
-			tell application "Finder"
-				set compiledScriptLibraries to Â
-					(every file of (entire contents of folder (scriptLibrariesFolder)) Â
-						whose name ends with ".scptd" or name ends with ".scpt") as alias list
-			end tell
-		end if
-		odebug({"compiledScriptLibraries: ", compiledScriptLibraries})
-		try
-			-- Alias each script library in a shared Script Libraries folder
-			repeat with lib in compiledScriptLibraries
-				makeAlias(lib, joinPath(sharedLibFolder, basename(lib)))
-			end repeat
-			-- Compile the script bundle
-			osacompile(joinPath(projectFolder, scriptName & ".applescript"), "scptd", {"-x"})
-			-- Remove the aliases
-			repeat with lib in compiledScriptLibraries
-				rm(joinPath(sharedLibFolder, basename(lib)))
-			end repeat
-		on error errMsg number errNum
-			repeat with lib in compiledScriptLibraries
-				rm(joinPath(sharedLibFolder, basename(lib)))
-			end repeat
-			error errMsg number errNum
-		end try
-		-- Move the script libraries in the bundle's Script Libraries folder
-		repeat with lib in compiledScriptLibraries
-			set {dir, base} to splitPath(lib)
-			mv(joinPath(dir, base & ".scptd"), scriptLibrariesFolder)
-		end repeat
-		-- Prepare Info.plist (use PlistBuddy?)
-		-- Copy other resources
-		-- Move the built product one level up
-	end makeScriptBundle
-	
-	
-	(*!
-		@abstract
-			Applies a unary handler to every element of a list, returning a new list with the result.
-			The original list remains unchanged.
-		@discussion
-			For optimal performance, the list should be passed by reference:
-			<pre>
-			set myNewList to map:(a reference to myList) byApplying:myHandler
-			</pre>
-		@param
-			aList <em>[list]</em> (A reference to) a list.
-		@param
-			unaryHandler <em>[text]</em> A handler with a single positional parameter.
-		@return
-			<em>[list]</em> A new list obtained by applying the handler to each element
-			of the original list.
-	*)
-	on map(aList, unaryHandler as handler)
-		script theFunctor
-			property apply : unaryHandler
-		end script
-		set theResult to {}
-		repeat with e in every item of aList
-			copy theFunctor's apply(the contents of e) to the end of theResult
-		end repeat
-		theResult
-	end map
-	
-	(*!
-		@abstract
-			Creates one or more folders at the specified path(s).
-		@param
-			dst <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
-			A path or a list of paths.
-	*)
-	on mkdir(dst)
-		shell for "/bin/mkdir" given options:{"-p"} & posixPaths(dst)
-	end mkdir
-	
-	(*!
-		@abstract
-			Moves one or more files to the specified path.
-		@discussion
-			This handler does not overwrite the target if it exists.
-		@param
-			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
-				Glob patterns are accepted.
-		@param
-			dst <em>[text]</em>: the destination path.
-	*)
-	on mv(src, dst)
-		local dest
-		set dest to posixPath(dst)
-		shell for "/bin/mv" given options:posixPaths(src) & dest
-	end mv
-	
-	(*!
-		@abstract
-			Compiles one or more scripts.
-		@param
-			src <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
-			A path or a list of paths.
-		@param
-			target <em>[text]</em> The type of the result, which can be <code>scpt</code>,
-			<code>scptd</code>, or <code>app</code>, for a script, script bundle, or applet, respectively.
-		@param
-			options <em>[list]</em> A list of <code>osacompile</code> options
-			(see <code>man osacompile</code>).
-	*)
-	on osacompile from sources given target:target : "scpt", options:options : {}
-		local basename, paths
-		set paths to posixPaths(sources)
-		if class of options is not list then set options to {options}
-		repeat with p in paths
-			if p ends with ".applescript" then
-				set basename to text 1 thru -13 of s -- remove suffix
-			else
-				set basename to p
-			end if
-			shell for "/usr/bin/osacompile" given options:{"-o", basename & "." & target} & options & {basename & ".applescript"}
-		end repeat
-	end osacompile
 	
 	(*!
 		@abstract
@@ -731,10 +530,123 @@ script TaskBase
 		return res
 	end posixPaths
 	
-	(* @abstract A wrapper around <tt>quoted form of</tt>. *)
-	on quoteText(s)
-		quoted form of s
-	end quoteText
+	(*!
+		@abstract
+			Splits the given path into a directory and a file component.
+			If the given path is relative then the directory component is relative, too.
+		@param
+			somePath <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
+			A path.
+		@return
+			<em>[list]</em> A two-element list.
+		@seealso
+			basename
+		@seealso
+			directoryPath
+	*)
+	on splitPath(somePath)
+		local base
+		set base to my _fileURL(somePath)
+		{base's URLByDeletingLastPathComponent's relativePath as text, base's lastPathComponent as text}
+	end splitPath
+
+
+	---------------------------------------------------------------------------------------
+	-- File manipulation
+	---------------------------------------------------------------------------------------
+	
+	(*!
+		@abstract
+			Copies one or more files to the specified destination.
+		@discussion
+			This is an interface to the <code>cp</code> command.
+			The arguments may be POSIX paths or HFS+ paths.
+			A list of source paths can be used.
+		@param
+			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
+		@param
+			dst <em>[text]</em>: the destination path.
+	*)
+	on cp(src, dst)
+		shell for "/bin/cp" given options:{"-r"} & posixPaths(src) & posixPaths(dst)
+	end cp
+	
+	(*!
+		@abstract
+			Copies one or more source files or directories to a destination directory,
+			or a source file to a destination file.
+		@discussion
+			This handler uses <code>ditto</code> to copy directory hierarchies.
+			See <code>man ditto</code> for further information.
+			Note that <code>ditto</code> does not copy items the same way as
+			<code>cp</code> does. In particular, <code>ditto("foo", "bar")</code>
+			will copy the contents of directory <code>foo</code> into <code>bar</code>,
+			whereas <code>cp("foo", "bar")</code> will copy <code>foo</code> itself
+			into <code>bar</code>.
+		@param
+			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
+		@param
+			dst <em>[text]</em>: the destination path.
+	*)
+	on ditto(src, dst)
+		set flags to {}
+		if verbose() then set the end of flags to "-V"
+		shell for "/usr/bin/ditto" given options:flags & posixPaths(src) & posixPaths(dst)
+	end ditto
+	
+	(*!
+		@abstract
+			Creates a Finder alias.
+		@param
+			source <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
+			The source path.
+		@param
+			target <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
+			The path to the Finder alias to be created.
+	*)
+	on makeAlias(source, target)
+		local src, tgt, dir, base
+		set src to my absolutePath(source)
+		set tgt to my absolutePath(target)
+		set {dir, base} to my splitPath(tgt)
+		if verbose() then Â
+			echo("Make alias at" & space & (dir as text) & space & Â
+				"to" & space & (src as text) & space & Â
+				"with name" & space & (base as text))
+		if not dry() then
+			tell application "Finder" to make new alias file at POSIX file dir to POSIX file src with properties {name:base}
+		else
+			return {src, dir, base}
+		end if
+	end makeAlias
+	
+	(*!
+		@abstract
+			Creates one or more folders at the specified path(s).
+		@param
+			dst <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			A path or a list of paths.
+	*)
+	on mkdir(dst)
+		shell for "/bin/mkdir" given options:{"-p"} & posixPaths(dst)
+	end mkdir
+	
+	(*!
+		@abstract
+			Moves one or more files to the specified path.
+		@discussion
+			This handler does not overwrite the target if it exists.
+		@param
+			src <em>[text]</em> or <em>[list]</em>: A path or a list of paths.
+				Glob patterns are accepted.
+		@param
+			dst <em>[text]</em>: the destination path.
+	*)
+	on mv(src, dst)
+		local dest
+		set dest to posixPath(dst)
+		shell for "/bin/mv" given options:posixPaths(src) & dest
+	end mv
 	
 	(*!
 		@abstract
@@ -801,117 +713,7 @@ script TaskBase
 			rm(somePaths)
 		end try
 	end rm_f
-	
-	(*!
-		@abstract
-			Executes a shell command.
-		@discussion
-			This handler provides an interface to run a shell script via
-			<code>do shell script</code>. All the features of <code>do shell script</code>
-			are supported, including running a command with administrator privileges.
-			For example, a command run as <code>nick</code>
-			with password <code>xyz123</code> may look as follows:
-			<pre>
-			shell for "mycmd" with privileges given options:{"--some", "--options"},
-			  username:"nick", |password|:"xyz123"
-			</pre>
-			Output redirection is supported, too, as well as altering line endings, e.g.:
-			<pre>
-			shell for "mycmd" given out:"/some/file", err:"&1", alteringLineEndings:false
-			</pre>
-			This handler uses the syntax introduced is OS X 10.10 (Yosemite) for optional labeled parameters. 
-			Apart from the <tt>for</tt> parameter, all other arguments are optional (and may appear in any order).
-		@param
-			command <em>[text]</em> The command to be executed.
-		@param
-			options <em>[text]</em> or <em>[list]</em> An argument or a list of arguments
-			for the command (internally, the handler always converts this
-			to a list). Each option is quoted before the command is executed.
-		@param
-			privileges <em>[boolean]</em> A flag indicating whether the command should be executed as a different user.
-			The default is <tt>false</tt>.
-		@param
-			username <em>[text]</em> The username that should execute the command.
-			This argument is ignored unless <tt>privileges</tt> is set to <tt>true</tt>.
-		@param
-			pass <em>[text]</em> The password to be authenticated as <tt>username</tt>.
-		@param
-			out <em>[text]</em> Redirect the standard output to the specified file.
-		@param
-			err <em>[text]</em> Redirect the standard error to the specified file.
-			Pass <tt>&1</tt> to redirect to the standard output.
-		@param
-			ale <em>[boolean]</em> Whether line endings should be changed or not.
-			The default is <tt>true</tt>.
-		@return
-			<em>[text]</em> The output of the command.
-			If ASMake is run with <code>--dry</code>, returns the text of the command.
-		@throws
-			An error if the shell script exits with non-zero status.
-			The error number is the exit status of the command.
-	*)
-	on shell for command given options:options : {}, privileges:privileges : false, username:username : missing value, |password|:pass : missing value, out:out : "", err:err : "", alteringLineEndings:ale : true
-		if options's class is not list then set options to {options}
-		if out is not "" then set out to space & ">" & quoted form of out
-		if err is not "" then
-			if err is "&1" then -- Allow redirecting stderr to stdout
-				set err to space & "2>&1"
-			else
-				set err to space & "2>" & quoted form of err
-			end if
-		end if
-		set command to command & space & (my join(my map(options, my quoteText), space)) & out & err
-		if my verbose() then my echo(command)
-		if my dry() then return command
-		set command to "cd" & space & quoted form of my PWD & ";" & command
-		if pass is missing value then
-			set output to (do shell script command administrator privileges privileges altering line endings ale)
-		else
-			if username is missing value then set username to short user name of (system info)
-			set output to (do shell script command administrator privileges privileges user name username password pass altering line endings ale)
-		end if
-		if my verbose() and output is not "" then my echo(output)
-		return output
-	end shell
-	
-	(*!
-		@abstract
-			Splits a string at the given delimiter.
-		@param
-			theText <em>[text]</em> A string.
-		@param
-			aDelimiter <em>[text]</em> A delimiter.
-		@return
-			<em>[list]</em> The list formed by splitting the string.
-	*)
-	on split(theText, aDelimiter)
-		-- TODO: NSArray* components = [urlAsString componentsSeparatedByString:@"#"];
-		set {tid, AppleScript's text item delimiters} to {AppleScript's text item delimiters, aDelimiter}
-		set theResult to the text items of theText
-		set AppleScript's text item delimiters to tid
-		return theResult
-	end split
-	
-	(*!
-		@abstract
-			Splits the given path into a directory and a file component.
-			If the given path is relative then the directory component is relative, too.
-		@param
-			somePath <em>[text]</em>, <em>[file]</em> or <em>[alias]</em>
-			A path.
-		@return
-			<em>[list]</em> A two-element list.
-		@seealso
-			basename
-		@seealso
-			directoryPath
-	*)
-	on splitPath(somePath)
-		local base
-		set base to my _fileURL(somePath)
-		{base's URLByDeletingLastPathComponent's relativePath as text, base's lastPathComponent as text}
-	end splitPath
-	
+
 	(*!
 		@abstract
 			Creates a symbolic link.
@@ -927,52 +729,6 @@ script TaskBase
 		set tgt to posixPath(target)
 		shell for "/bin/ln" given options:{"-s"} & src & tgt
 	end symlink
-	
-	(*
-		@abstract
-			Applies a unary handler to every element of a list, replacing the element with the result.
-		@discussion
-			For optimal performance, the list should be passed by reference, e.g.:
-			<pre>
-			transform(a reference to myList, myHandler)
-			</pre>
-	*)
-	on transform(aList, unaryHandler as handler)
-		script theFunctor
-			property apply : unaryHandler
-		end script
-		local n
-		set n to count aList
-		repeat with i from 1 to n
-			set item i of aList to theFunctor's apply(item i of aList)
-		end repeat
-	end transform
-	
-	(*!
-		@abstract
-			Returns true if the user has requested verbose output;
-			returns false otherwise.
-	*)
-	on verbose()
-		my arguments's options contains "--verbose" or my arguments's options contains "-v"
-	end verbose
-	
-	(*!
-		@abstract
-			Wrapper around the Unix program <code>which</code>.
-		@param
-			command <em>[text]</em> The name of a command.
-		@return
-			<em>[text]<em> The POSIX path of the executable, if found;
-			otherwise, returns <tt>missing value</tt>.		
-	*)
-	on which(command)
-		try
-			shell for "/usr/bin/which" given options:command
-		on error
-			missing value
-		end try
-	end which
 	
 	(*!
 		@abstract
@@ -993,6 +749,274 @@ script TaskBase
 			error errMsg number errNum
 		end try
 	end writeUTF8
+
+
+	---------------------------------------------------------------------------------------
+	-- Script manipulation
+	---------------------------------------------------------------------------------------
+	
+	(*
+		@abstract
+			Creates an empty script bundle.
+		@param
+			buildPath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+			The directory where the script bundle should be created.
+		@param
+			name <em>[text]</em> The name of the script bundle (with or without suffix).
+	*)
+	on emptyBundle at buildPath given name:bundleName : text
+		local scriptPath, dummyScript, didSucceed, theError
+		if bundleName does not end with ".scptd" then set bundleName to bundleName & ".scptd"
+		set scriptPath to current application's NSURL's fileURLWithPath:(my joinPath(my posixPath(buildPath), bundleName))
+		set dummyScript to current application's OSAScript's alloc's Â
+			initWithSource:"" fromURL:(missing value) Â
+				languageInstance:(current application's OSALanguage's defaultLanguage()'s sharedLanguageInstance()) Â
+				usingStorageOptions:(current application's OSANull)
+		set {didSucceed, theError} to dummyScript's compileAndReturnError:(reference)
+		if not didSucceed then error theError
+		set {didSucceed, theError} to dummyScript's Â
+			writeToURL:scriptPath ofType:(current application's OSAStorageScriptBundleType) Â
+				usingStorageOptions:(current application's OSANull) |error|:(reference)
+		if not didSucceed then error theError
+	end emptyBundle
+	
+	(*!
+		@abstract
+			Builds a script bundle from source, including resources and script libraries.
+		@discussion
+			TODO
+		@param
+			sourceFile <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>:
+			path to the source file (a file with <code>.applescript</code> suffix).
+	*)
+	on makeScriptBundle(sourceFile)
+		set sharedLibFolder to joinPath(path to library folder from user domain, "Script Libraries")
+		set sourcePath to absolutePath(posixPath(sourceFile))
+		set {sourceFolder, scriptName} to splitPath(sourcePath)
+		set scriptLibrariesFolder to POSIX file joinPath(sourceFolder, "Resources/Script Libraries")
+		set scriptLibraries to {}
+		set compiledScriptLibraries to {}
+		odebug("Shared Folder: " & sharedLibFolder)
+		odebug("Project: " & projectFolder)
+		odebug("Name: " & scriptName)
+		odebug("Script Libraries folder: " & scriptLibrariesFolder)
+		-- Search for script libraries and build them recursively
+		odebug("Searching for script libraries...", "")
+		try
+			alias scriptLibrariesFolder -- does it exist?
+			set folderExists to true
+		on error
+			odebug("Folder does not exist")
+			set folderExists to false
+		end try
+		if folderExists then
+			tell application "Finder"
+				set scriptLibraries to Â
+					(every file of (entire contents of folder (scriptLibrariesFolder)) Â
+						whose name ends with ".applescript") as alias list
+			end tell
+			repeat with libSource in scriptLibraries
+				odebug("Building " & (libSource as text))
+				makeScriptBundle(libSource)
+			end repeat
+			odebug("Searching for compiled script libraries...")
+			tell application "Finder"
+				set compiledScriptLibraries to Â
+					(every file of (entire contents of folder (scriptLibrariesFolder)) Â
+						whose name ends with ".scptd" or name ends with ".scpt") as alias list
+			end tell
+		end if
+		odebug({"compiledScriptLibraries: ", compiledScriptLibraries})
+		try
+			-- Alias each script library in a shared Script Libraries folder
+			repeat with lib in compiledScriptLibraries
+				makeAlias(lib, joinPath(sharedLibFolder, basename(lib)))
+			end repeat
+			-- Compile the script bundle
+			osacompile(joinPath(projectFolder, scriptName & ".applescript"), "scptd", {"-x"})
+			-- Remove the aliases
+			repeat with lib in compiledScriptLibraries
+				rm(joinPath(sharedLibFolder, basename(lib)))
+			end repeat
+		on error errMsg number errNum
+			repeat with lib in compiledScriptLibraries
+				rm(joinPath(sharedLibFolder, basename(lib)))
+			end repeat
+			error errMsg number errNum
+		end try
+		-- Move the script libraries in the bundle's Script Libraries folder
+		repeat with lib in compiledScriptLibraries
+			set {dir, base} to splitPath(lib)
+			mv(joinPath(dir, base & ".scptd"), scriptLibrariesFolder)
+		end repeat
+		-- Prepare Info.plist (use PlistBuddy?)
+		-- Copy other resources
+		-- Move the built product one level up
+	end makeScriptBundle
+	
+	(*!
+		@abstract
+			Compiles one or more scripts.
+		@param
+			src <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			A path or a list of paths.
+		@param
+			target <em>[text]</em> The type of the result, which can be <code>scpt</code>,
+			<code>scptd</code>, or <code>app</code>, for a script, script bundle, or applet, respectively.
+		@param
+			options <em>[list]</em> A list of <code>osacompile</code> options
+			(see <code>man osacompile</code>).
+	*)
+	on osacompile from sources given target:target : "scpt", options:options : {}
+		local basename, paths
+		set paths to posixPaths(sources)
+		if class of options is not list then set options to {options}
+		repeat with p in paths
+			if p ends with ".applescript" then
+				set basename to text 1 thru -13 of s -- remove suffix
+			else
+				set basename to p
+			end if
+			shell for "/usr/bin/osacompile" given options:{"-o", basename & "." & target} & options & {basename & ".applescript"}
+		end repeat
+	end osacompile
+	
+	(*!
+		@abstract
+			Wrapper around the Unix program <code>which</code>.
+		@param
+			command <em>[text]</em> The name of a command.
+		@return
+			<em>[text]<em> The POSIX path of the executable, if found;
+			otherwise, returns <tt>missing value</tt>.		
+	*)
+	on which(command)
+		try
+			shell for "/usr/bin/which" given options:command
+		on error
+			missing value
+		end try
+	end which
+
+
+	---------------------------------------------------------------------------------------
+	-- Utility handlers
+	---------------------------------------------------------------------------------------
+	
+	(*
+		@abstract
+			Filters the elements of a list using a boolean predicate.
+		@discussion
+			Returns a new list containing all and only the elements of the original list
+			for which the predicate returns <tt>true</tt>. The original list remains unchanged.
+			A predicate is a unary handler that returns a boolean value.
+			
+			For optimal performance, the list should be passed by reference, e.g.:
+			<pre>
+			set filteredList to filter(a reference to myList, myPredicate)
+			</pre>
+	*)
+	on filter(aList, predicate as handler)
+		script theFunctor
+			property apply : predicate
+		end script
+		set theResult to {}
+		repeat with e in aList
+			if theFunctor's apply(the contents of e) then
+				copy the contents of e to the end of theResult
+			end if
+		end repeat
+		theResult
+	end filter
+	
+	(*!
+		@abstract
+			Joins the elements of a list separating them with the given delimiter.
+		@param
+			aList <em>[list]</em> A list.
+		@param
+			aDelimiter <em>[text]</em> A delimiter.
+		@return
+			<em>[text]</em> The string formed by concatenating the elements of the list,
+			separated by the given delimiter.
+	*)
+	on join(aList, aDelimiter)
+		set {tid, AppleScript's text item delimiters} to {AppleScript's text item delimiters, aDelimiter}
+		set theResult to aList as text
+		set AppleScript's text item delimiters to tid
+		return theResult
+	end join
+	
+	(*!
+		@abstract
+			Applies a unary handler to every element of a list, returning a new list with the result.
+			The original list remains unchanged.
+		@discussion
+			For optimal performance, the list should be passed by reference:
+			<pre>
+			set myNewList to map:(a reference to myList) byApplying:myHandler
+			</pre>
+		@param
+			aList <em>[list]</em> (A reference to) a list.
+		@param
+			unaryHandler <em>[text]</em> A handler with a single positional parameter.
+		@return
+			<em>[list]</em> A new list obtained by applying the handler to each element
+			of the original list.
+	*)
+	on map(aList, unaryHandler as handler)
+		script theFunctor
+			property apply : unaryHandler
+		end script
+		set theResult to {}
+		repeat with e in every item of aList
+			copy theFunctor's apply(the contents of e) to the end of theResult
+		end repeat
+		theResult
+	end map
+	
+	(* @abstract A wrapper around <tt>quoted form of</tt>. *)
+	on quoteText(s)
+		quoted form of s
+	end quoteText
+	
+	(*!
+		@abstract
+			Splits a string at the given delimiter.
+		@param
+			theText <em>[text]</em> A string.
+		@param
+			aDelimiter <em>[text]</em> A delimiter.
+		@return
+			<em>[list]</em> The list formed by splitting the string.
+	*)
+	on split(theText, aDelimiter)
+		-- TODO: NSArray* components = [urlAsString componentsSeparatedByString:@"#"];
+		set {tid, AppleScript's text item delimiters} to {AppleScript's text item delimiters, aDelimiter}
+		set theResult to the text items of theText
+		set AppleScript's text item delimiters to tid
+		return theResult
+	end split
+	
+	(*
+		@abstract
+			Applies a unary handler to every element of a list, replacing the element with the result.
+		@discussion
+			For optimal performance, the list should be passed by reference, e.g.:
+			<pre>
+			transform(a reference to myList, myHandler)
+			</pre>
+	*)
+	on transform(aList, unaryHandler as handler)
+		script theFunctor
+			property apply : unaryHandler
+		end script
+		local n
+		set n to count aList
+		repeat with i from 1 to n
+			set item i of aList to theFunctor's apply(item i of aList)
+		end repeat
+	end transform
 end script -- TaskBase
 
 (*!
