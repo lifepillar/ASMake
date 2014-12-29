@@ -216,7 +216,7 @@ script TaskBase
 	
 	(*! @abstract Returns true if this is a dry run; returns false otherwise. *)
 	on dry()
-		my arguments's options contains "--dry" or my arguments's options contains "-n"
+		my arguments's dry()
 	end dry
 	
 	(*!
@@ -225,7 +225,7 @@ script TaskBase
 			returns false otherwise.
 	*)
 	on verbose()
-		my arguments's options contains "--verbose" or my arguments's options contains "-v"
+		my arguments's verbose()
 	end verbose
 	
 	
@@ -549,8 +549,8 @@ script TaskBase
 		set base to my _fileURL(somePath)
 		{base's URLByDeletingLastPathComponent's relativePath as text, base's lastPathComponent as text}
 	end splitPath
-
-
+	
+	
 	---------------------------------------------------------------------------------------
 	-- File manipulation
 	---------------------------------------------------------------------------------------
@@ -713,7 +713,7 @@ script TaskBase
 			rm(somePaths)
 		end try
 	end rm_f
-
+	
 	(*!
 		@abstract
 			Creates a symbolic link.
@@ -749,8 +749,8 @@ script TaskBase
 			error errMsg number errNum
 		end try
 	end writeUTF8
-
-
+	
+	
 	---------------------------------------------------------------------------------------
 	-- Script manipulation
 	---------------------------------------------------------------------------------------
@@ -897,8 +897,8 @@ script TaskBase
 			missing value
 		end try
 	end which
-
-
+	
+	
 	---------------------------------------------------------------------------------------
 	-- Utility handlers
 	---------------------------------------------------------------------------------------
@@ -1104,6 +1104,20 @@ script TaskArguments
 		set options to {}
 		set taskOptions to {}
 	end clear
+	
+	(*! @abstract Returns true if the user has requested a dry run, returns false otherwise. *)
+	on dry()
+		my options contains "--dry" or my options contains "-n"
+	end dry
+
+	(*!
+		@abstract
+			Returns true if the user has requested verbose output;
+			returns false otherwise.
+	*)
+	on verbose()
+		my options contains "--verbose" or my options contains "-v"
+	end verbose
 	
 	(*!
 		@abstract
