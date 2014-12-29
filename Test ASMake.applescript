@@ -120,7 +120,7 @@ end script -- TestSetEmptyTask
 
 ###################################################################################
 script TestSetNonEmptyTask
-	property name : "Set task properties"
+	property name : "Task properties"
 	property parent : TestSet(me)
 	property aTask : missing value
 	
@@ -179,8 +179,8 @@ end BaseTestSet
 
 
 ###################################################################################
-script TestSetTaskbase
-	property name : "TaskBase"
+script TestSetPathHandlers
+	property name : "Path manipulation"
 	property parent : BaseTestSet(me)
 	property tb : missing value
 	
@@ -293,14 +293,6 @@ script TestSetTaskbase
 	end script
 	
 	---------------------------------------------------------------------------------
-	script TestShell
-		property name : "shell()"
-		property parent : UnitTest(me)
-		set expected to "cmd" & space & "'-x' 2>&1"
-		assertEqual(expected, shell of tb for "cmd" without executing given options:"-x", err:"&1")
-	end script
-	
-	---------------------------------------------------------------------------------
 	script TestAbsolutePath
 		property name : "absolutePath()"
 		property parent : UnitTest(me)
@@ -336,19 +328,6 @@ script TestSetTaskbase
 	end script
 	
 	---------------------------------------------------------------------------------
-	script TestCp
-		property name : "cp()"
-		property parent : UnitTest(me)
-		set res to tb's cp({tb's glob("AS*.applescript"), POSIX file "doc/foo.txt", "examples/bar"}, "tmp/cp")
-		set expected to "/bin/cp" & space & quoted form of "-r" & space & Â
-			quoted form of "ASMake.applescript" & space & Â
-			quoted form of "doc/foo.txt" & space & Â
-			quoted form of "examples/bar" & space & Â
-			quoted form of "tmp/cp"
-		assertEqual(expected, res)
-	end script
-	
-	---------------------------------------------------------------------------------
 	script TestDeslash
 		property name : "deslash()"
 		property parent : UnitTest(me)
@@ -365,19 +344,6 @@ script TestSetTaskbase
 		assert(tb's directoryPath("/a/b/c") ends with "/a/b", "Assertion 2")
 		assert(tb's directoryPath("a:b:c") ends with "/a/b", "Assertion 3")
 		assert(tb's directoryPath("a:b:c:") ends with "/a/b", "Assertion 4")
-	end script
-	
-	---------------------------------------------------------------------------------
-	script TestDitto
-		property name : "ditto()"
-		property parent : UnitTest(me)
-		set res to tb's ditto({tb's glob("AS*.applescript"), POSIX file "doc/foo.txt", "examples/bar"}, "tmp/ditto")
-		set expected to "/usr/bin/ditto" & space & Â
-			quoted form of "ASMake.applescript" & space & Â
-			quoted form of "doc/foo.txt" & space & Â
-			quoted form of "examples/bar" & space & Â
-			quoted form of "tmp/ditto"
-		assertEqual(expected, res)
 	end script
 	
 	---------------------------------------------------------------------------------
@@ -403,54 +369,6 @@ script TestSetTaskbase
 	end script
 	
 	---------------------------------------------------------------------------------
-	script TestMakeAlias
-		property name : "makeAlias()"
-		property parent : UnitTest(me)
-		set p to "/a/b/c"
-		set q to "/x/y"
-		set r to q & "/SomeAlias"
-		assertEqual({p, q, "SomeAlias"}, tb's makeAlias(p, r))
-	end script
-	
-	---------------------------------------------------------------------------------
-	script TestMkdir
-		property name : "mkdir()"
-		property parent : UnitTest(me)
-		set res to tb's mkdir({"a", "b/c", POSIX file "d/e"})
-		set expected to "/bin/mkdir" & space & quoted form of "-p" & space & Â
-			quoted form of "a" & space & Â
-			quoted form of "b/c" & space & Â
-			quoted form of "d/e"
-		assertEqual(expected, res)
-		set expected to "/bin/mkdir '-p' 'foo bar'"
-		assertEqual(expected, tb's mkdir("foo bar"))
-	end script
-	
-	---------------------------------------------------------------------------------
-	script TestMv
-		property name : "mv()"
-		property parent : UnitTest(me)
-		set res to tb's mv({"foo", "examples/bar"}, "tmp/mv")
-		set expected to "/bin/mv" & space & Â
-			quoted form of "foo" & space & Â
-			quoted form of "examples/bar" & space & Â
-			quoted form of "tmp/mv"
-		assertEqual(expected, res)
-	end script
-	
-	---------------------------------------------------------------------------------
-	script TestDryRm
-		property name : "Dry rm()"
-		property parent : UnitTest(me)
-		set res to tb's rm({"a", "b/c", POSIX file "d/e"})
-		set expected to "Deleting" & space & Â
-			quoted form of "a" & ", " & Â
-			quoted form of "b/c" & ", " & Â
-			quoted form of "d/e"
-		assertEqual(expected, res)
-	end script
-	
-	---------------------------------------------------------------------------------
 	script TestChomp
 		property name : "chomp()"
 		property parent : UnitTest(me)
@@ -470,15 +388,7 @@ script TestSetTaskbase
 	end script
 	
 	---------------------------------------------------------------------------------
-	script TestOsacompile
-		property name : "osacompile()"
-		property parent : UnitTest(me)
-		set expected to "/usr/bin/osacompile '-o' 'ASMake.scpt' '-x' 'ASMake.applescript'"
-		assertEqual(expected, osacompile of tb from "ASMake" given target:"scpt", options:"-x")
-	end script
-	
-	---------------------------------------------------------------------------------
-	script Test_pathComponents
+	script TestPathComponents
 		property name : "pathComponents()"
 		property parent : UnitTest(me)
 		assertInstanceOf(list, tb's pathComponents("a/b"))
@@ -567,14 +477,6 @@ script TestSetTaskbase
 	end script
 	
 	---------------------------------------------------------------------------------
-	script TestSymlink
-		property name : "symlink()"
-		property parent : UnitTest(me)
-		set expected to "/bin/ln '-s' 'foo' 'bar'"
-		assertEqual(expected, tb's symlink("foo", "bar"))
-	end script
-	
-	---------------------------------------------------------------------------------
 	script TestWhich
 		property name : "Test which()"
 		property parent : UnitTest(me)
@@ -584,6 +486,127 @@ script TestSetTaskbase
 	end script
 	
 end script -- TestSetTaskbase
+
+###################################################################################
+script TestSetFileHandlers
+	property name : "File manipulation"
+	property parent : BaseTestSet(me)
+	property tb : missing value
+	
+	---------------------------------------------------------------------------------
+	script TestCp
+		property name : "cp()"
+		property parent : UnitTest(me)
+		set res to tb's cp({tb's glob("AS*.applescript"), POSIX file "doc/foo.txt", "examples/bar"}, "tmp/cp")
+		set expected to "/bin/cp" & space & quoted form of "-r" & space & Â
+			quoted form of "ASMake.applescript" & space & Â
+			quoted form of "doc/foo.txt" & space & Â
+			quoted form of "examples/bar" & space & Â
+			quoted form of "tmp/cp"
+		assertEqual(expected, res)
+	end script
+	
+	---------------------------------------------------------------------------------
+	script TestDitto
+		property name : "ditto()"
+		property parent : UnitTest(me)
+		set res to tb's ditto({tb's glob("AS*.applescript"), POSIX file "doc/foo.txt", "examples/bar"}, "tmp/ditto")
+		set expected to "/usr/bin/ditto" & space & Â
+			quoted form of "ASMake.applescript" & space & Â
+			quoted form of "doc/foo.txt" & space & Â
+			quoted form of "examples/bar" & space & Â
+			quoted form of "tmp/ditto"
+		assertEqual(expected, res)
+	end script
+	
+	---------------------------------------------------------------------------------
+	script TestMakeAlias
+		property name : "makeAlias()"
+		property parent : UnitTest(me)
+		set p to "/a/b/c"
+		set q to "/x/y"
+		set r to q & "/SomeAlias"
+		assertEqual({p, q, "SomeAlias"}, tb's makeAlias(p, r))
+	end script
+	
+	---------------------------------------------------------------------------------
+	script TestMkdir
+		property name : "mkdir()"
+		property parent : UnitTest(me)
+		set res to tb's mkdir({"a", "b/c", POSIX file "d/e"})
+		set expected to "/bin/mkdir" & space & quoted form of "-p" & space & Â
+			quoted form of "a" & space & Â
+			quoted form of "b/c" & space & Â
+			quoted form of "d/e"
+		assertEqual(expected, res)
+		set expected to "/bin/mkdir '-p' 'foo bar'"
+		assertEqual(expected, tb's mkdir("foo bar"))
+	end script
+	
+	---------------------------------------------------------------------------------
+	script TestMv
+		property name : "mv()"
+		property parent : UnitTest(me)
+		set res to tb's mv({"foo", "examples/bar"}, "tmp/mv")
+		set expected to "/bin/mv" & space & Â
+			quoted form of "foo" & space & Â
+			quoted form of "examples/bar" & space & Â
+			quoted form of "tmp/mv"
+		assertEqual(expected, res)
+	end script
+	
+	---------------------------------------------------------------------------------
+	script TestDryRm
+		property name : "Dry rm()"
+		property parent : UnitTest(me)
+		set res to tb's rm({"a", "b/c", POSIX file "d/e"})
+		set expected to "Deleting" & space & Â
+			quoted form of "a" & ", " & Â
+			quoted form of "b/c" & ", " & Â
+			quoted form of "d/e"
+		assertEqual(expected, res)
+	end script
+
+	---------------------------------------------------------------------------------
+	script TestSymlink
+		property name : "symlink()"
+		property parent : UnitTest(me)
+		set expected to "/bin/ln '-s' 'foo' 'bar'"
+		assertEqual(expected, tb's symlink("foo", "bar"))
+	end script
+end script -- TestSetFileHandlers
+
+
+###################################################################################
+script TestShellCommands
+	property name : "Shell commands"
+	property parent : BaseTestSet(me)
+	property tb : missing value
+	
+	---------------------------------------------------------------------------------
+	script TestShell
+		property name : "shell()"
+		property parent : UnitTest(me)
+		set expected to "cmd" & space & "'-x' 2>&1"
+		assertEqual(expected, shell of tb for "cmd" without executing given options:"-x", err:"&1")
+	end script
+end script -- TestShellCommands
+
+
+###################################################################################
+script TestScriptManipulation
+	property name : "Script manipulation"
+	property parent : BaseTestSet(me)
+	property tb : missing value
+	
+	---------------------------------------------------------------------------------
+	script TestOsacompile
+		property name : "osacompile()"
+		property parent : UnitTest(me)
+		set expected to "/usr/bin/osacompile '-o' 'ASMake.scpt' '-x' 'ASMake.applescript'"
+		assertEqual(expected, osacompile of tb from "ASMake" given target:"scpt", options:"-x")
+	end script
+end script -- TestScriptBundles
 
 
 ###################################################################################
