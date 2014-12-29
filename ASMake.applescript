@@ -667,7 +667,7 @@ script TaskBase
 	*)
 	on pathExists(somePath)
 		try
-			(my posixPath(somePath) as POSIX file) as alias
+			(my absolutePath(somePath) as POSIX file) as alias
 			true
 		on error
 			false
