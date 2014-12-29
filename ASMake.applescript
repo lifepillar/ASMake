@@ -429,7 +429,10 @@ script TaskBase
 	
 	(*!
 		@abstract
-			Converts a path to an absolute POSIX path. An existing trailing slash is stripped.
+			Converts a path to an absolute POSIX path.
+		@discussion
+			Relative paths are resolved with respect to the working directory.
+			If the path has a trailing slash then it is stripped.
 		@param
 			somePath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
 			A relative or absolute path.
