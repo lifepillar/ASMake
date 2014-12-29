@@ -1135,6 +1135,7 @@ script TaskArguments
 			set the end of my options to item i of argv
 			set i to i + 1
 		end repeat
+		verifyOptions()
 		-- Process command name
 		if i ² argc then
 			set my command to item i of argv
@@ -1146,6 +1147,15 @@ script TaskArguments
 			set i to i + 1
 		end repeat
 	end parse
+	
+	(*! @abstract Checks whether the user has specified undefined options. *)
+	on verifyOptions()
+		local availableOptions
+		set availableOptions to {"--dry", "-n", "--verbose", "-v"}
+		repeat with opt in my options
+			if opt is not in availableOptions then error "Unknown option: " & opt
+		end repeat
+	end verifyOptions
 	
 	(*! @abstract Returns true if the user has requested a dry run, returns false otherwise. *)
 	on dry()

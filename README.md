@@ -168,8 +168,7 @@ Currently, ASMake has the following options:
 - `--dry` or `-n`: do not really execute shell commands.
 - `--verbose` or `-v`: be verbose.
 
-Unknown options are silently ignored.
-Options are specified between `asmake` and the name of the task. For example:
+Such options must be specified before the name of the task. For example:
 
     asmake --dry build
 
