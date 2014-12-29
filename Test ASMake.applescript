@@ -69,7 +69,7 @@ script TestSetCoreASMake
 		assertInstanceOf(script, ASMake's Stdout)
 		assertInstanceOf("Task", ASMake's TaskBase)
 		assertKindOf(script, ASMake's TaskBase)
-		assertInstanceOf(script, ASMake's TaskArguments)
+		assertInstanceOf(script, ASMake's CommandLine)
 	end script
 end script -- TestSetCoreASMake
 
@@ -169,10 +169,10 @@ on BaseTestSet(aTestSet)
 		property parent : TestSet(aTestSet)
 		
 		on setUp()
-			set ASMake's TaskArguments's options to {"--dry"}
+			set ASMake's CommandLine's options to {"--dry"}
 			set my tb to a reference to ASMake's TaskBase
 			set my tb's PWD to POSIX path of TOPLEVEL's workingDir
-			set my tb's arguments to ASMake's TaskArguments
+			--set my tb's arguments to ASMake's CommandLine
 		end setUp
 	end script
 end BaseTestSet
@@ -480,7 +480,7 @@ script TestSetPathHandlers
 	script TestWhich
 		property name : "Test which()"
 		property parent : UnitTest(me)
-		set ASMake's TaskArguments's options to {} -- remove --dry
+		set ASMake's CommandLine's options to {} -- remove --dry
 		assertNil(tb's which("A-command-that-does-not-exist"))
 		assertEqual("/bin/bash", tb's which("bash"))
 	end script
