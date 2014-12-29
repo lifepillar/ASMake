@@ -93,7 +93,7 @@ and `echo()` shown above. They are all documented in the ASMake's source file.
 ## Tasks with arguments
 
 Tasks may accept arguments from the command line. Each task defines a
-`shift()` handler to help processing a task's arguments: by calling `my shift()`
+`shift()` handler to help processing a task's arguments: by calling `shift()`
 you retrieve the next unprocessed argument, if any. Other than that, however,
 it is the responsibility of the task to deal correctly with its arguments.
 
@@ -102,7 +102,7 @@ specifies the type of build:
 
     script build
       property parent : Task(me)
-      set target to my shift()
+      set target to shift()
       if target is "dev" then
         echo("dev build")
       else if target is "production" then

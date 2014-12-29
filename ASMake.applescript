@@ -167,7 +167,7 @@ script CommandLine
 *)
 	on parse(argv)
 		local i, argc
-		my clear()
+		clear()
 		set argc to count (argv)
 		set i to 1
 		-- Process ASMake options
@@ -289,7 +289,7 @@ script TaskBase
 			<em>[current application's NSURL]</em> An NSURL object.
 	*)
 	on _fileURL(somePath)
-		(current application's NSURL's fileURLWithPath:(my posixPath(somePath)))'s standardizedURL
+		(current application's NSURL's fileURLWithPath:(posixPath(somePath)))'s standardizedURL
 	end _fileURL
 	
 	(*!
@@ -342,7 +342,7 @@ script TaskBase
 			Set the working directory to the specified path.
 	*)
 	on setWorkingDirectory(somePath)
-		set my _pwd to my absolutePath(somePath)
+		set my _pwd to absolutePath(somePath)
 	end setWorkingDirectory
 	
 	
@@ -408,17 +408,17 @@ script TaskBase
 				set err to space & "2>" & quoted form of err
 			end if
 		end if
-		set command to command & space & (my join(my map(options, my quoteText), space)) & out & err
-		if my verbose() then my echo(command)
-		if my dry() then return command
-		set command to "cd" & space & quoted form of my workingDirectory() & ";" & command
+		set command to command & space & (join(map(options, my quoteText), space)) & out & err
+		if verbose() then echo(command)
+		if dry() then return command
+		set command to "cd" & space & quoted form of workingDirectory() & ";" & command
 		if pass is missing value then
 			set output to (do shell script command administrator privileges privileges altering line endings ale)
 		else
 			if username is missing value then set username to short user name of (system info)
 			set output to (do shell script command administrator privileges privileges user name username password pass altering line endings ale)
 		end if
-		if my verbose() and output is not "" then my echo(output)
+		if verbose() and output is not "" then echo(output)
 		return output
 	end shell
 	
@@ -440,7 +440,7 @@ script TaskBase
 			<em>[text]</em> A full POSIX path.
 	*)
 	on absolutePath(somePath)
-		(my _fileURL(somePath))'s |path| as text
+		(_fileURL(somePath))'s |path| as text
 	end absolutePath
 	
 	(*!
@@ -453,7 +453,7 @@ script TaskBase
 			<em>[text]</em> The last component of the path.
 	*)
 	on basename(somePath)
-		(my _fileURL(somePath))'s lastPathComponent as text
+		(_fileURL(somePath))'s lastPathComponent as text
 	end basename
 	
 	(*!
@@ -511,7 +511,7 @@ script TaskBase
 			<em>[text]</em> A POSIX path.
 	*)
 	on directoryPath(somePath)
-		(my _fileURL(somePath))'s URLByDeletingLastPathComponent's relativePath as text
+		(_fileURL(somePath))'s URLByDeletingLastPathComponent's relativePath as text
 	end directoryPath
 	
 	(*!
@@ -534,7 +534,7 @@ script TaskBase
 		set res to {}
 		repeat with p in pattern
 			set res to res & the paragraphs of Â
-				(do shell script "cd" & space & quoted form of my workingDirectory() & Â
+				(do shell script "cd" & space & quoted form of workingDirectory() & Â
 					";list=(" & p & ");for f in \"${list[@]}\";do echo \"$f\";done")
 		end repeat
 		return res
@@ -555,7 +555,7 @@ script TaskBase
 		<em>[text]</em> A POSIX path.
 	*)
 	on joinPath(basePath, relPath)
-		((my _fileURL(basePath))'s URLByAppendingPathComponent:(my posixPath(relPath)))'s relativePath as text
+		((_fileURL(basePath))'s URLByAppendingPathComponent:(posixPath(relPath)))'s relativePath as text
 	end joinPath
 	
 	(*!
@@ -572,7 +572,7 @@ script TaskBase
 			directoryPath
 	*)
 	on pathComponents(somePath)
-		(my _fileURL(somePath))'s pathComponents as list
+		(_fileURL(somePath))'s pathComponents as list
 	end pathComponents
 	
 	(*!
@@ -587,7 +587,7 @@ script TaskBase
 	*)
 	on pathExists(somePath)
 		try
-			(my absolutePath(somePath) as POSIX file) as alias
+			(absolutePath(somePath) as POSIX file) as alias
 			true
 		on error
 			false
@@ -667,7 +667,7 @@ script TaskBase
 	*)
 	on splitPath(somePath)
 		local base
-		set base to my _fileURL(somePath)
+		set base to _fileURL(somePath)
 		{base's URLByDeletingLastPathComponent's relativePath as text, base's lastPathComponent as text}
 	end splitPath
 	
@@ -727,9 +727,9 @@ script TaskBase
 	*)
 	on makeAlias(source, target)
 		local src, tgt, dir, base
-		set src to my absolutePath(source)
-		set tgt to my absolutePath(target)
-		set {dir, base} to my splitPath(tgt)
+		set src to absolutePath(source)
+		set tgt to absolutePath(target)
+		set {dir, base} to splitPath(tgt)
 		if verbose() then Â
 			echo("Make alias at" & space & (dir as text) & space & Â
 				"to" & space & (src as text) & space & Â
@@ -778,7 +778,7 @@ script TaskBase
 			<em>[text]</em> The content of the file.
 	*)
 	on readUTF8(fileName)
-		set ff to my posixPath(fileName)
+		set ff to posixPath(fileName)
 		set fp to open for access POSIX file ff without write permission
 		try
 			read fp as Çclass utf8È
@@ -802,11 +802,11 @@ script TaskBase
 	*)
 	on rm(somePaths)
 		script PathWrapper
-			property paths : my posixPaths(somePaths)
+			property paths : posixPaths(somePaths)
 		end script
 		
-		if my dry() then
-			return "Deleting" & space & my join(my map(a reference to PathWrapper's paths, my quoteText), ", ")
+		if dry() then
+			return "Deleting" & space & join(map(a reference to PathWrapper's paths, my quoteText), ", ")
 		end if
 		
 		local fileManager
@@ -860,7 +860,7 @@ script TaskBase
 			content <em>[text]</em> The content to write.
 	*)
 	on writeUTF8(fileName, content)
-		set ff to my posixPath(fileName)
+		set ff to posixPath(fileName)
 		set fp to open for access POSIX file ff with write permission
 		try
 			write content to fp as Çclass utf8È
@@ -888,7 +888,7 @@ script TaskBase
 	on emptyBundle at buildPath given name:bundleName : text
 		local scriptPath, dummyScript, didSucceed, theError
 		if bundleName does not end with ".scptd" then set bundleName to bundleName & ".scptd"
-		set scriptPath to current application's NSURL's fileURLWithPath:(my joinPath(my posixPath(buildPath), bundleName))
+		set scriptPath to current application's NSURL's fileURLWithPath:(joinPath(posixPath(buildPath), bundleName))
 		set dummyScript to current application's OSAScript's alloc's Â
 			initWithSource:"" fromURL:(missing value) Â
 				languageInstance:(current application's OSALanguage's defaultLanguage()'s sharedLanguageInstance()) Â
@@ -1183,10 +1183,10 @@ script HelpTask
 	
 	set nameLen to 0
 	-- TODO: sort tasks alphabetically
-	repeat with t in my tasks() -- find the longest name
+	repeat with t in tasks() -- find the longest name
 		if the length of t's name > nameLen then set nameLen to the length of t's name
 	end repeat
-	repeat with t in my tasks()
+	repeat with t in tasks()
 		set spaces to space & space
 		repeat with i from 1 to nameLen - (length of t's name)
 			set spaces to spaces & space
@@ -1202,7 +1202,7 @@ script WorkDir
 	property synonyms : {"pwd"}
 	property description : "Print the path of the working directory and exit."
 	property printSuccess : false
-	ohai(my workingDirectory())
+	ohai(workingDirectory())
 end script
 
 (*!
@@ -1272,7 +1272,7 @@ end runTask
 (*! @abstract The handler invoked by <tt>osascript</tt>. *)
 on run argv
 	set taskOptions to CommandLine's parse(argv)
-	TaskBase's setWorkingDirectory(my workingDirectory())
+	TaskBase's setWorkingDirectory(workingDirectory())
 	-- Allow loading ASMake from text format with run script
 	if CommandLine's command is "__ASMAKE__LOAD__" then return me
 	runTask(taskOptions)
