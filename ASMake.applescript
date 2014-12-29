@@ -241,10 +241,10 @@ script TaskBase
 		@abstract
 			The POSIX path of the working directory.
 		@discussion
-			This is a read-only property that should not be overridden by inheriting tasks.
+			This is a private property that should not be overridden by inheriting tasks.
 			The value of this property is set automatically when a makefile is executed.
 	*)
-	property PWD : missing value
+	property _pwd : missing value
 	
 	(*! @abstract Defines a list of aliases for this task. *)
 	property synonyms : {}
@@ -332,6 +332,20 @@ script TaskBase
 		set the end of my _tasks to t
 	end addTask
 	
+	(*! @abstract Returns the POSIX path of the current directory. *)
+	on workingDirectory()
+		my _pwd
+	end workingDirectory
+	
+	(*!
+		@abstract
+			Set the working directory to the specified path.
+	*)
+	on setWorkingDirectory(somePath)
+		set my _pwd to my absolutePath(somePath)
+	end setWorkingDirectory
+	
+	
 	---------------------------------------------------------------------------------------
 	-- Shell commands
 	---------------------------------------------------------------------------------------
@@ -397,7 +411,7 @@ script TaskBase
 		set command to command & space & (my join(my map(options, my quoteText), space)) & out & err
 		if my verbose() then my echo(command)
 		if my dry() then return command
-		set command to "cd" & space & quoted form of my PWD & ";" & command
+		set command to "cd" & space & quoted form of my workingDirectory() & ";" & command
 		if pass is missing value then
 			set output to (do shell script command administrator privileges privileges altering line endings ale)
 		else
@@ -516,8 +530,9 @@ script TaskBase
 		local res
 		set res to {}
 		repeat with p in pattern
-			set res to res & the paragraphs of (do shell script "cd" & space & quoted form of my PWD & Â
-				";list=(" & p & ");for f in \"${list[@]}\";do echo \"$f\";done")
+			set res to res & the paragraphs of Â
+				(do shell script "cd" & space & quoted form of my workingDirectory() & Â
+					";list=(" & p & ");for f in \"${list[@]}\";do echo \"$f\";done")
 		end repeat
 		return res
 	end glob
@@ -1184,7 +1199,7 @@ script WorkDir
 	property synonyms : {"pwd"}
 	property description : "Print the path of the working directory and exit."
 	property printSuccess : false
-	ohai(my PWD)
+	ohai(my workingDirectory())
 end script
 
 (*!
@@ -1200,7 +1215,7 @@ on workingDirectory()
 	local myPath, myFolder
 	set myPath to path to me
 	tell application "Finder" to set myFolder to (folder of myPath) as alias
-	return POSIX path of myFolder
+	return myFolder
 end workingDirectory
 
 (*!
@@ -1254,7 +1269,7 @@ end runTask
 (*! @abstract The handler invoked by <tt>osascript</tt>. *)
 on run argv
 	set taskOptions to CommandLine's parse(argv)
-	set TaskBase's PWD to my workingDirectory()
+	TaskBase's setWorkingDirectory(my workingDirectory())
 	-- Allow loading ASMake from text format with run script
 	if CommandLine's command is "__ASMAKE__LOAD__" then return me
 	runTask(taskOptions)

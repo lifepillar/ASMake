@@ -123,10 +123,10 @@ script TestSetEmptyTask
 		
 		-- This assumes that this test file, ASMake.applescript
 		-- and makefile.applescript are in the same folder.
-		refuteNil(aTask's PWD)
+		refuteNil(aTask's workingDirectory())
 		set myPath to (path to me)
 		tell application "Finder" to set myFolder to (folder of myPath) as alias
-		assertEqual(POSIX path of myFolder, aTask's PWD)
+		assertEqual(POSIX path of myFolder, aTask's workingDirectory() & "/")
 	end script
 end script -- TestSetEmptyTask
 
@@ -186,7 +186,7 @@ script TestSetShellCommands
 	on setUp()
 		ASMake's CommandLine's clear()
 		set my tb to a reference to ASMake's TaskBase
-		set my tb's PWD to POSIX path of TOPLEVEL's workingDir
+		my tb's setWorkingDirectory(TOPLEVEL's workingDir)
 	end setUp
 	
 	on tearDown()
@@ -211,7 +211,7 @@ on BaseTestSet(aTestSet)
 		on setUp()
 			set ASMake's CommandLine's options to {"--dry"}
 			set my tb to a reference to ASMake's TaskBase
-			set my tb's PWD to POSIX path of TOPLEVEL's workingDir
+			my tb's setWorkingDirectory(TOPLEVEL's workingDir)
 			--set my tb's arguments to ASMake's CommandLine
 		end setUp
 	end script
@@ -336,9 +336,9 @@ script TestSetPathHandlers
 	script TestAbsolutePath
 		property name : "absolutePath()"
 		property parent : UnitTest(me)
-		assertEqual(tb's PWD & "a/b/c", tb's absolutePath("a/b/c"))
-		assertEqual(tb's PWD & "a/b/c", tb's absolutePath("a/b/c/"))
-		assertEqual(tb's PWD & "a/b/c", tb's absolutePath(":a:b:c"))
+		assertEqual(tb's workingDirectory() & "/a/b/c", tb's absolutePath("a/b/c"))
+		assertEqual(tb's workingDirectory() & "/a/b/c", tb's absolutePath("a/b/c/"))
+		assertEqual(tb's workingDirectory() & "/a/b/c", tb's absolutePath(":a:b:c"))
 		assertKindOf(text, tb's absolutePath("/a/b/c"))
 		assertEqual("/a/b/c", tb's absolutePath("a:b:c:"))
 	end script
@@ -439,9 +439,9 @@ script TestSetPathHandlers
 	script TestPathExistsAbsPath
 		property name : "pathExists() with absolute paths"
 		property parent : UnitTest(me)
-		assert(tb's pathExists(tb's PWD), "The working directory should exist")
-		assert(tb's pathExists(tb's PWD & "ASMake.applescript"), "ASMake.applescript should exist")
-		refute(tb's pathExists(tb's PWD & "Idontexists"), "The file should not exist!")
+		assert(tb's pathExists(tb's workingDirectory()), "The working directory should exist")
+		assert(tb's pathExists(tb's workingDirectory() & "/ASMake.applescript"), "ASMake.applescript should exist")
+		refute(tb's pathExists(tb's workingDirectory() & "/Idontexists"), "The file should not exist!")
 	end script
 	
 	---------------------------------------------------------------------------------

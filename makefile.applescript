@@ -71,7 +71,7 @@ script test
 	property description : "Run tests."
 	property printSuccess : false
 	osacompile from "Test ASMake"
-	set testSuite to load script POSIX file (my PWD & "/Test ASMake.scpt")
+	set testSuite to load script POSIX file (my workingDirectory() & "/Test ASMake.scpt")
 	run testSuite
 end script
 
@@ -82,6 +82,6 @@ script versionTask
 	property description : "Print ASMake's version and exit."
 	property printSuccess : false
 	set {n, v} to {name, version} of Â
-		(run script POSIX file (my PWD & "/ASMake.applescript") with parameters "__ASMAKE__LOAD__")
+		(run script POSIX file (my workingDirectory() & "/ASMake.applescript") with parameters "__ASMAKE__LOAD__")
 	ohai(n & space & "v" & v)
 end script
