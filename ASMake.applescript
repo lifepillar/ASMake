@@ -88,11 +88,11 @@ script Stdout
 		echo(col("==>", green) & space & boldType & (msg as text) & reset)
 	end ohai
 	
-	(*! @abstract Prints a failure message, with details. *)
+	(*! @abstract Prints a failure message and exits. *)
 	on ofail(msg, info)
 		set msg to col("Fail:", red) & space & boldType & (msg as text) & reset
-		if info as text is not "" then set msg to msg & linefeed & (info as text)
 		echo(msg)
+		error info
 	end ofail
 	
 	(*! @abstract Prints a warning. *)
@@ -1189,7 +1189,7 @@ on findTask(taskName)
 	repeat with t in (a reference to TaskBase's TASKS)
 		if taskName = t's name or taskName is in t's synonyms then return t
 	end repeat
-	error
+	error "Wrong task name"
 end findTask
 
 (*!
@@ -1207,18 +1207,16 @@ on runTask(taskOptions)
 	
 	try
 		set t to findTask(CommandLine's command)
-	on error errMsg number errNum
-		ofail("Unknown task: " & CommandLine's command, "")
-		error errMsg number errNum
+	on error errMsg
+		ofail("Unknown task: " & CommandLine's command, errMsg)
 	end try
 	
 	try
 		t's exec:taskOptions
 		if t's printSuccess then ohai("Success!")
 		if t's dry() then ohai("(This was a dry run)")
-	on error errMsg number errNum
-		ofail("Task failed", "")
-		error errMsg number errNum
+	on error errMsg
+		ofail("Task failed", errMsg)
 	end try
 end runTask
 
