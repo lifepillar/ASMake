@@ -1105,11 +1105,53 @@ script TaskArguments
 		set taskOptions to {}
 	end clear
 	
+	(*!
+	@abstract
+		Parses the command-line.
+	@discussion
+		The general syntax for invoking a task is:
+		<pre>
+		asmake <options> <task name> <task options>
+		</pre>
+		where <tt>options</tt> can be one of the following:
+		<ul>
+			<li><tt>-v</tt> or <tt>--verbose</tt>: be verbose;</li>
+			<li><tt>-n</tt><tt>--dry</tt>: dry run.</li>
+		</ul>
+		The <task options> are made available to the task
+		through its <tt>arguments</tt> property.
+		It is the task's responsibility to deal with them
+		appropriately.
+	@param
+		argv <em>[list]</em> The command-line arguments.
+*)
+	on parse(argv)
+		local i, argc
+		my clear()
+		set argc to count (argv)
+		set i to 1
+		-- Process ASMake options
+		repeat while i ² argc and item i of argv starts with "-"
+			set the end of my options to item i of argv
+			set i to i + 1
+		end repeat
+		-- Process command name
+		if i ² argc then
+			set my command to item i of argv
+			set i to i + 1
+		end if
+		-- Process task's options
+		repeat while i ² argc
+			set the end of my taskOptions to item i of argv
+			set i to i + 1
+		end repeat
+	end parse
+	
 	(*! @abstract Returns true if the user has requested a dry run, returns false otherwise. *)
 	on dry()
 		my options contains "--dry" or my options contains "-n"
 	end dry
-
+	
 	(*!
 		@abstract
 			Returns true if the user has requested verbose output;
@@ -1183,51 +1225,8 @@ on runTask()
 	end try
 end runTask
 
-
-(*!
-	@abstract
-		Parses the command-line.
-	@discussion
-		The general syntax for invoking a task is:
-		<pre>
-		asmake <options> <task name> <task options>
-		</pre>
-		where <tt>options</tt> can be one of the following:
-		<ul>
-			<li><tt>-v</tt> or <tt>--verbose</tt>: be verbose;</li>
-			<li><tt>-n</tt><tt>--dry</tt>: dry run.</li>
-		</ul>
-		The <task options> are made available to the task
-		through its <tt>arguments</tt> property.
-		It is the task's responsibility to deal with them
-		appropriately.
-	@param
-		argv <em>[list]</em> The command-line arguments.
-*)
-on parseCommandLineOptions(argv)
-	local i, argc
-	TaskArguments's clear()
-	set argc to count (argv)
-	set i to 1
-	-- Process ASMake options
-	repeat while i ² argc and item i of argv starts with "-"
-		set the end of TaskArguments's options to item i of argv
-		set i to i + 1
-	end repeat
-	-- Process command name
-	if i ² argc then
-		set TaskArguments's command to item i of argv
-		set i to i + 1
-	end if
-	-- Process task's options
-	repeat while i ² argc
-		set the end of TaskArguments's taskOptions to item i of argv
-		set i to i + 1
-	end repeat
-end parseCommandLineOptions
-
 (*! @abstract The handler invoked by <tt>osascript</tt>. *)
 on run argv
-	parseCommandLineOptions(argv)
+	TaskArguments's parse(argv)
 	runTask()
 end run
