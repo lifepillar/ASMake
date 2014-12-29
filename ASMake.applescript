@@ -1123,7 +1123,6 @@ on Task(t)
 		
 		on exec:(argv as list)
 			set my argv to argv
-			set my PWD to do shell script "pwd"
 			run me
 		end exec:
 		
@@ -1177,6 +1176,22 @@ end script
 
 (*!
 	@abstract
+		The path of the working directory.
+	@discussion
+		This is always the path of the folder containing the task script,
+		indipendently of the location from where the script is run.
+	@return
+		<em>[text]</em> The POSIX path of the working directory (with a trailing slash).
+*)
+on workingDirectory()
+	local myPath, myFolder
+	set myPath to path to me
+	tell application "Finder" to set myFolder to (folder of myPath) as alias
+	return POSIX path of myFolder
+end workingDirectory
+
+(*!
+	@abstract
 		Retrieves the task specified by the user.
 	@param
 		taskName <em>[text]</em> The task name.
@@ -1223,6 +1238,7 @@ end runTask
 (*! @abstract The handler invoked by <tt>osascript</tt>. *)
 on run argv
 	set taskOptions to CommandLine's parse(argv)
+	set TaskBase's PWD to my workingDirectory()
 	-- Allow loading ASMake from text format with run script
 	if CommandLine's command is "__ASMAKE__LOAD__" then return me
 	runTask(taskOptions)

@@ -115,6 +115,19 @@ script TestSetEmptyTask
 		property parent : UnitTest(me)
 		ok(aTask's printSuccess)
 	end script
+	
+	---------------------------------------------------------------------------------
+	script TestTaskWorkingDirectory
+		property name : "Working directory is set before running task"
+		property parent : UnitTest(me)
+		
+		-- This assumes that this test file, ASMake.applescript
+		-- and makefile.applescript are in the same folder.
+		refuteNil(aTask's PWD)
+		set myPath to (path to me)
+		tell application "Finder" to set myFolder to (folder of myPath) as alias
+		assertEqual(POSIX path of myFolder, aTask's PWD)
+	end script
 end script -- TestSetEmptyTask
 
 
