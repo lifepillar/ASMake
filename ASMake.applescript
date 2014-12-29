@@ -211,7 +211,7 @@ script TaskBase
 			returns false otherwise.
 	*)
 	on debug()
-		my arguments's options contains "--debug" or my arguments's options contains "-D"
+		my arguments's debug()
 	end debug
 	
 	(*! @abstract Returns true if this is a dry run; returns false otherwise. *)
@@ -1151,11 +1151,20 @@ script TaskArguments
 	(*! @abstract Checks whether the user has specified undefined options. *)
 	on verifyOptions()
 		local availableOptions
-		set availableOptions to {"--dry", "-n", "--verbose", "-v"}
+		set availableOptions to {"--debug", "-D", "--dry", "-n", "--verbose", "-v"}
 		repeat with opt in my options
 			if opt is not in availableOptions then error "Unknown option: " & opt
 		end repeat
 	end verifyOptions
+	
+	(*!
+		@abstract
+			Returns true if the user has requested debugging output;
+			returns false otherwise.
+	*)
+	on debug()
+		my options contains "--debug" or my options contains "-D"
+	end debug
 	
 	(*! @abstract Returns true if the user has requested a dry run, returns false otherwise. *)
 	on dry()

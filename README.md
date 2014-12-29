@@ -165,6 +165,7 @@ Private tasks are not shown by `asmake help`.
 
 Currently, ASMake has the following options:
 
+- `--debug` or `-D`: enable debugging output.
 - `--dry` or `-n`: do not really execute shell commands.
 - `--verbose` or `-v`: be verbose.
 
