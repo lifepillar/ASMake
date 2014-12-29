@@ -231,11 +231,11 @@ script TaskBase
 		@abstract
 			The list of registered tasks.
 		@discussion
-			This is a read-only property that should not be overridden by inheriting tasks.
+			This is a private property that should not be overridden by inheriting tasks.
 			The value of this property is updated automatically at compile-time whenever
 			a task script is compiled.
 	*)
-	property TASKS : {}
+	property _tasks : {}
 	
 	(*!
 		@abstract
@@ -315,6 +315,22 @@ script TaskBase
 		CommandLine's verbose()
 	end verbose
 	
+	(*! @abstract Returns the list of non-private tasks. *)
+	on tasks()
+		local tl
+		set tl to {}
+		repeat with t in every item of (a reference to my _tasks)
+			if not t's private then
+				set the end of tl to t
+			end if
+		end repeat
+		return tl
+	end tasks
+	
+	(*! @abstract Registers a task. *)
+	on addTask(t)
+		set the end of my _tasks to t
+	end addTask
 	
 	---------------------------------------------------------------------------------------
 	-- Shell commands
@@ -1134,10 +1150,7 @@ on Task(t)
 		end shift
 	end script
 	
-	try -- t may not define the private property at this time
-		if t's private then return NewTask
-	end try
-	set the end of TaskBase's TASKS to t
+	TaskBase's addTask(t)
 	return NewTask
 end Task
 
@@ -1152,10 +1165,10 @@ script HelpTask
 	
 	set nameLen to 0
 	-- TODO: sort tasks alphabetically
-	repeat with t in my TASKS -- find the longest name
+	repeat with t in my tasks() -- find the longest name
 		if the length of t's name > nameLen then set nameLen to the length of t's name
 	end repeat
-	repeat with t in my TASKS
+	repeat with t in my tasks()
 		set spaces to space & space
 		repeat with i from 1 to nameLen - (length of t's name)
 			set spaces to spaces & space
@@ -1201,7 +1214,10 @@ end workingDirectory
 		An exception if the task is not found.
 *)
 on findTask(taskName)
-	repeat with t in (a reference to TaskBase's TASKS)
+	script
+		property tasks : TaskBase's tasks()
+	end script
+	repeat with t in (a reference to the result's tasks)
 		if taskName = t's name or taskName is in t's synonyms then return t
 	end repeat
 	error "Wrong task name"
