@@ -164,6 +164,33 @@ script TestSetNonEmptyTask
 end script -- TestSetNonEmptyTask
 
 
+###################################################################################
+script TestSetShellCommands
+	property name : "Shell commands"
+	property parent : TestSet(me)
+	property tb : missing value
+	
+	on setUp()
+		ASMake's CommandLine's clear()
+		set my tb to a reference to ASMake's TaskBase
+		set my tb's PWD to POSIX path of TOPLEVEL's workingDir
+	end setUp
+	
+	on tearDown()
+		
+	end tearDown
+	
+	---------------------------------------------------------------------------------
+	script TestDryShell
+		property name : "Dry shell()"
+		property parent : UnitTest(me)
+		set ASMake's CommandLine's options to {"--dry"}
+		set expected to "cmd" & space & "'-x' 2>&1"
+		assertEqual(expected, shell of tb for "cmd" without executing given options:"-x", err:"&1")
+	end script
+end script -- TestSetShellCommands
+
+
 on BaseTestSet(aTestSet)
 	script
 		property parent : TestSet(aTestSet)
@@ -566,7 +593,7 @@ script TestSetFileHandlers
 			quoted form of "d/e"
 		assertEqual(expected, res)
 	end script
-
+	
 	---------------------------------------------------------------------------------
 	script TestSymlink
 		property name : "symlink()"
@@ -575,22 +602,6 @@ script TestSetFileHandlers
 		assertEqual(expected, tb's symlink("foo", "bar"))
 	end script
 end script -- TestSetFileHandlers
-
-
-###################################################################################
-script TestShellCommands
-	property name : "Shell commands"
-	property parent : BaseTestSet(me)
-	property tb : missing value
-	
-	---------------------------------------------------------------------------------
-	script TestShell
-		property name : "shell()"
-		property parent : UnitTest(me)
-		set expected to "cmd" & space & "'-x' 2>&1"
-		assertEqual(expected, shell of tb for "cmd" without executing given options:"-x", err:"&1")
-	end script
-end script -- TestShellCommands
 
 
 ###################################################################################
