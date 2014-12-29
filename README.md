@@ -24,8 +24,8 @@ It is recommended that you also define an alias in `~/.bashrc`:
 
 ## Makefiles
 
-Tasks are defined in an executable script conventionally called `makefile.applescript`
-(the script can be named as you like, but this is the convention I have adopted).
+Tasks are usually defined in an executable script called `makefile.applescript`
+(the script can can have any name, but this is the convention I have adopted).
 To make the script executable, open the terminal and type:
 
     chmod +x makefile.applescript
@@ -90,11 +90,47 @@ There is a number of handlers that one can use in a task, such as `osacompile()`
 and `echo()` shown above. They are all documented in the ASMake's source file.
 
 
+## Tasks with arguments
+
+Tasks may accept arguments from the command line. Each task defines a
+`shift()` handler to help processing a task's arguments: by calling `my shift()`
+you retrieve the next unprocessed argument, if any. Other than that, however,
+it is the responsibility of the task to deal correctly with its arguments.
+
+For example, you may define a `build` task accepting a parameter that
+specifies the type of build:
+
+    script build
+      property parent : Task(me)
+      set target to my shift()
+      if target is "dev" then
+        echo("dev build")
+      else if target is "production" then
+        echo("production build")
+      else
+        echo("Default build")
+      end if
+    end script
+
+You may run this task as follows:
+
+    asmake build dev
+
+You may also call this task without arguments:
+
+    asmake build
+
+In this case, `target` will be set to `missing value`.
+
+
 ## Tasks with dependencies
 
 A task may depend on other tasks. For example, an `install` task may depend on a
-`build` task. To specify dependencies, simply run the dependent scripts as needed.
-For example:
+`build` task. To specify dependencies, you simply run the dependent scripts
+as needed. Although you might use the `run` handler for such purpose, currently
+the recommended way is to invoke the `exec` handler, which has a single
+parameter corresponding to the list (or an object that can be
+coerced to a list) of the arguments for the task. For example:
 
     script build
       property parent : Task(me)
@@ -103,62 +139,31 @@ For example:
 
     script install
       property parent : Task(me)
-      run build -- Dependent task
-      (* other commands *)
+      tell build to exec:{} -- Dependent task with no arguments
+      -- run build -- equivalent to the above, but not recommended
+      (* further commands to install the built product *)
     end
 
-
-## Tasks with arguments
-
-Tasks may accept arguments from the command line. The arguments are automatically
-made available to every task through their `arguments` property, whose value is the `TaskArguments`
-script object defined in `ASMake.applescript`. The `TaskArguments` script defines a
-`shift()` handler to help processing the arguments (see the source code for the details),
-but other than that it is the responsibility of the task to deal correctly with its arguments.
-
-For example, you may define a `build` task that accepts a parameter that
-specifies the type of build:
-
-    script build
+    script productionBuild
       property parent : Task(me)
-      set tgt to my arguments's shift()
-      if tgt is "dev" then
-        echo("dev build")
-      else if tgt is "production" then
-        echo("production build")
-      else
-        echo("Default build")
-      end if
-    end script
-
-For example, you may run this task as follows:
-
-    asmake build dev
-
-You may also call this task without arguments:
-
-    asmake build
-
-In this case, the `tgt` variable will be `missing value`.
+      tell build to exec:"production" -- Dependent task with arguments
+    end
 
 
 ## Private tasks
 
 Sometimes it is useful to have tasks that are not called directly, but are used
-only as dependencies for other tasks. You may define a task as private by setting
-its `private` property to `true`:
+only as dependencies for other tasks. You may define a task as “private”
+by setting its `private` property to `true`:
 
     script PrivateTask
-      property private : true
       property parent : Task(me)
+      property private : true
       (* ... *)
     end
 
-Note that the order in which the properties are specified is important: you must
-put the `private` property _before_ the `parent` property, otherwise it will be
-ignored.
-
-Private tasks are not shown by `asmake help`.
+Private tasks are not shown by `asmake help` and cannot be invoked directly from
+the command line, but they can be run from other tasks.
 
 
 ## ASMake options
