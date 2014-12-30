@@ -477,10 +477,10 @@ script TestSetPathHandlers
 	script TestDirectoryPath
 		property name : "directoryPath()"
 		property parent : UnitTest(me)
-		assert(tb's directoryPath("a/b/c") ends with "a/b", "Assertion 1")
-		assert(tb's directoryPath("/a/b/c") ends with "/a/b", "Assertion 2")
-		assert(tb's directoryPath("a:b:c") ends with "/a/b", "Assertion 3")
-		assert(tb's directoryPath("a:b:c:") ends with "/a/b", "Assertion 4")
+		assertEqual("a/b", tb's directoryPath("a/b/c"))
+		assertEqual("/a/b", tb's directoryPath("/a/b/c"))
+		assertEqual("/a/b", tb's directoryPath("a:b:c"))
+		assertEqual("/a/b", tb's directoryPath("a:b:c:"))
 	end script
 	
 	---------------------------------------------------------------------------------

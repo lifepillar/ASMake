@@ -507,7 +507,7 @@ script TaskBase
 	
 	(*!
 		@abstract
-			Returns the absolute path of the directory containing the given path.
+			Returns the path of the directory containing the given path.
 			If the path has a trailing slash, it is stripped.
 		@param
 			somePath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
