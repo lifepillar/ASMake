@@ -893,7 +893,7 @@ script TaskBase
 	on emptyBundle at buildPath given name:bundleName : text
 		local scriptPath, dummyScript, didSucceed, theError
 		if bundleName does not end with ".scptd" then set bundleName to bundleName & ".scptd"
-		set scriptPath to current application's NSURL's fileURLWithPath:(joinPath(posixPath(buildPath), bundleName))
+		set scriptPath to current application's NSURL's fileURLWithPath:(joinPath(buildPath, bundleName))
 		set dummyScript to current application's OSAScript's alloc's Â
 			initWithSource:"" fromURL:(missing value) Â
 				languageInstance:(current application's OSALanguage's defaultLanguage()'s sharedLanguageInstance()) Â
@@ -908,77 +908,112 @@ script TaskBase
 	
 	(*!
 		@abstract
-			Builds a script bundle from source, including resources and script libraries.
+			TODO
 		@discussion
 			TODO
+	*)
+	on _compileScript(source, fromURL)
+		local theScript, didSucceed, theError
+		
+		odebug("_compileScript()")
+		set theScript to current application's OSAScript's alloc's initWithSource:source Â
+			fromURL:fromURL Â
+			languageInstance:(current application's OSALanguage's defaultLanguage()'s sharedLanguageInstance()) Â
+			usingStorageOptions:(current application's OSANull)
+		set {didSucceed, theError} to theScript's compileAndReturnError:(reference)
+		odebug("didSucceed: " & (didSucceed as text))
+		if not didSucceed then ofail("Compilation error", (theError as record)'s OSAScriptErrorMessageKey as text)
+		return theScript
+	end _compileScript
+	
+	(*!
+		@abstract
+			TODO
+		@discussion
+			TODO
+	*)
+	on _makeScript(source, fromURL, writeURL)
+		local theScript, didSucceed, theError
+		
+		set theScript to _compileScript(source, fromURL)
+		set {didSucceed, theError} to theScript's writeToURL:writeURL Â
+			ofType:(current application's OSAStorageScriptType) Â
+			usingStorageOptions:(current application's OSANull) |error|:(reference)
+		if not didSucceed then ofail("Could not write script", (theError as record)'s OSAScriptErrorMessageKey as text)
+	end _makeScript
+	
+	(*!
+		@abstract
+			TODO
+		@discussion
+			TODO
+	*)
+	on _makeBundle(source, fromURL, writeURL)
+		local theScript, didSucceed, theError
+		
+		set theScript to _compileScript(source, fromURL)
+		set {didSucceed, theError} to theScript's writeToURL:writeURL Â
+			ofType:(current application's OSAStorageScriptBundleType) Â
+			usingStorageOptions:(current application's OSANull) |error|:(reference)
+		odebug("_makeBundle succeeded: " & (didSucceed as text))
+		if not didSucceed then ofail("Could not write script", (theError as record)'s OSAScriptErrorMessageKey as text)
+	end _makeBundle
+	
+	(*!
+		@abstract
+			Builds a script bundle from source, including resources and script libraries.
+		@discussion
+			This handler assumes that the source files are organized in a 
+			specific way. TODO: describe
 		@param
 			sourceFile <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>:
 			path to the source file (a file with <code>.applescript</code> suffix).
 	*)
-	on makeScriptBundle(sourceFile)
-		set sharedLibFolder to joinPath(path to library folder from user domain, "Script Libraries")
-		set sourcePath to absolutePath(posixPath(sourceFile))
-		set {sourceFolder, scriptName} to splitPath(sourcePath)
-		set scriptLibrariesFolder to POSIX file joinPath(sourceFolder, "Resources/Script Libraries")
-		set scriptLibraries to {}
-		set compiledScriptLibraries to {}
-		odebug("Shared Folder: " & sharedLibFolder)
-		odebug("Project: " & projectFolder)
-		odebug("Name: " & scriptName)
-		odebug("Script Libraries folder: " & scriptLibrariesFolder)
-		-- Search for script libraries and build them recursively
-		odebug("Searching for script libraries...", "")
-		try
-			alias scriptLibrariesFolder -- does it exist?
-			set folderExists to true
-		on error
-			odebug("Folder does not exist")
-			set folderExists to false
-		end try
-		if folderExists then
-			tell application "Finder"
-				set scriptLibraries to Â
-					(every file of (entire contents of folder (scriptLibrariesFolder)) Â
-						whose name ends with ".applescript") as alias list
-			end tell
-			repeat with libSource in scriptLibraries
-				odebug("Building " & (libSource as text))
-				makeScriptBundle(libSource)
-			end repeat
-			odebug("Searching for compiled script libraries...")
-			tell application "Finder"
-				set compiledScriptLibraries to Â
-					(every file of (entire contents of folder (scriptLibrariesFolder)) Â
-						whose name ends with ".scptd" or name ends with ".scpt") as alias list
-			end tell
+	on makeBundle from sourceFile at buildLocation : missing value
+		local sourcePath, sourceDirectory, basename, buildPath
+		local bundlePath, sourceCode, encoding, theError
+		local mainScriptPath
+		
+		odebug("Starting makeBundle()")
+		set sourcePath to _fileURL(sourceFile)
+		odebug(sourcePath's |path| as text)
+		set sourceDirectory to sourcePath's URLByDeletingLastPathComponent
+		odebug(sourceDirectory's |path| as text)
+		set basename to sourcePath's lastPathComponent's stringByDeletingPathExtension
+		odebug(basename as text)
+		if buildLocation is missing value then
+			set buildPath to sourceDirectory's URLByAppendingPathComponent:"build" isDirectory:true
+			odebug(buildPath's |path| as text)
+		else
+			set buildPath to _fileURL(buildLocation)
 		end if
-		odebug({"compiledScriptLibraries: ", compiledScriptLibraries})
-		try
-			-- Alias each script library in a shared Script Libraries folder
-			repeat with lib in compiledScriptLibraries
-				makeAlias(lib, joinPath(sharedLibFolder, basename(lib)))
-			end repeat
-			-- Compile the script bundle
-			osacompile(joinPath(projectFolder, scriptName & ".applescript"), "scptd", {"-x"})
-			-- Remove the aliases
-			repeat with lib in compiledScriptLibraries
-				rm(joinPath(sharedLibFolder, basename(lib)))
-			end repeat
-		on error errMsg number errNum
-			repeat with lib in compiledScriptLibraries
-				rm(joinPath(sharedLibFolder, basename(lib)))
-			end repeat
-			error errMsg number errNum
-		end try
-		-- Move the script libraries in the bundle's Script Libraries folder
-		repeat with lib in compiledScriptLibraries
-			set {dir, base} to splitPath(lib)
-			mv(joinPath(dir, base & ".scptd"), scriptLibrariesFolder)
-		end repeat
-		-- Prepare Info.plist (use PlistBuddy?)
-		-- Copy other resources
-		-- Move the built product one level up
-	end makeScriptBundle
+		mkdir(buildPath's |path| as text)
+		
+		-- 0. Create empty bundle
+		set bundlePath to buildPath's URLByAppendingPathComponent:((basename as text) & ".scptd")
+		odebug(bundlePath's |path| as text)
+		_makeBundle("set to ", missing value, bundlePath)
+		
+		-- 1. If the Resources folder contains a Script Libraries folder,
+		-- recursively compile those scripts and put them in the bundle.
+		--if pathExists(joinPath(sourceDir, "Script Libraries")) then -- TODO: test with localized folders	
+		--end if
+		
+		-- 2. Read source file
+		set {sourceCode, encoding, theError} to Â
+			current application's NSString's stringWithContentsOfFile:(sourcePath's |path|) Â
+			usedEncoding:(reference) |error|:(reference)
+		if sourceCode is missing value then error "Could not open file: " & (theError as text) -- FIXME
+		
+		-- 3. Compile the main script passing the path of the dummy bundle as fromURL:
+		set mainScriptPath to bundlePath's URLByAppendingPathComponent:"Contents/Resources/Scripts/main.scpt"
+		_makeScript(sourceCode, bundlePath, mainScriptPath)
+		
+		-- 4. Copy resources
+		
+		-- 5. Prepare Info.plist (use PlistBuddy?)
+		
+	end makeBundle
 	
 	(*!
 		@abstract
