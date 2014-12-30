@@ -440,7 +440,13 @@ script TaskBase
 			<em>[text]</em> A full POSIX path.
 	*)
 	on absolutePath(somePath)
-		(_fileURL(somePath))'s |path| as text
+		local p
+		set p to (_fileURL(somePath))'s relativePath as text
+		if p starts with "/" then
+			return p
+		else
+			return my workingDirectory() & "/" & p
+		end if
 	end absolutePath
 	
 	(*!
