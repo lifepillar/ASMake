@@ -75,6 +75,63 @@ end script -- TestSetCoreASMake
 
 
 ###################################################################################
+script TestSetASMakeInternals
+	use framework "Foundation"
+	
+	property name : "Internals"
+	property parent : TestSet(me)
+	property aTask : missing value
+	
+	on setUp()
+		script
+			property name : "EmptyTask"
+			property parent : ASMake's Task(me)
+		end script
+		set aTask to the result
+	end setUp
+	
+	---------------------------------------------------------------------------------
+	script TestFileURLAbsPath
+		property name : "_fileURL() with absolute path"
+		property parent : UnitTest(me)
+		
+		assertEqual("/", aTask's _fileURL("/")'s relativePath as text)
+		assertEqual("/a/b/c", aTask's _fileURL("/a/b/c")'s relativePath as text)
+	end script
+	
+	---------------------------------------------------------------------------------
+	script TestFileURLRelPath
+		property name : "_fileURL() with relative path"
+		property parent : UnitTest(me)
+		
+		assertEqual("a/b/c", aTask's _fileURL("a/b/c")'s relativePath as text)
+	end script
+	
+	---------------------------------------------------------------------------------
+	script TestFileURLPathWithTilde
+		property name : "_fileURL() with path with tilde"
+		property parent : UnitTest(me)
+		
+		assertEqual(POSIX path of (path to home folder), Â
+			(aTask's _fileURL("~")'s relativePath as text) & "/") -- relativePath strips trailing slash
+	end script
+	
+	---------------------------------------------------------------------------------
+	script TestFileURLPathWithDots
+		property name : "_fileURL() with path with dots"
+		property parent : UnitTest(me)
+		
+		assertEqual(".", aTask's _fileURL("./")'s relativePath as text)
+		assertEqual("..", aTask's _fileURL("./..")'s relativePath as text)
+		assertEqual(POSIX path of TOPLEVEL's workingDir, (Â
+			aTask's _fileURL("./")'s |path| as text) & "/") -- |path| strips trailing slash
+		assertEqual(POSIX path of TOPLEVEL's workingDir, (Â
+			aTask's _fileURL("./..")'s |path| as text) & "/ASMake/") -- |path| strips trailing slash
+	end script
+end script -- TestSetASMakeInternals
+
+
+###################################################################################
 script TestSetEmptyTask
 	property name : "Empty task"
 	property parent : TestSet(me)
@@ -115,6 +172,46 @@ script TestSetEmptyTask
 		property parent : UnitTest(me)
 		ok(aTask's printSuccess)
 	end script
+end script -- TestSetEmptyTask
+
+
+###################################################################################
+script TestSetWorkingDirectory
+	property name : "Working directory"
+	property parent : TestSet(me)
+	property aTask : missing value
+	
+	on setUp()
+		script
+			property name : "EmptyTask"
+			property parent : ASMake's Task(me)
+		end script
+		set aTask to the result
+	end setUp
+	
+	---------------------------------------------------------------------------------
+	script TestWorkingDirectoryDefined
+		property name : "Working directory is set before running task"
+		property parent : UnitTest(me)
+		refuteNil(aTask's workingDirectory())
+	end script
+	
+	---------------------------------------------------------------------------------
+	script TestWorkingDirectoryPosix
+		property name : "Working directory path is of class text"
+		property parent : UnitTest(me)
+		assertInstanceOf(text, aTask's workingDirectory())
+	end script
+	
+	---------------------------------------------------------------------------------
+	script TestTaskWorkingDirectorySlashes
+		property name : "Working directory path starts and ends with slash"
+		property parent : UnitTest(me)
+		assert(aTask's workingDirectory() starts with "/", Â
+			"Working directory path is not an absolute path")
+		assert(aTask's workingDirectory() ends with "/", Â
+			"Working directory path does not have a trailing slash")
+	end script
 	
 	---------------------------------------------------------------------------------
 	script TestTaskWorkingDirectory
@@ -123,13 +220,11 @@ script TestSetEmptyTask
 		
 		-- This assumes that this test file, ASMake.applescript
 		-- and makefile.applescript are in the same folder.
-		refuteNil(aTask's workingDirectory())
 		set myPath to (path to me)
 		tell application "Finder" to set myFolder to (folder of myPath) as alias
-		assertEqual(POSIX path of myFolder, aTask's workingDirectory() & "/")
+		assertEqual(POSIX path of myFolder, aTask's workingDirectory())
 	end script
-end script -- TestSetEmptyTask
-
+end script -- TestSetWorkingDirectory
 
 ###################################################################################
 script TestSetNonEmptyTask

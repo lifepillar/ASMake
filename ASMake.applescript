@@ -272,14 +272,6 @@ script TaskBase
 		@abstract
 			Builds an NSURL object from the given path.
 		@discussion
-			This handler assumes that <tt>somePath</tt> is a directory if its POSIX version ends with a slash.
-			If it does not end with a slash, the handler examines the file system to determine
-			if <tt>somePath</tt> is a file or a directory. If <tt>somePath</tt> exists in the
-			file system and is a directory, the method appends a trailing slash.
-			If <tt>somePath</tt> does not exist in the file system, the handler assumes that
-			it represents a file and does not append a trailing slash.
-			This handler also removes all instances of <tt>.</tt> and <tt>..</tt>.
-
 			This handler is used internally by ASMake to build an NSURL. User code
 			should never call this directly.
 		@param
@@ -289,7 +281,11 @@ script TaskBase
 			<em>[current application's NSURL]</em> An NSURL object.
 	*)
 	on _fileURL(somePath)
-		(current application's NSURL's fileURLWithPath:(posixPath(somePath)))'s standardizedURL
+		local wd, s, p
+		set base to current application's NSURL's fileURLWithPath:workingDirectory() isDirectory:true
+		set s to (current application's NSString's stringWithString:posixPath(somePath))'s stringByExpandingTildeInPath as text
+		set p to (current application's NSURL's fileURLWithPath:s)
+		current application's NSURL's URLWithString:(p's relativeString) relativeToURL:base
 	end _fileURL
 	
 	(*!
@@ -332,17 +328,26 @@ script TaskBase
 		set the end of my _tasks to t
 	end addTask
 	
-	(*! @abstract Returns the POSIX path of the current directory. *)
+	(*! @abstract Returns the POSIX path of the current directory (with a trailing slash). *)
 	on workingDirectory()
 		my _pwd
 	end workingDirectory
 	
 	(*!
 		@abstract
-			Set the working directory to the specified path.
+			Sets the working directory to the specified path.
+		@param
+			somePath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+			A path.
 	*)
 	on setWorkingDirectory(somePath)
-		set my _pwd to absolutePath(somePath)
+		local base
+		set base to posixPath(somePath)
+		if base does not start with "/" then
+			error "Working directory must be set to an absolute path"
+		end if
+		if base does not end with "/" then set base to base & "/"
+		set my _pwd to base
 	end setWorkingDirectory
 	
 	
