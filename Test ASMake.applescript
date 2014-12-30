@@ -123,10 +123,10 @@ script TestSetASMakeInternals
 		
 		assertEqual(".", aTask's _fileURL("./")'s relativePath as text)
 		assertEqual("..", aTask's _fileURL("./..")'s relativePath as text)
-		assertEqual(POSIX path of TOPLEVEL's workingDir, (Â
-			aTask's _fileURL("./")'s |path| as text) & "/") -- |path| strips trailing slash
-		assertEqual(POSIX path of TOPLEVEL's workingDir, (Â
-			aTask's _fileURL("./..")'s |path| as text) & "/ASMake/") -- |path| strips trailing slash
+		assertEqual(POSIX path of TOPLEVEL's workingDir, Â
+			(aTask's _fileURL("./")'s |path| as text) & "/") -- |path| strips trailing slash
+		assertEqual(POSIX path of TOPLEVEL's workingDir, Â
+			(aTask's _fileURL("./..")'s |path| as text) & "/ASMake/") -- |path| strips trailing slash
 	end script
 end script -- TestSetASMakeInternals
 
@@ -431,9 +431,11 @@ script TestSetPathHandlers
 	script TestAbsolutePath
 		property name : "absolutePath()"
 		property parent : UnitTest(me)
-		assertEqual(tb's workingDirectory() & "/a/b/c", tb's absolutePath("a/b/c"))
-		assertEqual(tb's workingDirectory() & "/a/b/c", tb's absolutePath("a/b/c/"))
-		assertEqual(tb's workingDirectory() & "/a/b/c", tb's absolutePath(":a:b:c"))
+		assertEqual(tb's workingDirectory() & "a/b/c", tb's absolutePath("a/b/c"))
+		assertEqual(tb's workingDirectory() & "a/b/c", tb's absolutePath("a/b/c/"))
+		assertEqual(tb's workingDirectory() & "a/b/c", tb's absolutePath(":a:b:c"))
+		assertEqual(tb's workingDirectory() & "a/d", tb's absolutePath("a/./b/../d"))
+		assertEqual((POSIX path of (path to home folder)) & "a", tb's absolutePath("~/a/d/./../."))
 		assertKindOf(text, tb's absolutePath("/a/b/c"))
 		assertEqual("/a/b/c", tb's absolutePath("a:b:c:"))
 	end script
