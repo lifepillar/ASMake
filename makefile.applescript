@@ -37,7 +37,7 @@ on tasks()
 	script build
 		property parent : Task(me)
 		property description : "Build ASMake."
-		osacompile from "ASMake" given target:"scpt", options:"-x"
+		makeScriptBundle from "ASMake.applescript"
 	end script
 	
 	script clean
@@ -64,9 +64,11 @@ on tasks()
 		property dir : POSIX path of Â
 			((path to library folder from user domain) as text) & "Script Libraries"
 		property description : "Install ASMake in" & space & dir & "."
-		run build
-		mkdir(dir)
-		cp("ASMake.scpt", dir)
+		
+		tell build to exec:{}
+		rm_f(joinPath(dir, "ASMake.scptd"))
+		cp("build/ASMake.scptd", joinPath(dir, "ASMake.scptd"))
+		
 		ohai("ASMake installed in" & space & (dir as text))
 	end script
 	
