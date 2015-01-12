@@ -1412,9 +1412,11 @@ script TaskBase
  			rm
 	*)
 	on rm_f(somePaths)
-		try
-			rm(somePaths)
-		end try
+		repeat with p in somePaths
+			try
+				rm(p)
+			end try
+		end repeat
 	end rm_f
 	
 	(*!
