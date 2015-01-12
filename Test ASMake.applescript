@@ -92,41 +92,41 @@ script TestSetASMakeInternals
 	
 	---------------------------------------------------------------------------------
 	script TestFileURLAbsPath
-		property name : "_fileURL() with absolute path"
+		property name : "toNSURL() with absolute path"
 		property parent : UnitTest(me)
 		
-		assertEqual("/", aTask's _fileURL("/")'s relativePath as text)
-		assertEqual("/a/b/c", aTask's _fileURL("/a/b/c")'s relativePath as text)
+		assertEqual("/", aTask's toNSURL("/")'s relativePath as text)
+		assertEqual("/a/b/c", aTask's toNSURL("/a/b/c")'s relativePath as text)
 	end script
 	
 	---------------------------------------------------------------------------------
 	script TestFileURLRelPath
-		property name : "_fileURL() with relative path"
+		property name : "toNSURL() with relative path"
 		property parent : UnitTest(me)
 		
-		assertEqual("a/b/c", aTask's _fileURL("a/b/c")'s relativePath as text)
+		assertEqual("a/b/c", aTask's toNSURL("a/b/c")'s relativePath as text)
 	end script
 	
 	---------------------------------------------------------------------------------
 	script TestFileURLPathWithTilde
-		property name : "_fileURL() with path with tilde"
+		property name : "toNSURL() with path with tilde"
 		property parent : UnitTest(me)
 		
 		assertEqual(POSIX path of (path to home folder), Â
-			(aTask's _fileURL("~")'s relativePath as text) & "/") -- relativePath strips trailing slash
+			(aTask's toNSURL("~")'s relativePath as text) & "/") -- relativePath strips trailing slash
 	end script
 	
 	---------------------------------------------------------------------------------
 	script TestFileURLPathWithDots
-		property name : "_fileURL() with path with dots"
+		property name : "toNSURL() with path with dots"
 		property parent : UnitTest(me)
 		
-		assertEqual(".", aTask's _fileURL("./")'s relativePath as text)
-		assertEqual("..", aTask's _fileURL("./..")'s relativePath as text)
+		assertEqual(".", aTask's toNSURL("./")'s relativePath as text)
+		assertEqual("..", aTask's toNSURL("./..")'s relativePath as text)
 		assertEqual(POSIX path of TOPLEVEL's workingDir, Â
-			(aTask's _fileURL("./")'s |path| as text) & "/") -- |path| strips trailing slash
+			(aTask's toNSURL("./")'s |path| as text) & "/") -- |path| strips trailing slash
 		assertEqual(POSIX path of TOPLEVEL's workingDir, Â
-			(aTask's _fileURL("./..")'s |path| as text) & "/ASMake/") -- |path| strips trailing slash
+			(aTask's toNSURL("./..")'s |path| as text) & "/ASMake/") -- |path| strips trailing slash
 	end script
 end script -- TestSetASMakeInternals
 
@@ -474,13 +474,13 @@ script TestSetPathHandlers
 	end script
 	
 	---------------------------------------------------------------------------------
-	script TestDirectoryPath
-		property name : "directoryPath()"
+	script TestParentDirectory
+		property name : "parentDirectory()"
 		property parent : UnitTest(me)
-		assertEqual("a/b", tb's directoryPath("a/b/c"))
-		assertEqual("/a/b", tb's directoryPath("/a/b/c"))
-		assertEqual("/a/b", tb's directoryPath("a:b:c"))
-		assertEqual("/a/b", tb's directoryPath("a:b:c:"))
+		assertEqual("a/b", tb's parentDirectory("a/b/c"))
+		assertEqual("/a/b", tb's parentDirectory("/a/b/c"))
+		assertEqual("/a/b", tb's parentDirectory("a:b:c"))
+		assertEqual("/a/b", tb's parentDirectory("a:b:c:"))
 	end script
 	
 	---------------------------------------------------------------------------------
@@ -667,17 +667,17 @@ script TestSetFileHandlers
 	end script
 	
 	---------------------------------------------------------------------------------
-	script TestMkdir
-		property name : "mkdir()"
+	script TestMakePath
+		property name : "makePath()"
 		property parent : UnitTest(me)
-		set res to tb's mkdir({"a", "b/c", POSIX file "d/e"})
+		set res to tb's makePath({"a", "b/c", POSIX file "d/e"})
 		set expected to "/bin/mkdir" & space & quoted form of "-p" & space & Â
 			quoted form of "a" & space & Â
 			quoted form of "b/c" & space & Â
 			quoted form of "d/e"
 		assertEqual(expected, res)
 		set expected to "/bin/mkdir '-p' 'foo bar'"
-		assertEqual(expected, tb's mkdir("foo bar"))
+		assertEqual(expected, tb's makePath("foo bar"))
 	end script
 	
 	---------------------------------------------------------------------------------
