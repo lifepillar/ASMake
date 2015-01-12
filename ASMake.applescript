@@ -1195,11 +1195,7 @@ script TaskBase
 			workingDirectory()
 	*)
 	on toNSURL(aPath)
-		local base, s, p
-		set base to (my NSURL)'s fileURLWithPath:workingDirectory() isDirectory:true
-		set s to ((my NSString)'s stringWithString:posixPath(aPath))'s stringByExpandingTildeInPath
-		set p to (my NSURL)'s fileURLWithPath:s
-		(my NSURL)'s URLWithString:(p's relativeString) relativeToURL:base
+		(my NSURL)'s fileURLWithPath:(((my NSString)'s stringWithString:posixPath(aPath))'s stringByExpandingTildeInPath)
 	end toNSURL
 	
 	(*!
