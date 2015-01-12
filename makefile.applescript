@@ -43,7 +43,7 @@ on tasks()
 	script clean
 		property parent : Task(me)
 		property description : "Remove any generated products."
-		rm_f(glob({"*.scpt", "*.scptd"}))
+		rm_f(glob({"*.scpt", "*.scptd"}) & {"build"})
 	end script
 	
 	script clobber
