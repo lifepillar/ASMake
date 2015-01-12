@@ -1411,7 +1411,7 @@ script TaskBase
 		@seealso
  			rm
 	*)
-	on rm_f(somePaths)
+	on rm_f(somePaths as list)
 		repeat with p in somePaths
 			try
 				rm(p)
