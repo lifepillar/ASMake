@@ -1411,7 +1411,7 @@ script TaskBase
 		@seealso
  			rm
 	*)
-	on rm_f(somePaths as list)
+	on rm_f(somePaths as list) -- FIXME: not safe, it allows surprising conversions (e.g., from record)
 		repeat with p in somePaths
 			try
 				rm(p)
