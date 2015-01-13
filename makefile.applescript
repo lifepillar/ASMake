@@ -118,6 +118,11 @@ on tasks()
 		property description : "Print the task's arguments and exit."
 		property printSuccess : false
 		
+		if my debug or my dry or my verbose then echo("ASMake options:")
+		if my debug then ohai("Debug")
+		if my dry then ohai("Dry run")
+		if my verbose then ohai("Verbose")
+		if my argv is not {} then echo("Task arguments:")
 		repeat until my argv is {}
 			ohai(shift())
 		end repeat

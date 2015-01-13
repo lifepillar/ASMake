@@ -265,6 +265,16 @@ script TaskBase
 	*)
 	property argv : {}
 	
+	(*! @abstract Flag to determine whether debug mode should be turned on *)
+	property debug : false
+	
+	(*! @abstract Flag to determine whether the task should be run in dry mode. *)
+	property dry : false
+	
+	
+	(*! @abstract Flag to determine whether verbose mode should be turned on. *)
+	property verbose : false
+	
 	(*! @abstract Defines a list of aliases for this task. *)
 	property synonyms : {}
 	
@@ -923,8 +933,8 @@ script TaskBase
 			end if
 		end if
 		set command to command & space & (join(map(options, my quoteText), space)) & out & err
-		if verbose() then echo(command)
-		if dry() then return command
+		if my verbose then echo(command)
+		if my dry then return command
 		set command to "cd" & space & quoted form of workingDirectory() & ";" & command
 		if pass is missing value then
 			set output to (do shell script command administrator privileges privileges altering line endings ale)
@@ -932,7 +942,7 @@ script TaskBase
 			if username is missing value then set username to short user name of (system info)
 			set output to (do shell script command administrator privileges privileges user name username password pass altering line endings ale)
 		end if
-		if verbose() and output is not "" then echo(output)
+		if my verbose and output is not "" then echo(output)
 		return output
 	end shell
 	
@@ -1287,7 +1297,7 @@ script TaskBase
 	*)
 	on ditto(src, dst)
 		set flags to {}
-		if verbose() then set the end of flags to "-V"
+		if my verbose then set the end of flags to "-V"
 		shell for "/usr/bin/ditto" given options:flags & posixPaths(src) & posixPaths(dst)
 	end ditto
 	
@@ -1342,11 +1352,11 @@ script TaskBase
 		set src to absolutePath(source)
 		set tgt to absolutePath(target)
 		set {dir, base} to splitPath(tgt)
-		if verbose() then Â
+		if my verbose then Â
 			echo("Make alias at" & space & (dir as text) & space & Â
 				"to" & space & (src as text) & space & Â
 				"with name" & space & (base as text))
-		if not dry() then
+		if not my dry then
 			tell application "Finder" to make new alias file at POSIX file dir to POSIX file src with properties {name:base}
 		else
 			return {src, dir, base}
@@ -1443,8 +1453,8 @@ script TaskBase
 			if (theURL's |path| as text) is in forbiddenPaths then
 				error "ASMake is not allowed to delete" & space & (theURL's |path| as text)
 			end if
-			if verbose() then echo("Deleting" & space & (theURL's |path| as text))
-			if not dry() then _removeItem(theURL)
+			if my verbose then echo("Deleting" & space & (theURL's |path| as text))
+			if not my dry() then _removeItem(theURL)
 		end repeat
 	end rm
 	
@@ -1831,20 +1841,6 @@ script TaskBase
 		return tl
 	end tasks
 	
-	(*! @abstract To be overridden. *)
-	on debug()
-		false
-	end debug
-	
-	(*! @abstract To be overridden. *)
-	on dry()
-		false
-	end dry
-	
-	(*! @abstract To be overridden. *)
-	on verbose()
-		true
-	end verbose
 	
 	-----------------------------
 	-- Output-related handlers --
@@ -1887,20 +1883,6 @@ on Task(t)
 		property parent : TaskBase
 		property argv : {} -- Overrides parent property
 		
-		on debug()
-			CommandLine's debug()
-		end debug
-		
-		(*! @abstract Returns true if this is a dry run; returns false otherwise. *)
-		on dry()
-			CommandLine's dry()
-		end dry
-		
-		(*! @abstract Returns true if verbose mode is on; returns false otherwise. *)
-		on verbose()
-			CommandLine's verbose()
-		end verbose
-		
 		on echo(s)
 			Stdout's echo(s)
 		end echo
@@ -1914,7 +1896,7 @@ on Task(t)
 		end ohai
 		
 		on odebug(info)
-			if debug() then Stdout's odebug(info)
+			if my debug then Stdout's odebug(info)
 		end odebug
 		
 		on owarn(s)
@@ -2030,7 +2012,7 @@ on runTask(taskOptions)
 	try
 		t's exec:taskOptions
 		if t's printSuccess then Stdout's ohai("Success!")
-		if t's dry() then Stdout's ohai("(This was a dry run)")
+		if t's dry then Stdout's ohai("(This was a dry run)")
 	on error errMsg
 		Stdout's ofail("Task failed", errMsg)
 	end try
@@ -2039,7 +2021,12 @@ end runTask
 (*! @abstract The handler invoked by <tt>osascript</tt>. *)
 on run argv
 	CommandLine's parse(argv)
-	TaskBase's setWorkingDirectory((folder of file (path to me) of application "Finder") as text)
+	tell TaskBase
+		setWorkingDirectory((folder of file (path to me) of application "Finder") as text)
+		set its debug to CommandLine's debug()
+		set its dry to CommandLine's dry()
+		set its verbose to CommandLine's verbose()
+	end tell
 	-- Allow loading ASMake from text format with run script
 	if CommandLine's command is "__ASMAKE__LOAD__" then return me
 	runTask(CommandLine's taskOptions)
