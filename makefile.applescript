@@ -66,8 +66,14 @@ on tasks()
 		property description : "Install ASMake in" & space & dir & "."
 		
 		tell build to exec:{}
-		rm_f(joinPath(dir, "ASMake.scptd"))
+		
+		set targetPath to joinPath(dir, "ASMake.scptd")
+		if pathExists(targetPath) then
+			display dialog targetPath & space & "exists. Overwrite?"
+		end if
+		rm_f(targetPath)
 		cp("build/ASMake.scptd", joinPath(dir, "ASMake.scptd"))
+		
 		
 		ohai("ASMake installed in" & space & (dir as text))
 	end script
