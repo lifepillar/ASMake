@@ -34,28 +34,33 @@ on tasks()
 		shell for "open" given options:(dir & "/ASMake_applescript/index.html")
 	end script
 	
-	script build
-		property parent : Task(me)
-		property description : "Build ASMake."
-		makeScriptBundle from "ASMake.applescript"
-	end script
-	
 	script clean
 		property parent : Task(me)
 		property description : "Remove any generated products."
-		rm_f(glob({"*.scpt", "*.scptd"}) & {"build"})
+		
+		rm_f("build")
 	end script
 	
 	script clobber
 		property parent : Task(me)
 		property description : "Remove all temporary products."
-		run clean
+		
+		tell clean to exec:{}
 		rm_f({"Documentation", "README.html"})
+	end script
+	
+	script build
+		property parent : Task(me)
+		property description : "Build ASMake."
+		
+		tell clean to exec:{}
+		makeScriptBundle from "ASMake.applescript"
 	end script
 	
 	script doc
 		property parent : Task(me)
 		property description : "Compile the README."
+		
 		shell for "markdown" given options:{"-o", "README.html", "README.md"}
 	end script
 	
@@ -69,13 +74,16 @@ on tasks()
 		
 		set targetPath to joinPath(dir, "ASMake.scptd")
 		if pathExists(targetPath) then
-			display dialog targetPath & space & "exists. Overwrite?"
+			display alert Â
+				"A version of ASMake is already installed." message targetPath & space & Â
+				"exists. Overwrite?" as warning Â
+				buttons {"Cancel", "OK"} Â
+				default button Â
+				"Cancel" cancel button "Cancel"
 		end if
 		rm_f(targetPath)
-		cp("build/ASMake.scptd", joinPath(dir, "ASMake.scptd"))
-		
-		
-		ohai("ASMake installed in" & space & (dir as text))
+		cp("build/ASMake.scptd", targetPath)
+		ohai("ASMake installed at" & space & targetPath)
 	end script
 	
 	script test
