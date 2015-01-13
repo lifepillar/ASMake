@@ -537,6 +537,30 @@ script TaskBase
 	
 	(*!
 		@abstract
+			Sets a custom icon for the given file or directory.
+		@param
+			docURL <em>[NSURL]</em> The location of the document.
+		@param
+			imgURL <em>[NSURL]</em> The location of the icon file.
+		@return
+			Nothing.
+		@throws
+			An error if the icon cannot be set.
+	*)
+	on _setIcon(docURL, imgURL)
+		local ok
+		
+		set ok to current application's NSWorkspace's sharedWorkspace()'s Â
+			setIcon:(current application's NSImage's alloc's initByReferencingURL:imgURL) Â
+				forFile:(docURL's |path|) Â
+				options:0
+		if not ok then error "Could not set icon for " & (docURL's |path| as text)
+		
+		return
+	end _setIcon
+	
+	(*!
+		@abstract
 			Creates a symbolic link that points to the specified destination.
 		@param
 			aURL <em>[NSURL]</em> A file URL specifying the location where
@@ -1446,6 +1470,25 @@ script TaskBase
 		
 		return
 	end rm_f
+	
+	(*!
+		@abstract
+			Sets a custom icon for the given file or directory.
+		@param
+			docPath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+			The location of the document.
+		@param
+			imgPath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+			The location of the icon file.
+		@return
+			Nothing.
+		@throws
+			An error if the icon cannot be set.
+	*)
+	on setIcon(docPath, imgPath)
+		_setIcon(toNSURL(docPath), toNSURL(imgPath))
+	end setIcon
+	
 	(*!
 		@abstract
 			Creates a symbolic link.
