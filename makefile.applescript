@@ -72,7 +72,7 @@ on tasks()
 		
 		tell build to exec:{}
 		
-		set targetPath to joinPath(dir, "ASMake.scptd")
+		set targetPath to joinPath(dir, "com.lifepillar/ASMake.scptd")
 		if pathExists(targetPath) then
 			display alert Â
 				"A version of ASMake is already installed." message targetPath & space & Â

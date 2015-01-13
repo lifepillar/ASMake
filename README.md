@@ -36,7 +36,7 @@ The general structure of a makefile is as follows:
 
     #!/usr/bin/osascript
     use AppleScript version "2.4"
-    property parent : script "ASMake"
+    property parent : script "com.lifepillar/ASMake"
 
     on run argv
 	    continue run argv
