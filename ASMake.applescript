@@ -1388,15 +1388,26 @@ script TaskBase
 		@seealso
 			rm_f
 	*)
-	on rm(somePaths as list)
-		local theURL
+	on rm(somePaths)
+		local theURL, forbiddenPaths
 		
 		script Wrapper
-			property args : somePaths
+			property pathList : {}
 		end script
 		
-		repeat with f in every item of (a reference to Wrapper's args)
+		if the class of somePaths is list then
+			set Wrapper's pathList to somePaths
+		else
+			set Wrapper's pathList to {somePaths}
+		end if
+		
+		-- Some safety net...
+		set forbiddenPaths to {"/", workingDirectory(), toNSURL("~")'s |path| as text}
+		repeat with f in every item of (a reference to Wrapper's pathList)
 			set theURL to toNSURL(contents of f)
+			if (theURL's |path| as text) is in forbiddenPaths then
+				error "ASMake is not allowed to delete" & space & (theURL's |path| as text)
+			end if
 			if verbose() then echo("Deleting" & space & (theURL's |path| as text))
 			if not dry() then _removeItem(theURL)
 		end repeat
@@ -1408,17 +1419,29 @@ script TaskBase
 		@param
 			somePaths <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
 			A path or a list of paths.
+		@return
+			Nothing.
 		@seealso
  			rm
 	*)
-	on rm_f(somePaths as list) -- FIXME: not safe, it allows surprising conversions (e.g., from record)
-		repeat with p in somePaths
+	on rm_f(somePaths)
+		script Wrapper
+			property pathList : {}
+		end script
+		
+		if the class of somePaths is list then
+			set Wrapper's pathList to somePaths
+		else
+			set Wrapper's pathList to {somePaths}
+		end if
+		repeat with p in every item of (a reference to Wrapper's pathList)
 			try
 				rm(p)
 			end try
 		end repeat
+		
+		return
 	end rm_f
-	
 	(*!
 		@abstract
 			Creates a symbolic link.
