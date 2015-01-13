@@ -257,6 +257,14 @@ script TaskBase
 	*)
 	property _tasks : {}
 	
+	(*!
+		@abstract
+			Task-specific arguments.
+		@discussion
+			This property should be overridden by inheriting script objects.
+	*)
+	property argv : {}
+	
 	(*! @abstract Defines a list of aliases for this task. *)
 	property synonyms : {}
 	
@@ -1672,20 +1680,6 @@ script TaskBase
 	-- Utility handlers --
 	---------------------- 
 	
-	(*! @abstract Registers a task. *)
-	on addTask(t)
-		set the end of my _tasks to t
-	end addTask
-	
-	on debug()
-		CommandLine's debug()
-	end debug
-	
-	(*! @abstract Returns true if this is a dry run; returns false otherwise. *)
-	on dry()
-		CommandLine's dry()
-	end dry
-	
 	(*
 		@abstract
 			Filters the elements of a list using a boolean predicate.
@@ -1758,10 +1752,6 @@ script TaskBase
 		theResult
 	end map
 	
-	on odebug(info)
-		if debug() then continue odebug(info)
-	end odebug
-	
 	(* @abstract A wrapper around <tt>quoted form of</tt>. *)
 	on quoteText(s)
 		quoted form of s
@@ -1785,20 +1775,6 @@ script TaskBase
 		return theResult
 	end split
 	
-	(*! @abstract Returns the list of non-private tasks. *)
-	on tasks()
-		local tl
-		
-		set tl to {}
-		repeat with t in every item of (a reference to my _tasks)
-			if not t's private then
-				set the end of tl to t
-			end if
-		end repeat
-		
-		return tl
-	end tasks
-	
 	(*
 		@abstract
 			Applies a unary handler to every element of a list, replacing the element with the result.
@@ -1819,10 +1795,41 @@ script TaskBase
 		end repeat
 	end transform
 	
-	(*! @abstract Returns true if verbose mode is on; returns false otherwise. *)
-	on verbose()
-		CommandLine's verbose()
-	end verbose
+	
+	---------------------------
+	-- Task-related handlers --
+	---------------------------
+	
+	(*! @abstract Registers a task. *)
+	on addTask(t)
+		set the end of my _tasks to t
+	end addTask
+	
+	on exec:(argv as list)
+		set my argv to argv
+		run me
+	end exec:
+	
+	on shift()
+		if my argv is {} then return missing value
+		local v
+		set {v, my argv} to {the first item of my argv, the rest of my argv}
+		return v
+	end shift
+	
+	(*! @abstract Returns the list of non-private tasks. *)
+	on tasks()
+		local tl
+		
+		set tl to {}
+		repeat with t in every item of (a reference to my _tasks)
+			if not t's private then
+				set the end of tl to t
+			end if
+		end repeat
+		
+		return tl
+	end tasks
 end script -- TaskBase
 
 (*!
@@ -1836,26 +1843,32 @@ end script -- TaskBase
 		Every task script must inherit from <code>Task(me)</code>.
 *)
 on Task(t)
-	script NewTask
-		property parent : TaskBase
-		property argv : {} -- Task parameters
-		
-		on exec:(argv as list)
-			set my argv to argv
-			run me
-		end exec:
-		
-		on shift()
-			if my argv is {} then return missing value
-			local v
-			set {v, my argv} to {the first item of my argv, the rest of my argv}
-			return v
-		end shift
-	end script
-	
 	TaskBase's addTask(t)
 	
-	return NewTask
+	script
+		property parent : TaskBase
+		property argv : {} -- Overrides parent property
+		
+		on debug()
+			CommandLine's debug()
+		end debug
+		
+		on odebug(info)
+			if debug() then Stdout's odebug(info)
+		end odebug
+		
+		(*! @abstract Returns true if this is a dry run; returns false otherwise. *)
+		on dry()
+			CommandLine's dry()
+		end dry
+		
+		(*! @abstract Returns true if verbose mode is on; returns false otherwise. *)
+		on verbose()
+			CommandLine's verbose()
+		end verbose
+	end script
+	
+	return the result
 end Task
 
 -- Predefined tasks
