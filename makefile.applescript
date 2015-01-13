@@ -88,10 +88,11 @@ on tasks()
 	
 	script test
 		property parent : Task(me)
-		property description : "Run tests."
+		property description : "Build and run tests."
 		property printSuccess : false
-		osacompile from "Test ASMake"
-		set testSuite to load script POSIX file (my workingDirectory() & "/Test ASMake.scpt")
+		
+		makeScriptBundle from "test/Test ASMake.applescript" at "test"
+		set testSuite to load script POSIX file (my workingDirectory() & "/test/Test ASMake.scptd")
 		run testSuite
 	end script
 	

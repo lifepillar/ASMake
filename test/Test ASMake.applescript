@@ -4,29 +4,14 @@
 		Unit tests for ASMake.
 	@charset macintosh
 *)
-on _wd()
-	if current application's id is "com.apple.ScriptEditor2" or Â
-		current application's name starts with "Script Debugger" then
-		(folder of file (document 1's path as POSIX file) of application "Finder") as text
-	else if current application's name is in {"osacompile", "osascript"} then
-		((POSIX file (do shell script "pwd")) as text) & ":"
-	else
-		error "This file cannot be compiled with this application: " & current application's name
-	end if
-end _wd
-
-property TOPLEVEL : me
--- We assume that either this script is run from source, or it is run
--- from the same directory where it is compiled.
-property workingDir : _wd()
--- Run ASMake from source at compile time
-property ASMakePath : _wd() & "ASMake.applescript"
-property ASMake : run script (ASMakePath as alias) with parameters {"__ASMAKE__LOAD__"}
-
 use AppleScript version "2.4"
 use scripting additions
 use ASUnit : script "ASUnit" version "1.2.3"
+use ASMake : script "com.lifepillar/ASMake"
+
 property parent : ASUnit
+property TOPLEVEL : me
+property workingDir : missing value
 property suite : makeTestSuite("Suite of unit tests for ASMake")
 
 log "Testing ASMake v" & ASMake's version
