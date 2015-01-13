@@ -14,6 +14,7 @@ on run argv
 	
 	tell ASMake
 		its TaskBase's setWorkingDirectory(my dir)
+		set its defaultTask to "test"
 		set taskOptions to its CommandLine's parse(argv)
 		runTask(taskOptions)
 	end tell
@@ -40,7 +41,7 @@ on tasks()
 		property parent : Task(me)
 		property description : "Remove any generated products."
 		
-		rm_f(glob({"**/*.scpt","**/*.scptd"}) & {"build"})
+		rm_f(glob({"**/*.scpt", "**/*.scptd"}) & {"build"})
 	end script
 	
 	script clobber

@@ -14,6 +14,7 @@ use scripting additions
 property name : "ASMake"
 property id : "com.lifepillar.ASMake"
 property version : "0.2.1"
+property ASMake : me
 
 (*! @abstract A script object to help print colored output to the terminal. *)
 script Stdout
@@ -1888,9 +1889,14 @@ script HelpTask
 		end repeat
 	end repeat
 	repeat with t in tasks()
-		echo(my boldType & t's name & my reset & padding(t's name) & t's description)
+		if ASMake's defaultTask is in ({t's name} & t's synonyms) then
+			set default to "(Default)" & space
+		else
+			set default to ""
+		end if
+		echo(my boldType & t's name & my reset & padding(t's name) & default & t's description)
 		repeat with s in t's synonyms
-			echo(my boldType & s & my reset & padding(s) & "A synonym for" & space & my boldType & t's name & my reset & ".")
+			echo(my boldType & s & my reset & padding(s) & default & "A synonym for" & space & my boldType & t's name & my reset & ".")
 		end repeat
 	end repeat
 end script
@@ -1906,6 +1912,9 @@ script WorkDir
 	ohai(workingDirectory())
 end script
 
+(*! @abstract The name of the default task. *)
+property defaultTask : "help"
+
 (*!
 	@abstract
 		Retrieves the task specified by the user.
@@ -1917,6 +1926,10 @@ end script
 		An exception if the task is not found.
 *)
 on findTask(taskName)
+	if taskName is in {missing value, ""} then
+		set taskName to my defaultTask
+	end if
+	
 	script
 		property tasks : TaskBase's tasks()
 	end script
