@@ -12,12 +12,13 @@ on run argv
 	
 	tasks() -- Register tasks at runtime to be able to inherit from source code
 	
-	tell ASMake
-		its TaskBase's setWorkingDirectory(my dir)
-		set its defaultTask to "test"
-		set taskOptions to its CommandLine's parse(argv)
-		runTask(taskOptions)
-	end tell
+	script
+		property parent : ASMake
+		set my defaultTask to "test"
+		continue run argv
+	end script
+	
+	run the result
 end run
 
 on Task(t) -- Make Task() visible to nested scripts
