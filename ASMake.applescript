@@ -383,6 +383,10 @@ script TaskBase
 		aPath's stringByDeletingPathExtension's stringByAppendingPathExtension:newExtension
 	end _setPathExtension
 	
+	(*! @abstract Returns the path of the working directory as an NSString object. *)
+	on _workingDirectory()
+		(my NSFileManager)'s defaultManager()'s currentDirectoryPath
+	end _workingDirectory
 	
 	--------------------------------------------
 	-- Private file URL manipulation handlers --
@@ -1207,7 +1211,7 @@ script TaskBase
 			setWorkingDirectory()
 	*)
 	on workingDirectory()
-		(my NSFileManager)'s defaultManager()'s currentDirectoryPath as text
+		_workingDirectory() as text
 	end workingDirectory
 	
 	
