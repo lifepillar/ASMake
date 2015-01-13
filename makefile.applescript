@@ -3,15 +3,17 @@ use AppleScript version "2.4"
 use scripting additions
 
 property ASMake : missing value
+property dir : missing value
 
 on run argv
-	set ASMake to run script Â
-		(((folder of file (path to me) of application "Finder") as text) & "ASMake.applescript") as alias Â
+	set my dir to (folder of file (path to me) of application "Finder") as text
+	set ASMake to run script (my dir & "ASMake.applescript") as alias Â
 		with parameters {"__ASMAKE__LOAD__"}
 	
 	tasks() -- Register tasks at runtime to be able to inherit from source code
 	
 	tell ASMake
+		its TaskBase's setWorkingDirectory(my dir)
 		set taskOptions to its CommandLine's parse(argv)
 		runTask(taskOptions)
 	end tell
@@ -54,7 +56,7 @@ on tasks()
 		property description : "Build ASMake."
 		
 		tell clean to exec:{}
-		makeScriptBundle from "ASMake.applescript"
+		makeScriptBundle from "ASMake.applescript" at "build"
 	end script
 	
 	script doc
@@ -78,9 +80,9 @@ on tasks()
 				"A version of ASMake is already installed." message targetPath & space & Â
 				"exists. Overwrite?" as warning Â
 				buttons {"Cancel", "OK"} Â
-				default button Â
-				"Cancel" cancel button "Cancel"
+				default button "Cancel" cancel button "Cancel"
 		end if
+		
 		rm_f(targetPath)
 		cp("build/ASMake.scptd", targetPath)
 		ohai("ASMake installed at" & space & targetPath)
@@ -102,13 +104,15 @@ on tasks()
 		property synonyms : {"v"}
 		property description : "Print ASMake's version and exit."
 		property printSuccess : false
+		
 		set {n, v} to {name, version} of Â
-			(run script POSIX file (my workingDirectory() & "/ASMake.applescript") with parameters "__ASMAKE__LOAD__")
+			(run script POSIX file (workingDirectory() & "/src/ASMake.applescript") with parameters "__ASMAKE__LOAD__")
 		ohai(n & space & "v" & v)
 	end script
 	
-	script args
+	script args_example
 		property parent : Task(me)
+		property name : "example/args"
 		property description : "Print the task's arguments and exit."
 		property printSuccess : false
 		
