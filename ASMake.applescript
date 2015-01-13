@@ -4,7 +4,7 @@
  @abstract
  	A draft of a primitive replacement for rake, make, etc…, in pure AppleScript.
  @author Lifepillar
- @copyright 2014 Lifepillar
+ @copyright 2014–2015 Lifepillar
  @version 0.2.1
  @charset macintosh
 *)
