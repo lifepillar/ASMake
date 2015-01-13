@@ -1797,18 +1797,31 @@ script HelpTask
 	property name : "help"
 	property description : "Show the list of available tasks and exit."
 	property printSuccess : false
+	property maxWidth : 0
 	
-	set nameLen to 0
-	-- TODO: sort tasks alphabetically
-	repeat with t in tasks() -- find the longest name
-		if the length of t's name > nameLen then set nameLen to the length of t's name
-	end repeat
-	repeat with t in tasks()
+	on padding(taskName)
+		local spaces
+		
 		set spaces to space & space
-		repeat with i from 1 to nameLen - (length of t's name)
+		repeat with i from 1 to (my maxWidth) - (length of taskName)
 			set spaces to spaces & space
 		end repeat
-		echo(my boldType & t's name & my reset & spaces & t's description)
+		
+		return spaces
+	end padding
+	
+	-- TODO: sort tasks alphabetically
+	repeat with t in tasks() -- find the longest name
+		if the length of t's name > maxWidth then set maxWidth to the length of t's name
+		repeat with s in t's synonyms
+			if the length of s > maxWidth then set maxWidth to the length of s
+		end repeat
+	end repeat
+	repeat with t in tasks()
+		echo(my boldType & t's name & my reset & padding(t's name) & t's description)
+		repeat with s in t's synonyms
+			echo(my boldType & s & my reset & padding(s) & "A synonym for" & space & my boldType & t's name & my reset & ".")
+		end repeat
 	end repeat
 end script
 
