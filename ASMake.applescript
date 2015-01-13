@@ -57,7 +57,7 @@ script Stdout
 			<em>[text]</em> The text with suitable ANSI escape codes for the given color.
 	*)
 	on col(s, kolor)
-		set s to kolor & s & reset
+		set s to kolor & s & my reset
 	end col
 	
 	(*!
@@ -69,7 +69,7 @@ script Stdout
 			<em>[text]</em> The escape sequence for the bold version of the given color.
 	*)
 	on bb(kolor)
-		esc & "1;" & text -3 thru -1 of kolor
+		my esc & "1;" & text -3 thru -1 of kolor
 	end bb
 	
 	(*!
@@ -87,19 +87,19 @@ script Stdout
 	
 	(*! @abstract Prints a notice. *)
 	on ohai(msg)
-		echo(col("==>", green) & space & boldType & (msg as text) & reset)
+		echo(col("==>", my green) & space & my boldType & (msg as text) & my reset)
 	end ohai
 	
 	(*! @abstract Prints a failure message and exits. *)
 	on ofail(msg, info)
-		set msg to col("Fail:", red) & space & boldType & (msg as text) & reset
+		set msg to col("Fail:", my red) & space & my boldType & (msg as text) & my reset
 		echo(msg)
 		error info
 	end ofail
 	
 	(*! @abstract Prints a warning. *)
 	on owarn(msg)
-		echo(col("Warn:", red) & space & boldType & (msg as text) & reset)
+		echo(col("Warn:", my red) & space & my boldType & (msg as text) & my reset)
 	end owarn
 	
 	(*!
@@ -110,10 +110,10 @@ script Stdout
 	*)
 	on odebug(info)
 		if class of info is not list then
-			echo(col("DEBUG:", red) & space & boldType & (info as text) & reset)
+			echo(col("DEBUG:", my red) & space & my boldType & (info as text) & my reset)
 			return
 		end if
-		set msg to (col("DEBUG:", red) & space & boldType & (item 1 of info) as text) & reset
+		set msg to (col("DEBUG:", my red) & space & my boldType & (item 1 of info) as text) & my reset
 		repeat with i from 2 to count info
 			set msg to msg & linefeed & ((item i of info) as text)
 		end repeat
@@ -242,7 +242,7 @@ script TaskBase
 	property OSAShowStartupScreen : a reference to current application's OSAShowStartupScreen
 	
 	(*! @abstract The parent of this object. *)
-	property parent : Stdout
+	property parent : AppleScript
 	
 	(*! @abstract The class of a task object. *)
 	property class : "Task"
@@ -1830,6 +1830,44 @@ script TaskBase
 		
 		return tl
 	end tasks
+	
+	(*! @abstract To be overridden. *)
+	on debug()
+		false
+	end debug
+	
+	(*! @abstract To be overridden. *)
+	on dry()
+		false
+	end dry
+	
+	(*! @abstract To be overridden. *)
+	on verbose()
+		true
+	end verbose
+	
+	-----------------------------
+	-- Output-related handlers --
+	-----------------------------
+	on echo(s)
+		log s
+	end echo
+	
+	on ofail(s)
+		log "Fail:" & space & s
+	end ofail
+	
+	on ohai(s)
+		log "==>" & space & s
+	end ohai
+	
+	on odebug(s)
+		log "DEBUG:" & space & s
+	end odebug
+	
+	on owarn(s)
+		log "Warn:" & space & s
+	end owarn
 end script -- TaskBase
 
 (*!
@@ -1853,10 +1891,6 @@ on Task(t)
 			CommandLine's debug()
 		end debug
 		
-		on odebug(info)
-			if debug() then Stdout's odebug(info)
-		end odebug
-		
 		(*! @abstract Returns true if this is a dry run; returns false otherwise. *)
 		on dry()
 			CommandLine's dry()
@@ -1866,6 +1900,26 @@ on Task(t)
 		on verbose()
 			CommandLine's verbose()
 		end verbose
+		
+		on echo(s)
+			Stdout's echo(s)
+		end echo
+		
+		on ofail(s)
+			Stdout's ofail(s)
+		end ofail
+		
+		on ohai(s)
+			Stdout's ohai(s)
+		end ohai
+		
+		on odebug(info)
+			if debug() then Stdout's odebug(info)
+		end odebug
+		
+		on owarn(s)
+			Stdout's owarn(s)
+		end owarn
 	end script
 	
 	return the result
@@ -1880,6 +1934,8 @@ script HelpTask
 	property description : "Show the list of available tasks and exit."
 	property printSuccess : false
 	property maxWidth : 0
+	property boldType : Stdout's boldType
+	property reset : Stdout's reset
 	
 	on padding(taskName)
 		local spaces
