@@ -831,8 +831,8 @@ script TaskBase
 			repeat
 				set f to dirEnumerator's nextObject()
 				if f is missing value then exit repeat
+				set fsrc to _joinPath(srcURL, f)
 				if f's lastPathComponent is not in {"Scripts", "Script Libraries"} then
-					set fsrc to _joinPath(srcURL, f)
 					set fdst to _joinPath(destURL, f)
 					if _pathExists(fdst) then _removeItem(fdst) -- Overwrite existing item (e.g., applet.icns)
 					_copyItem(fsrc, fdst) -- deep copy
