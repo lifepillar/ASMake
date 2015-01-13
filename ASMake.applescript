@@ -14,6 +14,7 @@ use scripting additions
 property name : "ASMake"
 property id : "com.lifepillar.ASMake"
 property version : "0.2.1"
+property parent : AppleScript
 property ASMake : me
 
 (*! @abstract A script object to help print colored output to the terminal. *)
@@ -120,9 +121,6 @@ script Stdout
 	end odebug
 	
 end script -- Stdout
-
-(*! @abstract The parent of the top-level script. *)
-property parent : Stdout
 
 (*!
 	@abstract
@@ -1957,15 +1955,15 @@ on runTask(taskOptions)
 	try
 		set t to findTask(CommandLine's command)
 	on error errMsg
-		ofail("Unknown task: " & CommandLine's command, errMsg)
+		Stdout's ofail("Unknown task: " & CommandLine's command, errMsg)
 	end try
 	
 	try
 		t's exec:taskOptions
-		if t's printSuccess then ohai("Success!")
-		if t's dry() then ohai("(This was a dry run)")
+		if t's printSuccess then Stdout's ohai("Success!")
+		if t's dry() then Stdout's ohai("(This was a dry run)")
 	on error errMsg
-		ofail("Task failed", errMsg)
+		Stdout's ofail("Task failed", errMsg)
 	end try
 end runTask
 
