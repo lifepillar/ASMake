@@ -1920,9 +1920,11 @@ on findTask(taskName)
 	script
 		property tasks : TaskBase's tasks()
 	end script
-	repeat with t in (a reference to the result's tasks)
-		if taskName = t's name or taskName is in t's synonyms then return t
+	
+	repeat with t in every item of (a reference to the result's tasks)
+		if taskName = (contents of t)'s name or taskName is in (contents of t)'s synonyms then return t
 	end repeat
+	
 	error "Wrong task name"
 end findTask
 
