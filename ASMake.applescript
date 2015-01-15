@@ -1616,7 +1616,7 @@ script TaskBase
 			languageInstance, my OSAStorageApplicationType, my OSANull)
 	end makeApplication
 	
-	(*
+	(*!
 		@abstract
 			Creates an empty script bundle.
 		@param
@@ -1690,7 +1690,7 @@ script TaskBase
 	-- Utility handlers --
 	---------------------- 
 	
-	(*
+	(*!
 		@abstract
 			Filters the elements of a list using a boolean predicate.
 		@discussion
@@ -1762,7 +1762,7 @@ script TaskBase
 		theResult
 	end map
 	
-	(* @abstract A wrapper around <tt>quoted form of</tt>. *)
+	(*! @abstract A wrapper around <tt>quoted form of</tt>. *)
 	on quoteText(s)
 		quoted form of s
 	end quoteText
@@ -1785,7 +1785,7 @@ script TaskBase
 		return theResult
 	end split
 	
-	(*
+	(*!
 		@abstract
 			Applies a unary handler to every element of a list, replacing the element with the result.
 		@discussion
@@ -1845,22 +1845,28 @@ script TaskBase
 	-----------------------------
 	-- Output-related handlers --
 	-----------------------------
+	
+	(*! @abstract TODO. *)
 	on echo(s)
 		log s
 	end echo
 	
+	(*! @abstract TODO. *)
 	on ofail(s)
 		log "Fail:" & space & s
 	end ofail
 	
+	(*! @abstract TODO. *)
 	on ohai(s)
 		log "==>" & space & s
 	end ohai
 	
+	(*! @abstract TODO. *)
 	on odebug(s)
 		log "DEBUG:" & space & s
 	end odebug
 	
+	(*! @abstract TODO. *)
 	on owarn(s)
 		log "Warn:" & space & s
 	end owarn
@@ -1874,7 +1880,7 @@ end script -- TaskBase
 	@discussion
 		This handler is used to register a task at compile-time
 		and to set the parent of a script to @link TaskBase @/link.
-		Every task script must inherit from <code>Task(me)</code>.
+		Every task script should inherit from <code>Task(me)</code>.
 *)
 on Task(t)
 	TaskBase's addTask(t)
@@ -1971,7 +1977,7 @@ property defaultTask : "help"
 		taskName <em>[text]</em> The task name.
 	@return
 		The task specified by the user, if found.
-	@throw
+	@throws
 		An exception if the task is not found.
 *)
 on findTask(taskName)
