@@ -49,7 +49,7 @@ on tasks()
 		property parent : Task(me)
 		property description : "Remove all temporary products."
 		
-		tell clean to exec:{}
+		tell clean to execute
 		rm_f({"Documentation", "README.html"})
 	end script
 	
@@ -57,7 +57,7 @@ on tasks()
 		property parent : Task(me)
 		property description : "Build ASMake."
 		
-		tell clean to exec:{}
+		tell clean to execute
 		makeScriptBundle from "ASMake.applescript" at "build"
 	end script
 	
@@ -74,7 +74,7 @@ on tasks()
 			((path to library folder from user domain) as text) & "Script Libraries"
 		property description : "Install ASMake in" & space & dir & "."
 		
-		tell build to exec:{}
+		tell build to execute
 		
 		set targetPath to joinPath(dir, "com.lifepillar/ASMake.scptd")
 		if pathExists(targetPath) then

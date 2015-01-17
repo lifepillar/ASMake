@@ -1815,10 +1815,10 @@ script TaskBase
 		set the end of my _tasks to t
 	end addTask
 	
-	on exec:(argv as list)
+	on execute given arguments:argv as list : {}
 		set my argv to argv
 		run me
-	end exec:
+	end execute
 	
 	on shift()
 		if my argv is {} then return missing value
@@ -2016,7 +2016,7 @@ on runTask(taskOptions)
 	end try
 	
 	try
-		t's exec:taskOptions
+		tell t to execute given arguments:taskOptions
 		if t's printSuccess then Stdout's ohai("Success!")
 		if t's dry then Stdout's ohai("(This was a dry run)")
 	on error errMsg
