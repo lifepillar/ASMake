@@ -1,8 +1,7 @@
 (*!
  @header ASMake
- 	A simple AppleScript build library.
  @abstract
- 	A draft of a primitive replacement for rake, make, etc…, in pure AppleScript.
+ 	A simple build and task AppleScript script library.
  @author Lifepillar
  @copyright 2014–2015 Lifepillar
  @version 0.2.1
