@@ -15,6 +15,7 @@ property name : "ASMake"
 property id : "com.lifepillar.ASMake"
 property version : "0.2.1"
 property parent : AppleScript
+(*! @abstract The top-level script object. *)
 property ASMake : me
 
 (*! @abstract A script object to help print colored output to the terminal. *)
@@ -130,11 +131,7 @@ end script -- Stdout
 *)
 script CommandLine
 	property parent : AppleScript
-	property availableOptions : {Â
-		"--debug", "-D", Â
-		"--dry", "-n", Â
-		"--verbose", Â
-		"-v"}
+	property availableOptions : {"--debug", "-D", "--dry", "-n", "--verbose", "-v"}
 	
 	(*! @abstract The name of the task to be executed. *)
 	property command : ""
@@ -1349,15 +1346,19 @@ script TaskBase
 	*)
 	on makeAlias(source, target)
 		local src, tgt, dir, base
+		
 		set src to absolutePath(source)
 		set tgt to absolutePath(target)
 		set {dir, base} to splitPath(tgt)
-		if my verbose then Â
+		if my verbose then
 			echo("Make alias at" & space & (dir as text) & space & Â
 				"to" & space & (src as text) & space & Â
 				"with name" & space & (base as text))
+		end if
 		if not my dry then
-			tell application "Finder" to make new alias file at POSIX file dir to POSIX file src with properties {name:base}
+			tell application "Finder"
+				make new alias file at POSIX file dir to POSIX file src with properties {name:base}
+			end tell
 		else
 			return {src, dir, base}
 		end if
@@ -1815,11 +1816,27 @@ script TaskBase
 		set the end of my _tasks to t
 	end addTask
 	
+	(*!
+		@abstract
+			Executes this task.
+		@param
+			argv <em>[list]</em> The arguments to pass to this task.
+		@return
+			Nothing.
+		@throws
+			An error if the task cannot be run or the task fails.
+	*)
 	on execute given arguments:argv as list : {}
 		set my argv to argv
 		run me
 	end execute
 	
+	(*!
+		@abstract
+			Returns the first non-processed option from the list of options.
+		@discussion
+			The returned option is removed from the list of options.
+	*)
 	on shift()
 		if my argv is {} then return missing value
 		local v
@@ -1996,6 +2013,20 @@ on findTask(taskName)
 	error "Wrong task name"
 end findTask
 
+(*! @abstract The handler invoked by <tt>osascript</tt>. *)
+on run argv
+	CommandLine's parse(argv)
+	tell TaskBase
+		setWorkingDirectory((folder of file (path to me) of application "Finder") as text)
+		set its debug to CommandLine's debug()
+		set its dry to CommandLine's dry()
+		set its verbose to CommandLine's verbose()
+	end tell
+	-- Allow loading ASMake from text format with run script
+	if CommandLine's command is "__ASMAKE__LOAD__" then return me
+	runTask(CommandLine's taskOptions)
+end run
+
 (*!
 	@abstract
 		Executes a task.
@@ -2023,17 +2054,3 @@ on runTask(taskOptions)
 		Stdout's ofail("Task failed", errMsg)
 	end try
 end runTask
-
-(*! @abstract The handler invoked by <tt>osascript</tt>. *)
-on run argv
-	CommandLine's parse(argv)
-	tell TaskBase
-		setWorkingDirectory((folder of file (path to me) of application "Finder") as text)
-		set its debug to CommandLine's debug()
-		set its dry to CommandLine's dry()
-		set its verbose to CommandLine's verbose()
-	end tell
-	-- Allow loading ASMake from text format with run script
-	if CommandLine's command is "__ASMAKE__LOAD__" then return me
-	runTask(CommandLine's taskOptions)
-end run
