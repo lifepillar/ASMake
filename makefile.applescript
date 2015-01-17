@@ -50,7 +50,7 @@ on tasks()
 		property description : "Remove all temporary products."
 		
 		tell clean to exec:{}
-		rm_f({"Documentation", "README.html"})
+		rm_f("README.html")
 	end script
 	
 	script build
