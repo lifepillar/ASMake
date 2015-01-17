@@ -39,7 +39,7 @@ The general structure of a makefile is as follows:
     property parent : script "com.lifepillar/ASMake"
 
     on run argv
-	    continue run argv
+      continue run argv
     end run
 
     (* Tasks go here *)
@@ -67,11 +67,11 @@ e.g.:
 
     script versionTask
       property parent : Task(me)
-	    property name : "version"
-	    property synonyms : {"vers", "v"}
-	    property description : "Print my version and exit."
-	    property printSuccess : false
-	    echo("v1.0.0")
+      property name : "version"
+      property synonyms : {"vers", "v"}
+      property description : "Print my version and exit."
+      property printSuccess : false
+      echo("v1.0.0")
     end script
 
 This task can be invoked equivalently with:
