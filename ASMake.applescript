@@ -1819,16 +1819,16 @@ script TaskBase
 		@abstract
 			Executes this task.
 		@param
-			argv <em>[list]</em> The arguments to pass to this task.
+			args <em>[list]</em> The arguments to pass to this task.
 		@return
 			Nothing.
 		@throws
 			An error if the task cannot be run or the task fails.
 	*)
-	on execute given arguments:argv as list : {}
-		set my argv to argv
+	on exec:(args as list)
+		set my argv to args
 		run me
-	end execute
+	end exec:
 	
 	(*!
 		@abstract
@@ -2046,7 +2046,7 @@ on runTask(taskOptions)
 	end try
 	
 	try
-		tell t to execute given arguments:taskOptions
+		t's exec:taskOptions
 		if t's printSuccess then Stdout's ohai("Success!")
 		if t's dry then Stdout's ohai("(This was a dry run)")
 	on error errMsg

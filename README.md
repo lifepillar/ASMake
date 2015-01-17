@@ -128,8 +128,8 @@ In this case, `target` will be set to `missing value`.
 A task may depend on other tasks. For example, an `install` task may depend on a
 `build` task. To specify dependencies, you simply run the dependent scripts
 as needed. Although you might use the `run` handler for such purpose, currently
-the recommended way is to invoke the `execute` handler, which has a single
-optional parameter corresponding to the list (or an object that can be
+the recommended way is to invoke the `exec` handler, which has a single
+parameter corresponding to the list (or an object that can be
 coerced to a list) of the arguments for the task. For example:
 
     script build
@@ -139,14 +139,14 @@ coerced to a list) of the arguments for the task. For example:
 
     script install
       property parent : Task(me)
-      tell build to execute -- Dependent task with no arguments
+      tell build to exec:{} -- Dependent task with no arguments
       -- run build -- equivalent to the above, but not recommended
       (* further commands to install the built product *)
     end
 
     script productionBuild
       property parent : Task(me)
-      tell build to execute given arguments:"production" -- Dependent task with arguments
+      tell build to exec:"production" -- Dependent task with arguments
     end
 
 
