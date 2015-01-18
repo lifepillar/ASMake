@@ -1335,8 +1335,12 @@ script TaskBase
 		end if
 		
 		set targetDirURL to toNSURL(targetDirPath)
-		if not _isDirectory(targetDirURL) then
-			error (targetDirURL's |path| as text) & space & "is not a directory."
+		if _pathExists(targetDirURL) then
+			if not _isDirectory(targetDirURL) then
+				error (targetDirURL's |path| as text) & space & "is not a directory."
+			end if
+		else if not my dry then
+			_makePath(targetDirURL)
 		end if
 		
 		repeat with f in every item of (a reference to Wrapper's pathList)
@@ -1347,7 +1351,7 @@ script TaskBase
 					space & "into" & space & (targetDirURL's |path| as text))
 			end if
 			if not my dry then
-				if overwrite then
+				if overwrite and _pathExists(destURL) then
 					_removeItem(destURL)
 				end if
 				_copyItem(srcURL, destURL)
@@ -1538,8 +1542,12 @@ script TaskBase
 		end if
 		
 		set targetDirURL to toNSURL(targetDirPath)
-		if not _isDirectory(targetDirURL) then
-			error (targetDirURL's |path| as text) & space & "is not a directory."
+		if _pathExists(targetDirURL) then
+			if not _isDirectory(targetDirURL) then
+				error (targetDirURL's |path| as text) & space & "is not a directory."
+			end if
+		else if not my dry then
+			_makePath(targetDirURL)
 		end if
 		
 		repeat with f in every item of (a reference to Wrapper's pathList)
@@ -1550,7 +1558,7 @@ script TaskBase
 					space & "into" & space & (targetDirURL's |path| as text))
 			end if
 			if not my dry then
-				if overwrite then
+				if overwrite and _pathExists(destURL) then
 					_removeItem(destURL)
 				end if
 				_moveItem(srcURL, destURL)
