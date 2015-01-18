@@ -1422,19 +1422,29 @@ script TaskBase
 		end try
 	end readUTF8
 	
+	(*! @abstract See @link removeItems @/link. *)
+	on removeItem at somePath given forcing:force : false
+		removeItems at somePath given forcing:force
+	end removeItem
+	
 	(*!
 		@abstract
-			Deletes one or more paths.
+			Deletes one or file files or directories (with their content).
 		@param
 			somePaths <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
 			A path or a list of paths.
+		@param
+			forcing <em>[boolean]</em> A flag indicating whether an error should be raised
+			when an item cannot be deleted. When set to <tt>true</tt>.
+			no errors are reported.
+		@return
+			Nothing.
 		@throws
-			An error if a file cannot be deleted, for example because it does not exist.
-		@seealso
-			rm_f
+			Only if <tt>forcing</tt> is <tt>false</tt>. In such a case,
+			an error is thrown when a file cannot be deleted, for example because it does not exist.
 	*)
-	on rm(somePaths)
-		local theURL, forbiddenPaths
+	on removeItems at somePaths given forcing:force : false
+		local theURL, forbiddenPaths, errMessage
 		
 		script Wrapper
 			property pathList : {}
@@ -1454,39 +1464,15 @@ script TaskBase
 				error "ASMake is not allowed to delete" & space & (theURL's |path| as text)
 			end if
 			if my verbose then echo("Deleting" & space & (theURL's |path| as text))
-			if not my dry() then _removeItem(theURL)
+			if not my dry then
+				try
+					_removeItem(theURL)
+				on error errMsg
+					if not force then error errMsg
+				end try
+			end if
 		end repeat
-	end rm
-	
-	(*!
-		@abstract
-			Deletes one or more paths, suppressing errors.
-		@param
-			somePaths <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
-			A path or a list of paths.
-		@return
-			Nothing.
-		@seealso
- 			rm
-	*)
-	on rm_f(somePaths)
-		script Wrapper
-			property pathList : {}
-		end script
-		
-		if the class of somePaths is list then
-			set Wrapper's pathList to somePaths
-		else
-			set Wrapper's pathList to {somePaths}
-		end if
-		repeat with p in every item of (a reference to Wrapper's pathList)
-			try
-				rm(p)
-			end try
-		end repeat
-		
-		return
-	end rm_f
+	end removeItems
 	
 	(*!
 		@abstract

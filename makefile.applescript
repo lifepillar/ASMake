@@ -42,7 +42,7 @@ on tasks()
 		property parent : Task(me)
 		property description : "Remove any generated products."
 		
-		rm_f(glob({"**/*.scpt", "**/*.scptd"}) & {"build"})
+		removeItems at glob({"**/*.scpt", "**/*.scptd"}) & {"build"} with forcing
 	end script
 	
 	script clobber
@@ -50,7 +50,7 @@ on tasks()
 		property description : "Remove all temporary products."
 		
 		tell clean to exec:{}
-		rm_f("README.html")
+		removeItem at "README.html" with forcing
 	end script
 	
 	script build
@@ -85,7 +85,7 @@ on tasks()
 				default button "Cancel" cancel button "Cancel"
 		end if
 		
-		rm_f(targetPath)
+		removeItem at targetPath with forcing
 		cp("build/ASMake.scptd", targetPath)
 		ohai("ASMake installed at" & space & targetPath)
 	end script
