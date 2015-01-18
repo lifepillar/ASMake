@@ -123,7 +123,7 @@ on tasks()
 		property printSuccess : false
 		
 		set {n, v} to {name, version} of Â
-			(run script POSIX file (workingDirectory() & "/src/ASMake.applescript") with parameters "__ASMAKE__LOAD__")
+			(run script POSIX file (workingDirectory() & "/ASMake.applescript") with parameters "__ASMAKE__LOAD__")
 		ohai(n & space & "v" & v)
 	end script
 	
