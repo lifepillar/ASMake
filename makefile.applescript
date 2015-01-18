@@ -103,7 +103,6 @@ on tasks()
 	script versionTask
 		property parent : Task(me)
 		property name : "version"
-		property synonyms : {"v"}
 		property description : "Print ASMake's version and exit."
 		property printSuccess : false
 		

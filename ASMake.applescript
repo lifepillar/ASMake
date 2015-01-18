@@ -2139,7 +2139,6 @@ end script
 script WorkDir
 	property parent : Task(me)
 	property name : "wd"
-	property synonyms : {"pwd"}
 	property description : "Print the path of the working directory and exit."
 	property printSuccess : false
 	
