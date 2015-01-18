@@ -678,8 +678,8 @@ script TaskBase
 		set {ok, theError} to theScript's compileAndReturnError:(reference)
 		
 		if not ok then
-			error (theError as record)'s OSAScriptErrorMessage as text Â
-				number (theError as record)'s OSAScriptErrorNumber
+			error (theError as record)'s OSAScriptErrorMessageKey as text Â
+				number (theError as record)'s OSAScriptErrorNumberKey
 		end if
 		
 		set {ok, theError} to theScript's writeToURL:writeURL Â
@@ -687,8 +687,8 @@ script TaskBase
 			|error|:(reference)
 		
 		if not ok then
-			error (theError as record)'s OSAScriptErrorMessage as text Â
-				number (theError as record)'s OSAScriptErrorNumber
+			error (theError as record)'s OSAScriptErrorMessageKey as text Â
+				number (theError as record)'s OSAScriptErrorNumberKey
 		end if
 		
 		return
