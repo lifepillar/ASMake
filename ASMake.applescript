@@ -22,29 +22,29 @@ script Stdout
 	(*! @abstract The parent of this object. *)
 	property parent : AppleScript
 	(*! @abstract The basic escape sequence. *)
-	property esc : "\\033["
+	property esc : Çdata utxt001BÈ as Unicode text
 	(*! @abstract The escape sequence for black. *)
-	property black : esc & "0;30m"
+	property black : esc & "[0;30m"
 	(*! @abstract The escape sequence for blue. *)
-	property blue : esc & "0;34m"
+	property blue : esc & "[0;34m"
 	(*! @abstract The escape sequence for cyan. *)
-	property cyan : esc & "0;36m"
+	property cyan : esc & "[0;36m"
 	(*! @abstract The escape sequence for green. *)
-	property green : esc & "0;32m"
+	property green : esc & "[0;32m"
 	(*! @abstract The escape sequence for magenta. *)
-	property magenta : esc & "0;35m"
+	property magenta : esc & "[0;35m"
 	(*! @abstract The escape sequence for purple. *)
-	property purple : esc & "0;35m"
+	property purple : esc & "[0;35m"
 	(*! @abstract The escape sequence for red. *)
-	property red : esc & "0;31m"
+	property red : esc & "[0;31m"
 	(*! @abstract The escape sequence for yellow. *)
-	property yellow : esc & "0;33m"
+	property yellow : esc & "[0;33m"
 	(*! @abstract The escape sequence for white. *)
-	property white : esc & "0;37m"
+	property white : esc & "[0;37m"
 	(*! @abstract The escape sequence for bold type. *)
-	property boldType : esc & "1m"
+	property boldType : esc & "[1m"
 	(*! @abstract The reset escape sequence. *)
-	property reset : esc & "0m"
+	property reset : esc & "[0m"
 	
 	(*!
 		@abstract
@@ -81,8 +81,7 @@ script Stdout
 			colored terminal output can be obtained.
 	*)
 	on echo(msg)
-		set msg to do shell script "echo " & quoted form of msg without altering line endings
-		log text 1 thru -2 of msg -- Remove last linefeed
+		log msg
 	end echo
 	
 	(*! @abstract Prints a notice. *)
