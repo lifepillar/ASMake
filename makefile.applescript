@@ -86,7 +86,7 @@ on tasks()
 				default button "Cancel" cancel button "Cancel"
 		end if
 		
-		moveItem at "build/ASMake.scptd" into targetDir with overwriting
+		copyItem at "build/ASMake.scptd" into targetDir with overwriting
 		ohai("ASMake installed at" & space & targetPath)
 	end script
 	

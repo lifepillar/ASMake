@@ -1259,20 +1259,101 @@ script TaskBase
 	
 	(*!
 		@abstract
-			Copies one or more files to the specified destination.
+			Copies one or more files or directories to the specified destination.
 		@param
-			src <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			sourcePath <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
 			A path or a list of paths.
 		@param
-			dst <em>[text]</em>, <em>[file]</em>, <em>[alias]</em> The destination path.
+			targetDirPath <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>
+			The path of the directory where the items should be copied.
+		@param
+			overwrite <em>[boolean]</em> A flag indicating whether existing files and
+			directories in the destination should be overwritten.
+		@return
+			Nothing.
+		@throws
+			An error if an item cannot be copied.
+		@seealso
+			cp
 	*)
-	on cp(src as list, dst)
-		local destURL
+	on copyItem at sourcePath into targetDirPath given overwriting:overwrite : false
+		cp(sourcePath, targetDirPath, overwrite)
+	end copyItem
+	
+	(*!
+		@abstract
+			Copies one or more files or directories to the specified destination.
+		@param
+			sourcePath <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			A path or a list of paths.
+		@param
+			targetDirPath <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>
+			The path of the directory where the items should be copied.
+		@param
+			overwrite <em>[boolean]</em> A flag indicating whether existing files and
+			directories in the destination should be overwritten.
+		@return
+			Nothing.
+		@throws
+			An error if an item cannot be copied.
+		@seealso
+			cp
+	*)
+	on copyItems at sourcePaths into targetDirPath given overwriting:overwrite : false
+		cp(sourcePaths, targetDirPath, overwrite)
+	end copyItems
+	
+	(*!
+		@abstract
+			Copies one or more files or directories to the specified destination.
+		@param
+			sourcePath <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			A path or a list of paths.
+		@param
+			targetDirPath <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>
+			The path of the directory where the items should be copied.
+		@param
+			overwrite <em>[boolean]</em> A flag indicating whether existing files and
+			directories in the destination should be overwritten.
+		@return
+			Nothing.
+		@throws
+			An error if an item cannot be copied.
+	*)
+	on cp(sourcePath, targetDirPath, overwrite)
+		local targetDirURL, destURL, srcURL
 		
-		set destURL to toNSURL(dst)
-		repeat with f in src
-			_copyItem(toNSURL(f), destURL)
+		script Wrapper
+			property pathList : {}
+		end script
+		
+		if the class of sourcePath is list then
+			set Wrapper's pathList to sourcePath
+		else
+			set Wrapper's pathList to {sourcePath}
+		end if
+		
+		set targetDirURL to toNSURL(targetDirPath)
+		if not _isDirectory(targetDirURL) then
+			error (targetDirURL's |path| as text) & space & "is not a directory."
+		end if
+		
+		repeat with f in every item of (a reference to Wrapper's pathList)
+			set srcURL to toNSURL(contents of f)
+			set destURL to _joinPath(targetDirURL, _basename(srcURL))
+			if my verbose then
+				echo("Copying" & space & (srcURL's |path| as text) & Â
+					space & "into" & space & (targetDirURL's |path| as text))
+			end if
+			if not my dry then
+				if overwrite then
+					_removeItem(destURL)
+				end if
+				_copyItem(srcURL, destURL)
+			end if
 		end repeat
+		
+		return
 	end cp
 	
 	(*!
