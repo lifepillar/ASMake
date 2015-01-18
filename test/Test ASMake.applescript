@@ -11,7 +11,6 @@ use ASMake : script "com.lifepillar/ASMake"
 
 property parent : ASUnit
 property TOPLEVEL : me
-property workingDir : missing value
 property suite : makeTestSuite("Suite of unit tests for ASMake")
 
 log "Testing ASMake v" & ASMake's version
