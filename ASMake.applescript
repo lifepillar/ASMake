@@ -1011,6 +1011,7 @@ script TaskBase
 			or <code>p</code> itself if not trailing slash is present.
 	*)
 	on deslash(p)
+		if p is "/" then return p
 		if the last character of p is not "/" then return p
 		local i
 		set i to 0

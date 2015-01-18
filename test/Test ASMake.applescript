@@ -456,6 +456,7 @@ script TestSetPathHandlers
 		assertEqual("a", tb's deslash("a"))
 		assertEqual("a", tb's deslash("a/"))
 		assertEqual("a", tb's deslash("a//"))
+		assertEqual("/", tb's deslash("/"))
 	end script
 	
 	---------------------------------------------------------------------------------
