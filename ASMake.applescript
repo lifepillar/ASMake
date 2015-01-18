@@ -1422,28 +1422,43 @@ script TaskBase
 		end try
 	end readUTF8
 	
-	(*! @abstract See @link removeItems @/link. *)
+	(*!
+		@abstract
+			Deletes one or more files or directories (with their content).
+		@see
+			rm
+	*)
 	on removeItem at somePath given forcing:force : false
-		removeItems at somePath given forcing:force
+		rm(somePath, force)
 	end removeItem
 	
 	(*!
 		@abstract
-			Deletes one or file files or directories (with their content).
+			Deletes one or more files or directories (with their content).
+		@see
+			rm
+	*)
+	on removeItems at somePaths given forcing:force : false
+		rm(somePaths, force)
+	end removeItems
+	
+	(*!
+		@abstract
+			Deletes one or more files or directories (with their content).
 		@param
 			somePaths <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
 			A path or a list of paths.
 		@param
-			forcing <em>[boolean]</em> A flag indicating whether an error should be raised
-			when an item cannot be deleted. When set to <tt>true</tt>.
+			force <em>[boolean]</em> A flag indicating whether an error should be raised
+			when an item cannot be deleted. When set to <tt>true</tt>,
 			no errors are reported.
 		@return
 			Nothing.
 		@throws
-			Only if <tt>forcing</tt> is <tt>false</tt>. In such a case,
-			an error is thrown when a file cannot be deleted, for example because it does not exist.
+			Only if <tt>force</tt> is <tt>false</tt>. In such a case,
+			an error is thrown when an item cannot be deleted, for example because it does not exist.
 	*)
-	on removeItems at somePaths given forcing:force : false
+	on rm(somePaths, force as boolean)
 		local theURL, forbiddenPaths, errMessage
 		
 		script Wrapper
@@ -1472,7 +1487,7 @@ script TaskBase
 				end try
 			end if
 		end repeat
-	end removeItems
+	end rm
 	
 	(*!
 		@abstract
