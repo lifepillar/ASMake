@@ -1978,6 +1978,36 @@ script TaskBase
 		set the end of my _tasks to t
 	end addTask
 	
+	(*! @abstract Returns the list of non-private tasks. *)
+	on tasks()
+		local tl
+		
+		set tl to {}
+		repeat with t in every item of (a reference to my _tasks)
+			if not t's private then
+				set the end of tl to t
+			end if
+		end repeat
+		
+		return tl
+	end tasks
+	
+	(*!
+		@abstract
+			Returns the first non-processed option from the list of options.
+		@discussion
+			The returned option is removed from the list of options.
+	*)
+	on shift()
+		if my argv is {} then
+			return missing value
+		end if
+		
+		local v
+		set {v, my argv} to {the first item of my argv, the rest of my argv}
+		return v
+	end shift
+	
 	(*!
 		@abstract
 			Executes this task.
@@ -1993,33 +2023,8 @@ script TaskBase
 		run me
 	end exec:
 	
-	(*!
-		@abstract
-			Returns the first non-processed option from the list of options.
-		@discussion
-			The returned option is removed from the list of options.
-	*)
-	on shift()
-		if my argv is {} then return missing value
-		local v
-		set {v, my argv} to {the first item of my argv, the rest of my argv}
-		return v
-	end shift
-	
-	(*! @abstract Returns the list of non-private tasks. *)
-	on tasks()
-		local tl
-		
-		set tl to {}
-		repeat with t in every item of (a reference to my _tasks)
-			if not t's private then
-				set the end of tl to t
-			end if
-		end repeat
-		
-		return tl
-	end tasks
-	
+	on _iamhereonlyforheaderdocnottoscrewup()
+	end _iamhereonlyforheaderdocnottoscrewup
 	
 	-----------------------------
 	-- Output-related handlers --
