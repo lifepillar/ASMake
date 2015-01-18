@@ -57,9 +57,8 @@ script TestSetCoreASMake
 	end script
 end script -- TestSetCoreASMake
 
-
 ###################################################################################
-script TestSetASMakeInternals
+script TestSetToNSURL
 	use framework "Foundation"
 	
 	property name : "Internals"
@@ -69,7 +68,7 @@ script TestSetASMakeInternals
 	on setUp()
 		script
 			property name : "EmptyTask"
-			property parent : ASMake's Task(me)
+			property parent : ASMake's TaskBase
 		end script
 		set aTask to the result
 	end setUp
@@ -81,6 +80,8 @@ script TestSetASMakeInternals
 		
 		assertEqual("/", aTask's toNSURL("/")'s relativePath as text)
 		assertEqual("/a/b/c", aTask's toNSURL("/a/b/c")'s relativePath as text)
+		assertEqual("/", aTask's toNSURL("/")'s |path| as text)
+		assertEqual("/a/b/c", aTask's toNSURL("/a/b/c")'s |path| as text)
 	end script
 	
 	---------------------------------------------------------------------------------
@@ -89,6 +90,7 @@ script TestSetASMakeInternals
 		property parent : UnitTest(me)
 		
 		assertEqual("a/b/c", aTask's toNSURL("a/b/c")'s relativePath as text)
+		assertEqual(aTask's workingDirectory() & "/a/b/c", aTask's toNSURL("a/b/c")'s |path| as text)
 	end script
 	
 	---------------------------------------------------------------------------------
@@ -98,6 +100,16 @@ script TestSetASMakeInternals
 		
 		assertEqual(POSIX path of (path to home folder), Â
 			(aTask's toNSURL("~")'s relativePath as text) & "/") -- relativePath strips trailing slash
+		assertEqual(POSIX path of (path to home folder), Â
+			(aTask's toNSURL("~")'s |path| as text) & "/") -- |path| strips trailing slash
+		assertEqual(POSIX path of (path to home folder), Â
+			(aTask's toNSURL("~/")'s relativePath as text) & "/")
+		assertEqual(POSIX path of (path to home folder), Â
+			(aTask's toNSURL("~/")'s |path| as text) & "/")
+		assertEqual(POSIX path of (path to home folder) & "xyz", Â
+			aTask's toNSURL("~/xyz/")'s relativePath as text)
+		assertEqual(POSIX path of (path to home folder) & "xyz", Â
+			aTask's toNSURL("~/xyz/")'s |path| as text)
 	end script
 	
 	---------------------------------------------------------------------------------
@@ -107,10 +119,23 @@ script TestSetASMakeInternals
 		
 		assertEqual(".", aTask's toNSURL("./")'s relativePath as text)
 		assertEqual("..", aTask's toNSURL("./..")'s relativePath as text)
-		assertEqual(POSIX path of TOPLEVEL's workingDir, Â
-			(aTask's toNSURL("./")'s |path| as text) & "/") -- |path| strips trailing slash
-		assertEqual(POSIX path of TOPLEVEL's workingDir, Â
-			(aTask's toNSURL("./..")'s |path| as text) & "/ASMake/") -- |path| strips trailing slash
+		assertEqual(aTask's workingDirectory(), Â
+			aTask's toNSURL("./")'s |path| as text)
+		assertEqual(aTask's workingDirectory(), Â
+			aTask's toNSURL(".")'s |path| as text)
+		assertEqual(aTask's workingDirectory(), Â
+			aTask's toNSURL("./foobar/..")'s |path| as text)
+		assertEqual(aTask's workingDirectory(), Â
+			aTask's toNSURL("./foobar/..")'s |path| as text)
+	end script
+	
+	script TestFileURLStandardization
+		property name : "toNSURL()'s |path| is standardized"
+		property parent : UnitTest(me)
+		
+		assertEqual("/a/b/c", aTask's toNSURL("/a/../b/./c")'s |path| as text)
+		--		assertEqual("/a/b/c", aTask's toNSURL("/./a/b/../b/./c/d/../")'s |path| as text)
+		--		assertEqual("/a/b/c", aTask's toNSURL("/./a/b/../b/./c/d/..")'s |path| as text)
 	end script
 end script -- TestSetASMakeInternals
 
