@@ -14,7 +14,7 @@ on run argv
 	
 	script
 		property parent : ASMake
-		set my defaultTask to "test"
+		set my defaultTask to "test/run"
 		continue run argv
 	end script
 	
@@ -90,14 +90,24 @@ on tasks()
 		ohai("ASMake installed at" & space & targetPath)
 	end script
 	
+	script BuildTests
+		property parent : Task(me)
+		property name : "test/build"
+		property description : "Build tests, but do not run them."
+		
+		makeScriptBundle from "test/Test ASMake.applescript" at "test"
+	end script
+	
 	script test
 		property parent : Task(me)
+		property name : "test/run"
 		property description : "Build and run tests."
 		property printSuccess : false
 		
-		makeScriptBundle from "test/Test ASMake.applescript" at "test"
-		set testSuite to load script POSIX file (my workingDirectory() & "/test/Test ASMake.scptd")
-		run testSuite
+		tell build_tests to exec:{}
+		ohai("Tests built")
+		owarn("Due to bugs in OS X Yosemite, tests cannot be run from the makefile.")
+		owarn("Please run the tests with `osascript 'test/Test ASMake.scptd'`")
 	end script
 	
 	script versionTask
