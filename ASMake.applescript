@@ -1194,7 +1194,7 @@ script TaskBase
 		@throws
 			An error if the working directory cannot be changed.
 		@seealso
-			workingDirectory()
+			workingDirectory
 	*)
 	on setWorkingDirectory(aPath)
 		set ok to (my NSFileManager)'s defaultManager()'s changeCurrentDirectoryPath:posixPath(aPath)
@@ -1233,7 +1233,7 @@ script TaskBase
 		@return
 			<em>[NSURL]</em> An NSURL object.
 		@seealso
-			workingDirectory()
+			workingDirectory
 	*)
 	on toNSURL(aPath)
 		(my NSURL)'s fileURLWithPath:(((my NSString)'s stringWithString:posixPath(aPath))'s stringByExpandingTildeInPath)
@@ -1245,7 +1245,7 @@ script TaskBase
 		@return
 			<em>[text]</em> The POSIX path of the working directory.
 		@seealso
-			setWorkingDirectory()
+			setWorkingDirectory
 	*)
 	on workingDirectory()
 		_workingDirectory() as text
