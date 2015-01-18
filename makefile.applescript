@@ -108,6 +108,12 @@ on tasks()
 		ohai("Tests built")
 		owarn("Due to bugs in OS X Yosemite, tests cannot be run from the makefile.")
 		owarn("Please run the tests with `osascript 'test/Test ASMake.scptd'`")
+		-- This method causes a segfault unless ASMake is installed in a shared location:
+		--local t
+		--set t to load script POSIX file (workingDirectory() & "/test/Test ASMake.scptd")
+		--run t
+		-- This method does not output anything (and needs ASMake installed):
+		--run script POSIX file (workingDirectory() & "/test/Test ASMake.applescript")
 	end script
 	
 	script VersionTask
