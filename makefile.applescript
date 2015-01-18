@@ -98,19 +98,19 @@ on tasks()
 		makeScriptBundle from "test/Test ASMake.applescript" at "test"
 	end script
 	
-	script test
+	script RunTests
 		property parent : Task(me)
 		property name : "test/run"
 		property description : "Build and run tests."
 		property printSuccess : false
 		
-		tell build_tests to exec:{}
+		tell BuildTests to exec:{}
 		ohai("Tests built")
 		owarn("Due to bugs in OS X Yosemite, tests cannot be run from the makefile.")
 		owarn("Please run the tests with `osascript 'test/Test ASMake.scptd'`")
 	end script
 	
-	script versionTask
+	script VersionTask
 		property parent : Task(me)
 		property name : "version"
 		property description : "Print ASMake's version and exit."
@@ -121,7 +121,7 @@ on tasks()
 		ohai(n & space & "v" & v)
 	end script
 	
-	script args_example
+	script ArgsExample
 		property parent : Task(me)
 		property name : "example/args"
 		property description : "Print the task's arguments and exit."
