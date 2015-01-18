@@ -76,7 +76,8 @@ on tasks()
 		
 		tell build to exec:{}
 		
-		set targetPath to joinPath(dir, "com.lifepillar/ASMake.scptd")
+		set targetDir to joinPath(dir, "com.lifepillar")
+		set targetPath to joinPath(targetDir, "ASMake.scptd")
 		if pathExists(targetPath) then
 			display alert Â
 				"A version of ASMake is already installed." message targetPath & space & Â
@@ -85,8 +86,7 @@ on tasks()
 				default button "Cancel" cancel button "Cancel"
 		end if
 		
-		removeItem at targetPath with forcing
-		cp("build/ASMake.scptd", targetPath)
+		moveItem at "build/ASMake.scptd" into targetDir with overwriting
 		ohai("ASMake installed at" & space & targetPath)
 	end script
 	

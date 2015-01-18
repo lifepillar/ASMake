@@ -484,9 +484,10 @@ script TaskBase
 			If the item at <tt>srcURL</tt> is a directory, this handler
 			moves the directory and all of its contents, including any hidden files.
 		@param
-			srcURL <em>[NSURL]</em> The file URL that identifies to be moved.
+			srcURL <em>[NSURL]</em> The file URL that identifies the item to be moved.
 		@param
 			destURL <em>[NSURL]</em> The new location for the item in <tt>srcURL</tt>.
+			This file URL must include the name of the file or directory in its new location.
 		@return
 			Nothing.
 		@throws
@@ -1378,29 +1379,109 @@ script TaskBase
 	
 	(*!
 		@abstract
-			Moves one or more files to the specified path.
-		@discussion
-			This handler does not overwrite the target if it exists.
+			Moves one or more files or directories to the specified destination.
 		@param
-			src <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			sourcePath <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			A path or a list of paths.
+		@param
+			targetDirPath <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>
+			The path of the directory where the items should be moved.
+		@param
+			overwriting <em>[boolean]</em> A flag indicating whether the destination path
+			should be overwritten.
+		@return
+			Nothing.
+		@throws
+			An error if an item cannot be moved.
+		@seealso
+			mv
+	*)
+	on moveItem at sourcePath into targetDirPath given overwriting:overwrite : false
+		mv(sourcePath, targetDirPath, overwrite)
+	end moveItem
+	
+	(*!
+		@abstract
+			Moves one or more files or directories to the specified destination.
+		@param
+			sourcePath <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			A path or a list of paths.
+		@param
+			targetDirPath <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>
+			The path of the directory where the items should be moved.
+		@param
+			overwriting <em>[boolean]</em> A flag indicating whether the destination path
+			should be overwritten.
+		@return
+			Nothing.
+		@throws
+			An error if an item cannot be moved.
+		@seealso
+			mv
+	*)
+	on moveItems at sourcePaths into targetDirPath given overwriting:overwrite : false
+		mv(sourcePaths, targetDirPath, overwrite)
+	end moveItems
+	
+	(*!
+		@abstract
+			Moves one or more files or directories to the specified destination.
+		@discussion
+			Do not use this handler to rename a file or directory!
+		@param
+			sourcePath <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
 			A path or a ist of paths.
 		@param
-			dst <em>[text]</em>, <em>[file]</em>, <em>[alias]</em> The destination path.
+			targetDirPath <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>
+			The path of the directory where the items should be moved.
+		@param
+			overwrite <em>[boolean]</em> A flag indicating whether the destination path
+			should be overwritten.
+		@return
+			Nothing.
+		@throws
+			An error if an item cannot be moved.
 	*)
-	on mv(src as list, dst)
-		local destURL
+	on mv(sourcePath, targetDirPath, overwrite)
+		local targetDirURL, destURL, srcURL
 		
-		set destURL to toNSURL(dst)
-		repeat with f in src
-			_moveItem(toNSURL(f), destURL)
+		script Wrapper
+			property pathList : {}
+		end script
+		
+		if the class of sourcePath is list then
+			set Wrapper's pathList to sourcePath
+		else
+			set Wrapper's pathList to {sourcePath}
+		end if
+		
+		set targetDirURL to toNSURL(targetDirPath)
+		if not _isDirectory(targetDirURL) then
+			error (targetDirURL's |path| as text) & space & "is not a directory."
+		end if
+		
+		repeat with f in every item of (a reference to Wrapper's pathList)
+			set srcURL to toNSURL(contents of f)
+			set destURL to _joinPath(targetDirURL, _basename(srcURL))
+			if my verbose then
+				echo("Moving" & space & (srcURL's |path| as text) & Â
+					space & "into" & space & (targetDirURL's |path| as text))
+			end if
+			if not my dry then
+				if overwrite then
+					_removeItem(destURL)
+				end if
+				_moveItem(srcURL, destURL)
+			end if
 		end repeat
+		
+		return
 	end mv
 	
 	(*! @abstract TODO *)
 	on readFile(aPath)
 		_readFile(toNSURL(aPath)) as text
 	end readFile
-	
 	
 	(*!
 		@abstract
