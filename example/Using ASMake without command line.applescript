@@ -1,4 +1,7 @@
-(* This script shows how to use ASMake in a script run from Script Editor *)
+(*
+	This script shows how to use ASMake in a script run from Script Editor,
+	or from the script menu, or whatever.
+*)
 
 use AppleScript version "2.4"
 use scripting additions
@@ -6,12 +9,12 @@ use scripting additions
 property ASMake : script "com.lifepillar/ASMake"
 property parent : ASMake's TaskBase
 
+-- Here you have the full power of ASMake at your disposal!
+
 on alert(descr, msg)
 	display alert descr message msg as informational Â
 		buttons {"Cancel", "OK"} default button "OK" cancel button "Cancel"
 end alert
-
--- Here you have the full power of ASMake at your disposal!
 
 alert("You may get the working directory:", workingDirectory())
 set p to choose file with prompt "You may easily work with paths. Choose a file:"
