@@ -1828,25 +1828,13 @@ script TaskBase
 		@abstract
 			Creates an empty script bundle.
 		@param
-			buildPath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
-			The directory where the script bundle should be created..
-		@param
-			name <em>[text]</em> The name of the script bundle (with or without suffix).
+			buildLocation <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
+			The path where the script bundle should be created.
+			The path must include the name of the script bundle.
 	*)
-	on emptyScriptBundle at buildPath given name:bundleName : text
-		local scriptPath, dummyScript, didSucceed, theError
-		if bundleName does not end with ".scptd" then set bundleName to bundleName & ".scptd"
-		set scriptPath to current application's NSURL's fileURLWithPath:(joinPath(buildPath, bundleName))
-		set dummyScript to current application's OSAScript's alloc's Â
-			initWithSource:"" fromURL:(missing value) Â
-				languageInstance:(current application's OSALanguage's defaultLanguage()'s sharedLanguageInstance()) Â
-				usingStorageOptions:(current application's OSANull)
-		set {didSucceed, theError} to dummyScript's compileAndReturnError:(reference)
-		if not didSucceed then error theError
-		set {didSucceed, theError} to dummyScript's Â
-			writeToURL:scriptPath ofType:(current application's OSAStorageScriptBundleType) Â
-				usingStorageOptions:(current application's OSANull) |error|:(reference)
-		if not didSucceed then error theError
+	on emptyScriptBundle(buildLocation)
+		_compile("", missing value, toNSURL(buildLocation), Â
+			_languageInstanceForName("AppleScript"), my OSAStorageScriptBundleType, my OSANull)
 	end emptyScriptBundle
 	
 	(*!
