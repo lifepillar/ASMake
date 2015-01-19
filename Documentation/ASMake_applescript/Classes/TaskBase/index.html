@@ -352,7 +352,7 @@ coincides with the name of last path component (without extension).
 <dd><p>Copies one or more source files or directories to a destination directory,
 or a source file to a destination file.
 </p></dd>
-<dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(name:bundleName:text,atbuildPath)" target="_top">emptyScriptBundle</a></tt></dt>
+<dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(buildLocation)" target="_top">emptyScriptBundle</a></tt></dt>
 <dd><p>Creates an empty script bundle.
 </p></dd>
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/exec://(argsaslist)" target="_top">exec :</a></tt></dt>
@@ -415,7 +415,7 @@ The original list remains unchanged.
 <dd><p>TODO. </p></dd>
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/ohai//(s)" target="_top">ohai</a></tt></dt>
 <dd><p>TODO. </p></dd>
-<dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/osacompile//(target:target:,options:options:%7B%7D,fromsources)" target="_top">osacompile</a></tt></dt>
+<dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/osacompile//(sources,target,options)" target="_top">osacompile</a></tt></dt>
 <dd><p>Compiles one or more scripts.
 </p></dd>
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/overb//(sastext)" target="_top">overb</a></tt></dt>
@@ -1586,31 +1586,27 @@ into <code>bar</code>.
 <!-- headerDoc=discussion;uid=//apple_ref/applescript/instm/TaskBase/ditto//(src,dst);name=end --><!-- end discussion -->
 </p>
 <hr class="betweenAPIEntries">
-<!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(name:bundleName:text,atbuildPath);   name=TaskBase::emptyScriptBundle --><a name="//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(name:bundleName:text,atbuildPath)"></a>
+<!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(buildLocation);   name=TaskBase::emptyScriptBundle --><a name="//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(buildLocation)"></a>
 <h3><a name="emptyScriptBundle">emptyScriptBundle</a></h3>
 <hr class="afterName">
-<p><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(name:bundleName:text,atbuildPath);name=start --><!-- begin abstract --></p>
+<p><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(buildLocation);name=start --><!-- begin abstract --></p>
 <p>Creates an empty script bundle.
-<!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(name:bundleName:text,atbuildPath);name=end --></p>
+<!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(buildLocation);name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(name:bundleName:text,atbuildPath);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(name:bundleName:text,atbuildPath)" logicalPath="//apple_ref/applescript/instm/TaskBase/emptyScriptBundle" target="_top"><span class="function">emptyScriptBundle</span></a> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/at //apple_ref/applescript/clm/TaskBase/at //apple_ref/applescript/intfcm/TaskBase/at //apple_ref/applescript/intfm/TaskBase/at //apple_ref/applescript/func/at //apple_ref/applescript/ftmplt/TaskBase/at //apple_ref/applescript/defn/at //apple_ref/applescript/macro/at //apple_ref/doc/anysymbol/at" machineGenerated="true" --><span class="function">at</span><!-- /a --> <span class="param">buildPath</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/given //apple_ref/applescript/clm/TaskBase/given //apple_ref/applescript/intfcm/TaskBase/given //apple_ref/applescript/intfm/TaskBase/given //apple_ref/applescript/func/given //apple_ref/applescript/ftmplt/TaskBase/given //apple_ref/applescript/defn/given //apple_ref/applescript/macro/given //apple_ref/doc/anysymbol/given" machineGenerated="true" --><span class="function">given</span><!-- /a --> <span class="param">name</span>:<!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/bundleName //apple_ref/applescript/clm/TaskBase/bundleName //apple_ref/applescript/intfcm/TaskBase/bundleName //apple_ref/applescript/intfm/TaskBase/bundleName //apple_ref/applescript/func/bundleName //apple_ref/applescript/ftmplt/TaskBase/bundleName //apple_ref/applescript/defn/bundleName //apple_ref/applescript/macro/bundleName //apple_ref/doc/anysymbol/bundleName" machineGenerated="true" --><span class="function">bundleName</span><!-- /a --> : <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/text //apple_ref/applescript/clm/TaskBase/text //apple_ref/applescript/intfcm/TaskBase/text //apple_ref/applescript/intfm/TaskBase/text //apple_ref/applescript/func/text //apple_ref/applescript/ftmplt/TaskBase/text //apple_ref/applescript/defn/text //apple_ref/applescript/macro/text //apple_ref/doc/anysymbol/text" machineGenerated="true" --><span class="function">text</span><!-- /a --><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(name:bundleName:text,atbuildPath);name=end --></pre>
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(buildLocation);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(buildLocation)" logicalPath="//apple_ref/applescript/instm/TaskBase/emptyScriptBundle" target="_top"><span class="function">emptyScriptBundle</span></a>(
+    <span class="param">buildLocation</span>)<!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(buildLocation);name=end --></pre>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Parameters</font></h5>
 <div class="param_indent">
 <dl>
 <dt>
-<!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/emptyScriptBundle/buildPath;   name=emptyScriptBundle::buildPath -->
-<a name="//apple_ref/doc/functionparam/TaskBase/emptyScriptBundle/buildPath"></a>
-<code>buildPath</code>
+<!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/emptyScriptBundle/buildLocation;   name=emptyScriptBundle::buildLocation -->
+<a name="//apple_ref/doc/functionparam/TaskBase/emptyScriptBundle/buildLocation"></a>
+<code>buildLocation</code>
 </dt>
 <dd><p><em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
-The directory where the script bundle should be created..</p></dd>
-<dt>
-<!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/emptyScriptBundle/name;   name=emptyScriptBundle::name -->
-<a name="//apple_ref/doc/functionparam/TaskBase/emptyScriptBundle/name"></a>
-<code>name</code>
-</dt>
-<dd><p><em>[text]</em> The name of the script bundle (with or without suffix).</p></dd>
+The path where the script bundle should be created.
+The path must include the name of the script bundle.</p></dd>
 </dl>
 </div>
 <hr class="betweenAPIEntries">
@@ -2284,26 +2280,28 @@ should be overwritten.</p></dd>
     <span class="param">s</span>)<!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/ohai//(s);name=end --></pre>
 </div>
 <hr class="betweenAPIEntries">
-<!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/osacompile//(target:target:,options:options:%7B%7D,fromsources);   name=TaskBase::osacompile --><a name="//apple_ref/applescript/instm/TaskBase/osacompile//(target:target:,options:options:%7B%7D,fromsources)"></a>
+<!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/osacompile//(sources,target,options);   name=TaskBase::osacompile --><a name="//apple_ref/applescript/instm/TaskBase/osacompile//(sources,target,options)"></a>
 <h3><a name="osacompile">osacompile</a></h3>
 <hr class="afterName">
-<p><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/osacompile//(target:target:,options:options:%7B%7D,fromsources);name=start --><!-- begin abstract --></p>
+<p><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/osacompile//(sources,target,options);name=start --><!-- begin abstract --></p>
 <p>Compiles one or more scripts.
-<!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/osacompile//(target:target:,options:options:%7B%7D,fromsources);name=end --></p>
+<!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/osacompile//(sources,target,options);name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/osacompile//(target:target:,options:options:%7B%7D,fromsources);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/osacompile//(target:target:,options:options:%7B%7D,fromsources)" logicalPath="//apple_ref/applescript/instm/TaskBase/osacompile" target="_top"><span class="function">osacompile</span></a> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/from //apple_ref/applescript/clm/TaskBase/from //apple_ref/applescript/intfcm/TaskBase/from //apple_ref/applescript/intfm/TaskBase/from //apple_ref/applescript/func/from //apple_ref/applescript/ftmplt/TaskBase/from //apple_ref/applescript/defn/from //apple_ref/applescript/macro/from //apple_ref/doc/anysymbol/from" machineGenerated="true" --><span class="function">from</span><!-- /a --> <span class="param">sources</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/given //apple_ref/applescript/clm/TaskBase/given //apple_ref/applescript/intfcm/TaskBase/given //apple_ref/applescript/intfm/TaskBase/given //apple_ref/applescript/func/given //apple_ref/applescript/ftmplt/TaskBase/given //apple_ref/applescript/defn/given //apple_ref/applescript/macro/given //apple_ref/doc/anysymbol/given" machineGenerated="true" --><span class="function">given</span><!-- /a --> <span class="param">target</span>:<a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/osacompile/target" logicalPath="//apple_ref/applescript/instm/TaskBase/target //apple_ref/applescript/clm/TaskBase/target //apple_ref/applescript/intfcm/TaskBase/target //apple_ref/applescript/intfm/TaskBase/target //apple_ref/applescript/func/target //apple_ref/applescript/ftmplt/TaskBase/target //apple_ref/applescript/defn/target //apple_ref/applescript/macro/target //apple_ref/doc/anysymbol/target" target="_top"><span class="function">target</span></a> : "<!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/scpt //apple_ref/applescript/clm/TaskBase/scpt //apple_ref/applescript/intfcm/TaskBase/scpt //apple_ref/applescript/intfm/TaskBase/scpt //apple_ref/applescript/func/scpt //apple_ref/applescript/ftmplt/TaskBase/scpt //apple_ref/applescript/defn/scpt //apple_ref/applescript/macro/scpt //apple_ref/doc/anysymbol/scpt" machineGenerated="true" --><span class="function">scpt</span><!-- /a -->",
-<a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/shell/options" logicalPath="//apple_ref/applescript/instm/TaskBase/options //apple_ref/applescript/clm/TaskBase/options //apple_ref/applescript/intfcm/TaskBase/options //apple_ref/applescript/intfm/TaskBase/options //apple_ref/applescript/func/options //apple_ref/applescript/ftmplt/TaskBase/options //apple_ref/applescript/defn/options //apple_ref/applescript/macro/options //apple_ref/doc/anysymbol/options" target="_top"><span class="function">options</span></a>:<a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/shell/options" logicalPath="//apple_ref/applescript/instm/TaskBase/options //apple_ref/applescript/clm/TaskBase/options //apple_ref/applescript/intfcm/TaskBase/options //apple_ref/applescript/intfm/TaskBase/options //apple_ref/applescript/func/options //apple_ref/applescript/ftmplt/TaskBase/options //apple_ref/applescript/defn/options //apple_ref/applescript/macro/options //apple_ref/doc/anysymbol/options" target="_top"><span class="function">options</span></a> : {}<!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/osacompile//(target:target:,options:options:%7B%7D,fromsources);name=end --></pre>
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/osacompile//(sources,target,options);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/osacompile//(sources,target,options)" logicalPath="//apple_ref/applescript/instm/TaskBase/osacompile" target="_top"><span class="function">osacompile</span></a>(
+    <span class="param">sources</span>,
+    <span class="param">target</span>,
+    <span class="param">options</span>)<!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/osacompile//(sources,target,options);name=end --></pre>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Parameters</font></h5>
 <div class="param_indent">
 <dl>
 <dt>
-<!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/osacompile/src;   name=osacompile::src -->
-<a name="//apple_ref/doc/functionparam/TaskBase/osacompile/src"></a>
-<code>src</code>
+<!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/osacompile/sources;   name=osacompile::sources -->
+<a name="//apple_ref/doc/functionparam/TaskBase/osacompile/sources"></a>
+<code>sources</code>
 </dt>
 <dd><p><em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
-A path or a list of paths.</p></dd>
+A path or a list of paths to the scripts to be compiled.</p></dd>
 <dt>
 <!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/osacompile/target;   name=osacompile::target -->
 <a name="//apple_ref/doc/functionparam/TaskBase/osacompile/target"></a>
