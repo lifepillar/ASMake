@@ -779,7 +779,7 @@ script TaskBase
 		@return
 			Nothing.
 		@throws
-			An error if the script cannot be compiled or it cannot be written to disk.
+			An error if the script cannot be compiled or if it cannot be written to disk.
 	*)
 	on _buildScript(sourceURL, fromURL, bundleURL, languageInstance, storageType, storageOptions)
 		local sourceDirURL, defaultManager, languageInstance
