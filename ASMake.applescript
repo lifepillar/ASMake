@@ -2288,7 +2288,7 @@ end run
 		Executes a task.
 	@param
 		taskOptions <em>[list]</em> A (possibly empty) list of arguments for the task.
-	@throw
+	@throws
 		An error if the command contains a syntax error,
 		if the task with the specified name does not exist,
 		or if the task fails.
