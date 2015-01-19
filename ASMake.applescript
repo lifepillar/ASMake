@@ -2018,6 +2018,60 @@ script TaskBase
 	end transform
 	
 	
+	----------------------
+	-- Sorting handlers --
+	----------------------
+	
+	(*!
+		@abstract
+			Sorts a list in-place.
+		@discussion
+			This handler sorts a list in-place. Call it as follows:
+			<pre><code>
+      set myList to {4,2,6,3}
+      insertionSort(a reference to myList)
+      myList -- {2,3,4,6}
+			</code></pre>
+		@param
+			x <em>[reference]</em> A reference to a list.
+		@param
+			compareHandler <em>[handler]</em> A comparator, that is,
+			a handler with two parameters <code>x</code> and <code>y</code>,
+			which returns <code>-1</code> if <code>x</code> is less than <code>y</code>,
+			returns <code>1</code> if <code>x</code> is greater than <code>y</code>,
+			and returns <code>0</code> if <code>x</code> and <code>y</code> are equal.
+			To use the default semantics for comparison, pass <code>missing value</code>.
+		@return
+			Nothing.
+	*)
+	on insertionSort(x, compareHandler)
+		local i, j, key
+		
+		script comparator
+			property compare : compareHandler
+			
+			on defaultComparison(x, y)
+				if x < y then return -1
+				if x > y then return 1
+				0
+			end defaultComparison
+		end script
+		
+		if comparator's compare is missing value then
+			set comparator's compare to comparator's defaultComparison
+		end if
+		
+		repeat with j from 2 to (count x)
+			set key to item j of x
+			set i to j - 1
+			repeat while i > 0 and comparator's compare(item i of x, key) = 1
+				set item (i + 1) of x to item i of x
+				set i to i - 1
+			end repeat
+			set item (i + 1) of x to key
+		end repeat
+	end insertionSort
+	
 	---------------------------
 	-- Task-related handlers --
 	---------------------------
@@ -2158,6 +2212,10 @@ script HelpTask
 	property boldType : Stdout's boldType
 	property reset : Stdout's reset
 	
+	script TaskList
+		property content : {}
+	end script
+	
 	on padding(taskName)
 		local spaces
 		
@@ -2169,23 +2227,34 @@ script HelpTask
 		return spaces
 	end padding
 	
-	-- TODO: sort tasks alphabetically
-	repeat with t in tasks() -- find the longest name
-		if the length of t's name > maxWidth then set maxWidth to the length of t's name
-		repeat with s in t's synonyms
-			if the length of s > maxWidth then set maxWidth to the length of s
-		end repeat
+	on compareTaskNames(t1, t2)
+		if t1's name < t2's name then return -1
+		if t1's name > t2's name then return 1
+		0
+	end compareTaskNames
+	
+	set TaskList's content to tasks()
+	-- Sort tasks alphabetically
+	insertionSort(a reference to TaskList's content, compareTaskNames)
+	local t, tc, desc
+	-- Find the longest name (for correct alignment)
+	repeat with t in every item of (a reference to TaskList's content)
+		set tc to contents of t
+		if the length of tc's name > maxWidth then set maxWidth to the length of tc's name
 	end repeat
-	repeat with t in tasks()
-		if ASMake's defaultTask is in ({t's name} & t's synonyms) then
-			set default to "(Default)" & space
-		else
-			set default to ""
+	
+	-- Print help message
+	repeat with t in every item of (a reference to TaskList's content)
+		set tc to contents of t
+		set desc to my boldType & tc's name & my reset & padding(tc's name)
+		if {tc's name} & tc's synonyms contains ASMake's defaultTask then
+			set desc to desc & "(Default)" & space
 		end if
-		echo(my boldType & t's name & my reset & padding(t's name) & default & t's description & ".")
-		repeat with s in t's synonyms
-			echo(my boldType & s & my reset & padding(s) & default & "A synonym for" & space & my boldType & t's name & my reset & ".")
-		end repeat
+		set desc to desc & tc's description
+		if tc's synonyms is not {} then
+			set desc to desc & space & "(Synonyms:" & space & my boldType & join(tc's synonyms, "," & space) & my reset & ")"
+		end if
+		log desc & "."
 	end repeat
 end script
 
