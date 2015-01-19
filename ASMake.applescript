@@ -72,33 +72,21 @@ script Stdout
 		my esc & "1;" & text -3 thru -1 of kolor
 	end bb
 	
-	(*!
-		@abstract
-			Sends a message to the terminal.
-		@discussion
-			This is the low-level procedure that is used to print anything.
-			It is implemented to support ASCII escape sequences, so that
-			colored terminal output can be obtained.
-	*)
-	on echo(msg)
-		log msg
-	end echo
-	
 	(*! @abstract Prints a notice. *)
 	on ohai(msg)
-		echo(col("==>", my green) & space & my boldType & (msg as text) & my reset)
+		log col("==>", my green) & space & my boldType & (msg as text) & my reset
 	end ohai
 	
 	(*! @abstract Prints a failure message and exits. *)
 	on ofail(msg, info)
 		set msg to col("Fail:", my red) & space & my boldType & (msg as text) & my reset
-		echo(msg)
+		log msg
 		error info
 	end ofail
 	
 	(*! @abstract Prints a warning. *)
 	on owarn(msg)
-		echo(col("Warn:", my red) & space & my boldType & (msg as text) & my reset)
+		log col("Warn:", my red) & space & my boldType & (msg as text) & my reset
 	end owarn
 	
 	(*!
@@ -109,14 +97,14 @@ script Stdout
 	*)
 	on odebug(info)
 		if class of info is not list then
-			echo(col("DEBUG:", my red) & space & my boldType & (info as text) & my reset)
+			log col("DEBUG:", my red) & space & my boldType & (info as text) & my reset
 			return
 		end if
 		set msg to (col("DEBUG:", my red) & space & my boldType & (item 1 of info) as text) & my reset
 		repeat with i from 2 to count info
 			set msg to msg & linefeed & ((item i of info) as text)
 		end repeat
-		echo(msg)
+		log msg
 	end odebug
 	
 end script -- Stdout
@@ -940,7 +928,7 @@ script TaskBase
 			end if
 		end if
 		set command to command & space & (join(map(options, my quoteText), space)) & out & err
-		if my verbose then echo(command)
+		if my verbose then log command
 		if my dry then return command
 		set command to "cd" & space & quoted form of workingDirectory() & ";" & command
 		if pass is missing value then
@@ -949,7 +937,7 @@ script TaskBase
 			if username is missing value then set username to short user name of (system info)
 			set output to (do shell script command administrator privileges privileges user name username password pass altering line endings ale)
 		end if
-		if my verbose and output is not "" then echo(output)
+		if my verbose and output is not "" then log output
 		return output
 	end shell
 	
@@ -1357,8 +1345,8 @@ script TaskBase
 			set srcURL to toNSURL(contents of f)
 			set destURL to _joinPath(targetDirURL, _basename(srcURL))
 			if my verbose then
-				echo("Copying" & space & (srcURL's |path| as text) & Â
-					space & "into" & space & (targetDirURL's |path| as text))
+				log "Copying" & space & (srcURL's |path| as text) & Â
+					space & "into" & space & (targetDirURL's |path| as text)
 			end if
 			if not my dry then
 				if overwrite and _pathExists(destURL) then
@@ -1447,9 +1435,9 @@ script TaskBase
 		set tgt to absolutePath(target)
 		set {dir, base} to splitPath(tgt)
 		if my verbose then
-			echo("Make alias at" & space & (dir as text) & space & Â
+			log "Make alias at" & space & (dir as text) & space & Â
 				"to" & space & (src as text) & space & Â
-				"with name" & space & (base as text))
+				"with name" & space & (base as text)
 		end if
 		if not my dry then
 			tell application "Finder"
@@ -1564,8 +1552,8 @@ script TaskBase
 			set srcURL to toNSURL(contents of f)
 			set destURL to _joinPath(targetDirURL, _basename(srcURL))
 			if my verbose then
-				echo("Moving" & space & (srcURL's |path| as text) & Â
-					space & "into" & space & (targetDirURL's |path| as text))
+				log "Moving" & space & (srcURL's |path| as text) & Â
+					space & "into" & space & (targetDirURL's |path| as text)
 			end if
 			if not my dry then
 				if overwrite and _pathExists(destURL) then
@@ -1659,7 +1647,7 @@ script TaskBase
 			if (theURL's |path| as text) is in forbiddenPaths then
 				error "ASMake is not allowed to delete" & space & (theURL's |path| as text)
 			end if
-			if my verbose then echo("Deleting" & space & (theURL's |path| as text))
+			if my verbose then log "Deleting" & space & (theURL's |path| as text)
 			if not my dry then
 				try
 					_removeItem(theURL)
@@ -2071,6 +2059,7 @@ script TaskBase
 			set item (i + 1) of x to key
 		end repeat
 	end insertionSort
+
 	
 	---------------------------
 	-- Task-related handlers --
@@ -2134,11 +2123,6 @@ script TaskBase
 	-----------------------------
 	
 	(*! @abstract TODO. *)
-	on echo(s)
-		log s
-	end echo
-	
-	(*! @abstract TODO. *)
 	on ofail(s)
 		log "Fail:" & space & s
 	end ofail
@@ -2175,10 +2159,6 @@ on Task(t)
 	script
 		property parent : TaskBase
 		property argv : {} -- Overrides parent property
-		
-		on echo(s)
-			Stdout's echo(s)
-		end echo
 		
 		on ofail(s)
 			Stdout's ofail(s)
