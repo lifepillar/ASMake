@@ -1751,13 +1751,9 @@ script TaskBase
 		
 		set bundleURL to _joinPath(buildURL, scriptBundleName)
 		if overwrite then
-			if _pathExists(bundleURL) then
-				_removeItem(bundleURL)
-			end if
+			if _pathExists(bundleURL) then _removeItem(bundleURL)
 		else
-			if _pathExists(bundleURL) then
-				error (bundleURL's |path| as text) & space & "already exists."
-			end if
+			if _pathExists(bundleURL) then error (bundleURL's |path| as text) & space & "already exists."
 		end if
 		
 		set languageInstance to _languageInstanceForName("AppleScript")
@@ -1802,13 +1798,9 @@ script TaskBase
 		
 		set bundleURL to _joinPath(buildURL, scriptBundleName)
 		if overwrite then
-			if _pathExists(bundleURL) then
-				_removeItem(bundleURL)
-			end if
+			if _pathExists(bundleURL) then _removeItem(bundleURL)
 		else
-			if _pathExists(bundleURL) then
-				error (bundleURL's |path| as text) & space & "already exists."
-			end if
+			if _pathExists(bundleURL) then error (bundleURL's |path| as text) & space & "already exists."
 		end if
 		
 		set languageInstance to _languageInstanceForName("AppleScript")
