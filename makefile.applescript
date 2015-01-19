@@ -69,8 +69,7 @@ on tasks()
 	
 	script install
 		property parent : Task(me)
-		property dir : POSIX path of Â
-			((path to library folder from user domain) as text) & "Script Libraries"
+		property dir :  my parent's joinPath(path to library folder from user domain, "Script Libraries")
 		property description : "Install ASMake in" & space & dir & "."
 		
 		tell build to exec:{}
@@ -95,6 +94,17 @@ on tasks()
 		property description : "Build tests, but do not run them."
 		
 		makeScriptBundle from "test/Test ASMake.applescript" at "test" with overwriting
+	end script
+	
+	script uninstall
+		property parent : Task(me)
+		property dir : my parent's joinPath(path to library folder from user domain, "Script Libraries")
+		property description : "Remove ASMake from" & space & dir
+		
+		set targetPath to joinPath(dir, "com.lifepillar/ASMake.scptd")
+		if pathExists(targetPath) then
+			removeItem at targetPath
+		end if
 	end script
 	
 	script RunTests
