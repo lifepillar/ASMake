@@ -1061,7 +1061,7 @@ script TaskBase
 	@abstract
 		Returns a new POSIX path formed by joining a base path and a relative path.
 		If the relative path has a trailing slash, it is stripped.
-		The resulting path is relative is base path is relative.
+		The resulting path is relative if base path is relative.
 	@param
 		basePath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
 		A path.
@@ -1424,7 +1424,7 @@ script TaskBase
 		@return
 			<em>[boolean]</em> A boolean value indicating whether the given path is a directory.
 		@throws
-			An error if the property cannot be retrieved.
+			An error if the property cannot be retrieved, for example because the path does not exist.
 	*)
 	on isDirectory(aPath)
 		_isDirectory(toNSURL(aPath))
