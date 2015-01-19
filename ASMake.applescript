@@ -1060,14 +1060,16 @@ script TaskBase
 			<em>[list]</em> The list of paths matching the pattern.
 	*)
 	on glob(pattern)
-		if the class of pattern is not list then set pattern to {pattern}
 		local res
+		
+		if the class of pattern is not list then set pattern to {pattern}
 		set res to {}
 		repeat with p in pattern
 			set res to res & the paragraphs of Â
 				(do shell script "cd" & space & quoted form of workingDirectory() & Â
 					";list=(" & p & ");for f in \"${list[@]}\";do echo \"$f\";done")
 		end repeat
+		
 		return res
 	end glob
 	
