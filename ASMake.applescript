@@ -800,35 +800,46 @@ script TaskBase
 		-- Create an empty bundle
 		_compile("", fromURL, bundleURL, languageInstance, storageType, storageOptions)
 		
-		set filter to current application's NSPredicate's predicateWithFormat:"pathExtension='applescript'"
+		set filter to current application's NSPredicate's Â
+			predicateWithFormat:"(pathExtension='applescript') OR (pathExtension='scpt') OR (pathExtension='scptd')"
 		
-		-- Build script libraries
+		-- Build/copy script libraries
 		set srcURL to _joinPath(sourceDirURL, "Resources/Script Libraries")
 		if _pathExists(srcURL) and _isDirectory(srcURL) then
 			set destURL to _joinPath(bundleURL, "Contents/Resources/Script Libraries")
 			set dirEnumerator to defaultManager's enumeratorAtPath:(srcURL's |path|)
 			set scriptList to (dirEnumerator's allObjects()'s filteredArrayUsingPredicate:filter)
 			repeat with f in scriptList
-				_buildScript(_joinPath(srcURL, f), Â
-					missing value, Â
-					_joinPath(destURL, _setPathExtension(_removeParentDirectoryFromPathWhenMatchingScriptName(f), "scptd")), Â
-					languageInstance, my OSAStorageScriptBundleType, Â
-					storageOptions)
+				if f's pathExtension as text is "applescript" then
+					_buildScript(_joinPath(srcURL, f), Â
+						missing value, Â
+						_joinPath(destURL, _setPathExtension(_removeParentDirectoryFromPathWhenMatchingScriptName(f), "scptd")), Â
+						languageInstance, my OSAStorageScriptBundleType, storageOptions)
+				else
+					set fdst to _joinPath(destURL, f)
+					if _pathExists(fdst) then _removeItem(fdst)
+					_copyItem(_joinPath(srcURL, f), fdst)
+				end if
 			end repeat
 		end if
 		
-		-- Build auxiliary scripts
+		-- Build/copy auxiliary scripts
 		set srcURL to _joinPath(sourceDirURL, "Resources/Scripts")
 		if _pathExists(srcURL) and _isDirectory(srcURL) then
 			set destURL to _joinPath(bundleURL, "Contents/Resources/Scripts")
 			set dirEnumerator to defaultManager's enumeratorAtPath:(srcURL's |path|)
 			set scriptList to (dirEnumerator's allObjects()'s filteredArrayUsingPredicate:filter)
 			repeat with f in scriptList
-				_buildScript(_joinPath(srcURL, f), Â
-					bundleURL, Â
-					_joinPath(destURL, _setPathExtension(_removeParentDirectoryFromPathWhenMatchingScriptName(f), "scpt")), Â
-					languageInstance, my OSAStorageScriptType, Â
-					storageOptions)
+				if f's pathExtension as text is "applescript" then
+					_buildScript(_joinPath(srcURL, f), Â
+						bundleURL, Â
+						_joinPath(destURL, _setPathExtension(_removeParentDirectoryFromPathWhenMatchingScriptName(f), "scpt")), Â
+						languageInstance, my OSAStorageScriptType, storageOptions)
+				else
+					set fdst to _joinPath(destURL, f)
+					if _pathExists(fdst) then _removeItem(fdst)
+					_copyItem(_joinPath(srcURL, f), fdst)
+				end if
 			end repeat
 		end if
 		
