@@ -71,7 +71,7 @@ e.g.:
       property synonyms : {"vers", "v"}
       property description : "Print my version and exit."
       property printSuccess : false
-      echo("v1.0.0")
+      log "v1.0.0"
     end script
 
 This task can be invoked equivalently with:
@@ -87,7 +87,7 @@ By default, if a task completes successfully, the following message is printed:
 To suppress this message, set the `printSuccess` property to `false`.
 
 There is a number of handlers that one can use in a task, such as `osacompile()`
-and `echo()` shown above. They are all documented in the ASMake's source file.
+shown above. They are all documented in the ASMake's source file.
 
 
 ## Tasks with arguments
@@ -104,11 +104,11 @@ specifies the type of build:
       property parent : Task(me)
       set target to shift()
       if target is "dev" then
-        echo("dev build")
+        log "dev build"
       else if target is "production" then
-        echo("production build")
+        log "production build"
       else
-        echo("Default build")
+        log "Default build"
       end if
     end script
 
@@ -140,7 +140,7 @@ coerced to a list) of the arguments for the task. For example:
     script install
       property parent : Task(me)
       tell build to exec:{} -- Dependent task with no arguments
-      -- run build -- equivalent to the above, but not recommended
+      -- run build -- (Almost) equivalent to the above, but not recommended
       (* further commands to install the built product *)
     end
 
