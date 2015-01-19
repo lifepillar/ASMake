@@ -274,9 +274,6 @@ function disclosure_triangle(elt) {
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/Stdout/col//(s,kolor)" target="_top">col</a></tt></dt>
 <dd><p>Colors the given text using the specified color.
 </p></dd>
-<dt><tt><a href="index.html#//apple_ref/applescript/instm/Stdout/echo//(msg)" target="_top">echo</a></tt></dt>
-<dd><p>Sends a message to the terminal.
-</p></dd>
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/Stdout/odebug//(info)" target="_top">odebug</a></tt></dt>
 <dd><p>Prints a debugging message.
 </p></dd>
@@ -348,23 +345,6 @@ function disclosure_triangle(elt) {
 <p><em>[text]</em> The text with suitable ANSI escape codes for the given color.
 
 <!-- end return value --></p>
-<hr class="betweenAPIEntries">
-<!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/Stdout/echo//(msg);   name=Stdout::echo --><a name="//apple_ref/applescript/instm/Stdout/echo//(msg)"></a>
-<h3><a name="echo">echo</a></h3>
-<hr class="afterName">
-<p><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/Stdout/echo//(msg);name=start --><!-- begin abstract --></p>
-<p>Sends a message to the terminal.
-<!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/Stdout/echo//(msg);name=end --></p>
-<div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/Stdout/echo//(msg);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/Stdout/echo//(msg)" logicalPath="//apple_ref/applescript/instm/Stdout/echo" target="_top"><span class="function">echo</span></a>(
-    <span class="param">msg</span>)<!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/Stdout/echo//(msg);name=end --></pre>
-</div>
-<h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Discussion</font></h5>
-<!-- begin discussion --><!-- headerDoc=discussion;uid=//apple_ref/applescript/instm/Stdout/echo//(msg);name=start --><p>This is the low-level procedure that is used to print anything.
-It is implemented to support ASCII escape sequences, so that
-colored terminal output can be obtained.
-<!-- headerDoc=discussion;uid=//apple_ref/applescript/instm/Stdout/echo//(msg);name=end --><!-- end discussion -->
-</p>
 <hr class="betweenAPIEntries">
 <!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/Stdout/odebug//(info);   name=Stdout::odebug --><a name="//apple_ref/applescript/instm/Stdout/odebug//(info)"></a>
 <h3><a name="odebug">odebug</a></h3>
@@ -456,7 +436,7 @@ colored terminal output can be obtained.
 <p><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/black;name=start --><!-- begin abstract --></p>
 <p>The escape sequence for black. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/black;name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/black;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/black" logicalPath="//apple_ref/applescript/econst/black //apple_ref/applescript/data/Stdout/black" target="_top"><span class="var">black</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "<span class="string">0</span>;
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/black;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/black" logicalPath="//apple_ref/applescript/econst/black //apple_ref/applescript/data/Stdout/black" target="_top"><span class="var">black</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "[<span class="string">0</span>;
     <span class="string">30m</span>" <!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/black;name=end --></pre>
 </div>
 <hr class="betweenAPIEntries">
@@ -466,7 +446,7 @@ colored terminal output can be obtained.
 <p><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/blue;name=start --><!-- begin abstract --></p>
 <p>The escape sequence for blue. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/blue;name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/blue;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/blue" logicalPath="//apple_ref/applescript/econst/blue //apple_ref/applescript/data/Stdout/blue" target="_top"><span class="var">blue</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "<span class="string">0</span>;
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/blue;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/blue" logicalPath="//apple_ref/applescript/econst/blue //apple_ref/applescript/data/Stdout/blue" target="_top"><span class="var">blue</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "[<span class="string">0</span>;
     <span class="string">34m</span>" <!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/blue;name=end --></pre>
 </div>
 <hr class="betweenAPIEntries">
@@ -476,7 +456,7 @@ colored terminal output can be obtained.
 <p><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/boldType;name=start --><!-- begin abstract --></p>
 <p>The escape sequence for bold type. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/boldType;name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/boldType;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/boldType" logicalPath="//apple_ref/applescript/econst/boldType //apple_ref/applescript/data/Stdout/boldType" target="_top"><span class="var">boldType</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "<span class="string">1m</span>" <!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/boldType;name=end --></pre>
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/boldType;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/boldType" logicalPath="//apple_ref/applescript/econst/boldType //apple_ref/applescript/data/Stdout/boldType" target="_top"><span class="var">boldType</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "[<span class="string">1m</span>" <!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/boldType;name=end --></pre>
 </div>
 <hr class="betweenAPIEntries">
 <!-- headerDoc=data;  uid=//apple_ref/applescript/data/Stdout/cyan;   name=Stdout::cyan --><a name="//apple_ref/applescript/data/Stdout/cyan"></a>
@@ -485,7 +465,7 @@ colored terminal output can be obtained.
 <p><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/cyan;name=start --><!-- begin abstract --></p>
 <p>The escape sequence for cyan. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/cyan;name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/cyan;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/cyan" logicalPath="//apple_ref/applescript/econst/cyan //apple_ref/applescript/data/Stdout/cyan" target="_top"><span class="var">cyan</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "<span class="string">0</span>;
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/cyan;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/cyan" logicalPath="//apple_ref/applescript/econst/cyan //apple_ref/applescript/data/Stdout/cyan" target="_top"><span class="var">cyan</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "[<span class="string">0</span>;
     <span class="string">36m</span>" <!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/cyan;name=end --></pre>
 </div>
 <hr class="betweenAPIEntries">
@@ -495,7 +475,7 @@ colored terminal output can be obtained.
 <p><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/esc;name=start --><!-- begin abstract --></p>
 <p>The basic escape sequence. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/esc;name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/esc;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> : "\\<span class="string">033</span>[" <!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/esc;name=end --></pre>
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/esc;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> : Ç<!-- a logicalPath="//apple_ref/applescript/econst/data //apple_ref/applescript/data/Stdout/data //apple_ref/applescript/data/data //apple_ref/applescript/clconst/Stdout/data " machineGenerated="true" --><span class="var">data</span><!-- /a --> <!-- a logicalPath="//apple_ref/applescript/econst/utxt001B //apple_ref/applescript/data/Stdout/utxt001B //apple_ref/applescript/data/utxt001B //apple_ref/applescript/clconst/Stdout/utxt001B " machineGenerated="true" --><span class="var">utxt001B</span><!-- /a -->È <span class="keyword">as</span> <!-- a logicalPath="//apple_ref/applescript/econst/Unicode //apple_ref/applescript/data/Stdout/Unicode //apple_ref/applescript/data/Unicode //apple_ref/applescript/clconst/Stdout/Unicode " machineGenerated="true" --><span class="var">Unicode</span><!-- /a --> <!-- a logicalPath="//apple_ref/applescript/econst/text //apple_ref/applescript/data/Stdout/text //apple_ref/applescript/data/text //apple_ref/applescript/clconst/Stdout/text " machineGenerated="true" --><span class="var">text</span><!-- /a --> <!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/esc;name=end --></pre>
 </div>
 <hr class="betweenAPIEntries">
 <!-- headerDoc=data;  uid=//apple_ref/applescript/data/Stdout/green;   name=Stdout::green --><a name="//apple_ref/applescript/data/Stdout/green"></a>
@@ -504,7 +484,7 @@ colored terminal output can be obtained.
 <p><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/green;name=start --><!-- begin abstract --></p>
 <p>The escape sequence for green. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/green;name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/green;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/green" logicalPath="//apple_ref/applescript/econst/green //apple_ref/applescript/data/Stdout/green" target="_top"><span class="var">green</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "<span class="string">0</span>;
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/green;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/green" logicalPath="//apple_ref/applescript/econst/green //apple_ref/applescript/data/Stdout/green" target="_top"><span class="var">green</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "[<span class="string">0</span>;
     <span class="string">32m</span>" <!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/green;name=end --></pre>
 </div>
 <hr class="betweenAPIEntries">
@@ -514,7 +494,7 @@ colored terminal output can be obtained.
 <p><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/magenta;name=start --><!-- begin abstract --></p>
 <p>The escape sequence for magenta. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/magenta;name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/magenta;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/magenta" logicalPath="//apple_ref/applescript/econst/magenta //apple_ref/applescript/data/Stdout/magenta" target="_top"><span class="var">magenta</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "<span class="string">0</span>;
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/magenta;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/magenta" logicalPath="//apple_ref/applescript/econst/magenta //apple_ref/applescript/data/Stdout/magenta" target="_top"><span class="var">magenta</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "[<span class="string">0</span>;
     <span class="string">35m</span>" <!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/magenta;name=end --></pre>
 </div>
 <hr class="betweenAPIEntries">
@@ -533,7 +513,7 @@ colored terminal output can be obtained.
 <p><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/purple;name=start --><!-- begin abstract --></p>
 <p>The escape sequence for purple. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/purple;name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/purple;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/purple" logicalPath="//apple_ref/applescript/econst/purple //apple_ref/applescript/data/Stdout/purple" target="_top"><span class="var">purple</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "<span class="string">0</span>;
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/purple;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/purple" logicalPath="//apple_ref/applescript/econst/purple //apple_ref/applescript/data/Stdout/purple" target="_top"><span class="var">purple</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "[<span class="string">0</span>;
     <span class="string">35m</span>" <!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/purple;name=end --></pre>
 </div>
 <hr class="betweenAPIEntries">
@@ -543,7 +523,7 @@ colored terminal output can be obtained.
 <p><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/red;name=start --><!-- begin abstract --></p>
 <p>The escape sequence for red. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/red;name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/red;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/red" logicalPath="//apple_ref/applescript/econst/red //apple_ref/applescript/data/Stdout/red" target="_top"><span class="var">red</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "<span class="string">0</span>;
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/red;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/red" logicalPath="//apple_ref/applescript/econst/red //apple_ref/applescript/data/Stdout/red" target="_top"><span class="var">red</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "[<span class="string">0</span>;
     <span class="string">31m</span>" <!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/red;name=end --></pre>
 </div>
 <hr class="betweenAPIEntries">
@@ -553,7 +533,7 @@ colored terminal output can be obtained.
 <p><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/reset;name=start --><!-- begin abstract --></p>
 <p>The reset escape sequence. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/reset;name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/reset;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/reset" logicalPath="//apple_ref/applescript/econst/reset //apple_ref/applescript/data/Stdout/reset" target="_top"><span class="var">reset</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "<span class="string">0m</span>" <!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/reset;name=end --></pre>
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/reset;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/reset" logicalPath="//apple_ref/applescript/econst/reset //apple_ref/applescript/data/Stdout/reset" target="_top"><span class="var">reset</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "[<span class="string">0m</span>" <!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/reset;name=end --></pre>
 </div>
 <hr class="betweenAPIEntries">
 <!-- headerDoc=data;  uid=//apple_ref/applescript/data/Stdout/white;   name=Stdout::white --><a name="//apple_ref/applescript/data/Stdout/white"></a>
@@ -562,7 +542,7 @@ colored terminal output can be obtained.
 <p><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/white;name=start --><!-- begin abstract --></p>
 <p>The escape sequence for white. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/white;name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/white;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/white" logicalPath="//apple_ref/applescript/econst/white //apple_ref/applescript/data/Stdout/white" target="_top"><span class="var">white</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "<span class="string">0</span>;
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/white;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/white" logicalPath="//apple_ref/applescript/econst/white //apple_ref/applescript/data/Stdout/white" target="_top"><span class="var">white</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "[<span class="string">0</span>;
     <span class="string">37m</span>" <!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/white;name=end --></pre>
 </div>
 <hr class="betweenAPIEntries">
@@ -572,13 +552,13 @@ colored terminal output can be obtained.
 <p><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/yellow;name=start --><!-- begin abstract --></p>
 <p>The escape sequence for yellow. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/data/Stdout/yellow;name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/yellow;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/yellow" logicalPath="//apple_ref/applescript/econst/yellow //apple_ref/applescript/data/Stdout/yellow" target="_top"><span class="var">yellow</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "<span class="string">0</span>;
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/yellow;name=start --><span class="keyword">property</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/yellow" logicalPath="//apple_ref/applescript/econst/yellow //apple_ref/applescript/data/Stdout/yellow" target="_top"><span class="var">yellow</span></a> : <a machinegenerated="true" href="index.html#//apple_ref/applescript/data/Stdout/esc" logicalPath="//apple_ref/applescript/econst/esc //apple_ref/applescript/data/Stdout/esc" target="_top"><span class="var">esc</span></a> &amp; "[<span class="string">0</span>;
     <span class="string">33m</span>" <!-- headerDoc=declaration;uid=//apple_ref/applescript/data/Stdout/yellow;name=end --></pre>
 </div>
 <p class="gapBeforeFooter">Ê</p>
 <hr class="afterFooter">
 <div class="hd_copyright_and_timestamp">
-<p class="hd_timestamp">Last Updated: Sunday, January 18, 2015
+<p class="hd_timestamp">Last Updated: Monday, January 19, 2015
 </p>
 </div>
 </td>

@@ -288,7 +288,7 @@ a script bundle, or an applet.
 <dd><p>Joins two paths.
 </p></dd>
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/_languageInstanceForName//(languageNameastext)" target="_top">_languageInstanceForName</a></tt></dt>
-<dd><p>Returns an <tt>OSALanguageInstance</tt> object for the specified language. </p></dd>
+<dd><p>Returns an <code>OSALanguageInstance</code> object for the specified language. </p></dd>
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/_makePath//(aURL)" target="_top">_makePath</a></tt></dt>
 <dd><p>Creates a directory at the specified path.
 </p></dd>
@@ -345,15 +345,13 @@ coincides with the name of last path component (without extension).
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/cp//(sourcePath,targetDirPath,overwrite)" target="_top">cp</a></tt></dt>
 <dd><p>Copies one or more files or directories to the specified destination.
 </p></dd>
-<dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/deslash//(p)" target="_top">deslash</a></tt></dt>
+<dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/deslash//(aPath)" target="_top">deslash</a></tt></dt>
 <dd><p>Removes a trailing slash from a POSIX path.
 </p></dd>
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/ditto//(src,dst)" target="_top">ditto</a></tt></dt>
 <dd><p>Copies one or more source files or directories to a destination directory,
 or a source file to a destination file.
 </p></dd>
-<dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/echo//(s)" target="_top">echo</a></tt></dt>
-<dd><p>TODO. </p></dd>
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(name:bundleName:text,atbuildPath)" target="_top">emptyScriptBundle</a></tt></dt>
 <dd><p>Creates an empty script bundle.
 </p></dd>
@@ -370,6 +368,9 @@ satisfying a given condition.
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/glob//(pattern)" target="_top">glob</a></tt></dt>
 <dd><p>Expands a glob pattern.
 </p></dd>
+<dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/insertionSort//(x,compareHandler)" target="_top">insertionSort</a></tt></dt>
+<dd><p>Sorts a list in-place.
+</p></dd>
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/isDirectory//(aPath)" target="_top">isDirectory</a></tt></dt>
 <dd><p>Returns true if the given path is a directory; returns false otherwise.
 </p></dd>
@@ -379,19 +380,19 @@ satisfying a given condition.
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/joinPath//(basePath,relPath)" target="_top">joinPath</a></tt></dt>
 <dd><p>Returns a new POSIX path formed by joining a base path and a relative path.
 If the relative path has a trailing slash, it is stripped.
-The resulting path is relative is base path is relative.
+The resulting path is relative if base path is relative.
 </p></dd>
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/makeAlias//(source,target)" target="_top">makeAlias</a></tt></dt>
 <dd><p>Creates a Finder alias.
 </p></dd>
-<dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/makeApplication:missingvalue//(atbuildLocation)" target="_top">makeApplication : missing value</a></tt></dt>
+<dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/makeApplication:missingvalue//(overwriting:overwrite,atbuildLocation)" target="_top">makeApplication : missing value</a></tt></dt>
 <dd><p>Builds an application from a source script, including resources and
 embedded script libraries.
 </p></dd>
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/makePath//(dstaslist)" target="_top">makePath</a></tt></dt>
 <dd><p>Creates one or more folders at the specified path(s).
 </p></dd>
-<dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/makeScriptBundle:missingvalue//(atbuildLocation)" target="_top">makeScriptBundle : missing value</a></tt></dt>
+<dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/makeScriptBundle:missingvalue//(overwriting:overwrite,atbuildLocation)" target="_top">makeScriptBundle : missing value</a></tt></dt>
 <dd><p>Builds a script bundle from source, including resources and
 embedded script libraries.
 </p></dd>
@@ -437,7 +438,7 @@ Relative paths are resolved with respect to the working directory.
 <dd><p>Returns one or more paths as POSIX paths.
 </p></dd>
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/quoteText//(s)" target="_top">quoteText</a></tt></dt>
-<dd><p>A wrapper around <tt>quoted form of</tt>. </p></dd>
+<dd><p>A wrapper around <code>quoted form of</code>. </p></dd>
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/readFile//(aPath)" target="_top">readFile</a></tt></dt>
 <dd><p>TODO </p></dd>
 <dt><tt><a href="index.html#//apple_ref/applescript/instm/TaskBase/readUTF8//(fileName)" target="_top">readUTF8</a></tt></dt>
@@ -569,9 +570,9 @@ script bundles and <tt>.app</tt> for applets).</p></dd>
 <code>storageType</code>
 </dt>
 <dd><p>A constant specifying the type of object to create:
-one of <tt>OSAStorageScriptType</tt>, <tt>OSAStorageScriptBundleType</tt>,
-<tt>OSAStorageApplicationType</tt>, <tt>OSAStorageApplicationBundleType</tt>
-or <tt>OSAStorageTextType</tt>.</p></dd>
+one of <code>OSAStorageScriptType</code>, <code>OSAStorageScriptBundleType</code>,
+<code>OSAStorageApplicationType</code>, <code>OSAStorageApplicationBundleType</code>
+or <code>OSAStorageTextType</code>.</p></dd>
 <dt>
 <!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/_buildScript/languageInstance;   name=_buildScript::languageInstance -->
 <a name="//apple_ref/doc/functionparam/TaskBase/_buildScript/languageInstance"></a>
@@ -584,9 +585,9 @@ compile the script.</p></dd>
 <a name="//apple_ref/doc/functionparam/TaskBase/_buildScript/storageOptions"></a>
 <code>storageOptions</code>
 </dt>
-<dd><p>One ore more of <tt>OSANull</tt>, <tt>OSAPreventGetSource</tt>,
-<tt>OSACompileIntoContext</tt>, <tt>OSADontSetScriptLocation</tt>,
-<tt>OSAStayOpenApplet</tt>, or <tt>OSAShowStartupScreen</tt>.</p></dd>
+<dd><p>One ore more of <code>OSANull</code>, <code>OSAPreventGetSource</code>,
+<code>OSACompileIntoContext</code>, <code>OSADontSetScriptLocation</code>,
+<code>OSAStayOpenApplet</code>, or <code>OSAShowStartupScreen</code>.</p></dd>
 </dl>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Return Value</font></h5>
@@ -601,7 +602,7 @@ with a specific layout. (This handler may be used to compile a script
 into a <tt>.scpt</tt> file as a special case, but <a href="index.html#//apple_ref/applescript/instm/TaskBase/_compile//(source,fromURL,writeURL,languageInstance,storageType,storageOptions)" logicalPath="//apple_ref/applescript/instm/TaskBase/_compile//(source,fromURL,writeURL,languageInstance,storageType,storageOptions)" target="_top">_compile()</a>
 is recommended instead.)
 </p>
-<p>The <tt>sourceURL</tt> must point to the main script source file. An optional
+<p>The <code>sourceURL</code> must point to the main script source file. An optional
 <tt>Info.plist</tt> file and an optional <tt>Resources</tt> folder may be
 placed in the same directory as the the main script. The <tt>Resources</tt>
 folder may contain any required resources, including additional scripts
@@ -618,8 +619,8 @@ the target bundle.)
         Info.plist
         MyApp.applescript
         Resources
-        applet.icns
-        Readme.txt
+          applet.icns
+          Readme.txt
           Scripts
             helper.applescript
           Script Libraries
@@ -659,7 +660,7 @@ immediately under <tt>Script Libraries</tt>, while <tt>LibTwo.scptd</tt> is crea
 <dl>
 <dt><b>Throws</b></dt>
 <dd><p>
- An error if the script cannot be compiled or it cannot be written to disk.<br></p></dd>
+ An error if the script cannot be compiled or if it cannot be written to disk.<br></p></dd>
 </dl>
 <hr class="betweenAPIEntries">
 <!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/_compile//(source,fromURL,writeURL,languageInstance,storageType,storageOptions);   name=TaskBase::_compile --><a name="//apple_ref/applescript/instm/TaskBase/_compile//(source,fromURL,writeURL,languageInstance,storageType,storageOptions)"></a>
@@ -694,7 +695,7 @@ a script bundle, or an applet.
 </dt>
 <dd><p><em>[NSURL]</em> URL argument used to indicate the origin of scripts.
 In AppleScript, for example, this URL may be used for the value of "path to me",
-unless you use the <tt>OSADontSetScriptLocation</tt> storage option.
+unless you use the <code>OSADontSetScriptLocation</code> storage option.
 This URL may also be used to specify the location of the script libraries this
 script depends upon.</p></dd>
 <dt>
@@ -709,9 +710,9 @@ script depends upon.</p></dd>
 <code>storageType</code>
 </dt>
 <dd><p>A constant specifying the type of object to create:
-one of <tt>OSAStorageScriptType</tt>, <tt>OSAStorageScriptBundleType</tt>,
-<tt>OSAStorageApplicationType</tt>, <tt>OSAStorageApplicationBundleType</tt>
-or <tt>OSAStorageTextType</tt>.</p></dd>
+one of <code>OSAStorageScriptType</code>, <code>OSAStorageScriptBundleType</code>,
+<code>OSAStorageApplicationType</code>, <code>OSAStorageApplicationBundleType</code>
+or <code>OSAStorageTextType</code>.</p></dd>
 <dt>
 <!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/_compile/languageInstance;   name=_compile::languageInstance -->
 <a name="//apple_ref/doc/functionparam/TaskBase/_compile/languageInstance"></a>
@@ -724,9 +725,9 @@ compile the script.</p></dd>
 <a name="//apple_ref/doc/functionparam/TaskBase/_compile/storageOptions"></a>
 <code>storageOptions</code>
 </dt>
-<dd><p>One ore more of <tt>OSANull</tt>, <tt>OSAPreventGetSource</tt>,
-<tt>OSACompileIntoContext</tt>, <tt>OSADontSetScriptLocation</tt>,
-<tt>OSAStayOpenApplet</tt>, or <tt>OSAShowStartupScreen</tt>.</p></dd>
+<dd><p>One ore more of <code>OSANull</code>, <code>OSAPreventGetSource</code>,
+<code>OSACompileIntoContext</code>, <code>OSADontSetScriptLocation</code>,
+<code>OSAStayOpenApplet</code>, or <code>OSAShowStartupScreen</code>.</p></dd>
 </dl>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Return Value</font></h5>
@@ -765,7 +766,7 @@ compile the script.</p></dd>
 <a name="//apple_ref/doc/functionparam/TaskBase/_copyItem/destURL"></a>
 <code>destURL</code>
 </dt>
-<dd><p><em>[NSURL]</em> The URL at which to place the copy of <tt>srcURL</tt>.</p></dd>
+<dd><p><em>[NSURL]</em> The URL at which to place the copy of <code>srcURL</code>.</p></dd>
 </dl>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Return Value</font></h5>
@@ -774,7 +775,7 @@ compile the script.</p></dd>
 
 <!-- end return value --></p>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Discussion</font></h5>
-<!-- begin discussion --><!-- headerDoc=discussion;uid=//apple_ref/applescript/instm/TaskBase/_copyItem//(srcURL,destURL);name=start --><p>If the item at <tt>srcURL</tt> is a directory, this handler
+<!-- begin discussion --><!-- headerDoc=discussion;uid=//apple_ref/applescript/instm/TaskBase/_copyItem//(srcURL,destURL);name=start --><p>If the item at <code>srcURL</code> is a directory, this handler
 copies the directory and all of its contents, including any hidden files.
 <!-- headerDoc=discussion;uid=//apple_ref/applescript/instm/TaskBase/_copyItem//(srcURL,destURL);name=end --><!-- end discussion -->
 </p>
@@ -855,7 +856,7 @@ to the base path.
 <h3><a name="_languageInstanceForName">_languageInstanceForName</a></h3>
 <hr class="afterName">
 <p><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/_languageInstanceForName//(languageNameastext);name=start --><!-- begin abstract --></p>
-<p>Returns an <tt>OSALanguageInstance</tt> object for the specified language. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/_languageInstanceForName//(languageNameastext);name=end --></p>
+<p>Returns an <code>OSALanguageInstance</code> object for the specified language. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/_languageInstanceForName//(languageNameastext);name=end --></p>
 <div class="declaration_indent">
 <pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/_languageInstanceForName//(languageNameastext);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/_languageInstanceForName//(languageNameastext)" logicalPath="//apple_ref/applescript/instm/TaskBase/_languageInstanceForName" target="_top"><span class="function">_languageInstanceForName</span></a>(<!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/languageName //apple_ref/applescript/clm/TaskBase/languageName //apple_ref/applescript/intfcm/TaskBase/languageName //apple_ref/applescript/intfm/TaskBase/languageName //apple_ref/applescript/func/languageName //apple_ref/applescript/ftmplt/TaskBase/languageName //apple_ref/applescript/defn/languageName //apple_ref/applescript/macro/languageName //apple_ref/doc/anysymbol/languageName" machineGenerated="true" --><span class="function">languageName</span><!-- /a --> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/as //apple_ref/applescript/clm/TaskBase/as //apple_ref/applescript/intfcm/TaskBase/as //apple_ref/applescript/intfm/TaskBase/as //apple_ref/applescript/func/as //apple_ref/applescript/ftmplt/TaskBase/as //apple_ref/applescript/defn/as //apple_ref/applescript/macro/as //apple_ref/doc/anysymbol/as" machineGenerated="true" --><span class="function">as</span><!-- /a --> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/text //apple_ref/applescript/clm/TaskBase/text //apple_ref/applescript/intfcm/TaskBase/text //apple_ref/applescript/intfm/TaskBase/text //apple_ref/applescript/func/text //apple_ref/applescript/ftmplt/TaskBase/text //apple_ref/applescript/defn/text //apple_ref/applescript/macro/text //apple_ref/doc/anysymbol/text" machineGenerated="true" --><span class="function">text</span><!-- /a -->)<!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/_languageInstanceForName//(languageNameastext);name=end --></pre>
 </div>
@@ -921,7 +922,7 @@ to the base path.
 <a name="//apple_ref/doc/functionparam/TaskBase/_moveItem/destURL"></a>
 <code>destURL</code>
 </dt>
-<dd><p><em>[NSURL]</em> The new location for the item in <tt>srcURL</tt>.
+<dd><p><em>[NSURL]</em> The new location for the item in <code>srcURL</code>.
 This file URL must include the name of the file or directory in its new location.</p></dd>
 </dl>
 </div>
@@ -931,7 +932,7 @@ This file URL must include the name of the file or directory in its new location
 
 <!-- end return value --></p>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Discussion</font></h5>
-<!-- begin discussion --><!-- headerDoc=discussion;uid=//apple_ref/applescript/instm/TaskBase/_moveItem//(srcURL,destURL);name=start --><p>If the item at <tt>srcURL</tt> is a directory, this handler
+<!-- begin discussion --><!-- headerDoc=discussion;uid=//apple_ref/applescript/instm/TaskBase/_moveItem//(srcURL,destURL);name=start --><p>If the item at <code>srcURL</code> is a directory, this handler
 moves the directory and all of its contents, including any hidden files.
 <!-- headerDoc=discussion;uid=//apple_ref/applescript/instm/TaskBase/_moveItem//(srcURL,destURL);name=end --><!-- end discussion -->
 </p>
@@ -1372,7 +1373,7 @@ or <code>t</code> itself if it does not have a trailing newline.
 <p>Copies one or more files or directories to the specified destination.
 <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/copyItem//(overwriting:overwrite,intotargetDirPath);name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/copyItem//(overwriting:overwrite,intotargetDirPath);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/copyItem//(overwriting:overwrite,intotargetDirPath)" logicalPath="//apple_ref/applescript/instm/TaskBase/copyItem" target="_top"><span class="function">copyItem</span></a> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/at //apple_ref/applescript/clm/TaskBase/at //apple_ref/applescript/intfcm/TaskBase/at //apple_ref/applescript/intfm/TaskBase/at //apple_ref/applescript/func/at //apple_ref/applescript/ftmplt/TaskBase/at //apple_ref/applescript/defn/at //apple_ref/applescript/macro/at //apple_ref/doc/anysymbol/at" machineGenerated="true" --><span class="function">at</span><!-- /a --> <span class="param">sourcePath</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/into //apple_ref/applescript/clm/TaskBase/into //apple_ref/applescript/intfcm/TaskBase/into //apple_ref/applescript/intfm/TaskBase/into //apple_ref/applescript/func/into //apple_ref/applescript/ftmplt/TaskBase/into //apple_ref/applescript/defn/into //apple_ref/applescript/macro/into //apple_ref/doc/anysymbol/into" machineGenerated="true" --><span class="function">into</span><!-- /a --> <span class="param">targetDirPath</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/given //apple_ref/applescript/clm/TaskBase/given //apple_ref/applescript/intfcm/TaskBase/given //apple_ref/applescript/intfm/TaskBase/given //apple_ref/applescript/func/given //apple_ref/applescript/ftmplt/TaskBase/given //apple_ref/applescript/defn/given //apple_ref/applescript/macro/given //apple_ref/doc/anysymbol/given" machineGenerated="true" --><span class="function">given</span><!-- /a --> <a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/moveItems/overwriting" logicalPath="//apple_ref/applescript/instm/TaskBase/overwriting //apple_ref/applescript/clm/TaskBase/overwriting //apple_ref/applescript/intfcm/TaskBase/overwriting //apple_ref/applescript/intfm/TaskBase/overwriting //apple_ref/applescript/func/overwriting //apple_ref/applescript/ftmplt/TaskBase/overwriting //apple_ref/applescript/defn/overwriting //apple_ref/applescript/macro/overwriting //apple_ref/doc/anysymbol/overwriting" target="_top"><span class="function">overwriting</span></a>:<a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/mv/overwrite" logicalPath="//apple_ref/applescript/instm/TaskBase/overwrite //apple_ref/applescript/clm/TaskBase/overwrite //apple_ref/applescript/intfcm/TaskBase/overwrite //apple_ref/applescript/intfm/TaskBase/overwrite //apple_ref/applescript/func/overwrite //apple_ref/applescript/ftmplt/TaskBase/overwrite //apple_ref/applescript/defn/overwrite //apple_ref/applescript/macro/overwrite //apple_ref/doc/anysymbol/overwrite" target="_top"><span class="function">overwrite</span></a> : <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/false //apple_ref/applescript/clm/TaskBase/false //apple_ref/applescript/intfcm/TaskBase/false //apple_ref/applescript/intfm/TaskBase/false //apple_ref/applescript/func/false //apple_ref/applescript/ftmplt/TaskBase/false //apple_ref/applescript/defn/false //apple_ref/applescript/macro/false //apple_ref/doc/anysymbol/false" machineGenerated="true" --><span class="function">false</span><!-- /a --><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/copyItem//(overwriting:overwrite,intotargetDirPath);name=end --></pre>
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/copyItem//(overwriting:overwrite,intotargetDirPath);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/copyItems//(overwriting:overwrite,intotargetDirPath)" logicalPath="//apple_ref/applescript/instm/TaskBase/copyItem" target="_top"><span class="function">copyItem</span></a> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/at //apple_ref/applescript/clm/TaskBase/at //apple_ref/applescript/intfcm/TaskBase/at //apple_ref/applescript/intfm/TaskBase/at //apple_ref/applescript/func/at //apple_ref/applescript/ftmplt/TaskBase/at //apple_ref/applescript/defn/at //apple_ref/applescript/macro/at //apple_ref/doc/anysymbol/at" machineGenerated="true" --><span class="function">at</span><!-- /a --> <span class="param">sourcePath</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/into //apple_ref/applescript/clm/TaskBase/into //apple_ref/applescript/intfcm/TaskBase/into //apple_ref/applescript/intfm/TaskBase/into //apple_ref/applescript/func/into //apple_ref/applescript/ftmplt/TaskBase/into //apple_ref/applescript/defn/into //apple_ref/applescript/macro/into //apple_ref/doc/anysymbol/into" machineGenerated="true" --><span class="function">into</span><!-- /a --> <span class="param">targetDirPath</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/given //apple_ref/applescript/clm/TaskBase/given //apple_ref/applescript/intfcm/TaskBase/given //apple_ref/applescript/intfm/TaskBase/given //apple_ref/applescript/func/given //apple_ref/applescript/ftmplt/TaskBase/given //apple_ref/applescript/defn/given //apple_ref/applescript/macro/given //apple_ref/doc/anysymbol/given" machineGenerated="true" --><span class="function">given</span><!-- /a --> <a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/moveItems/overwriting" logicalPath="//apple_ref/applescript/instm/TaskBase/overwriting //apple_ref/applescript/clm/TaskBase/overwriting //apple_ref/applescript/intfcm/TaskBase/overwriting //apple_ref/applescript/intfm/TaskBase/overwriting //apple_ref/applescript/func/overwriting //apple_ref/applescript/ftmplt/TaskBase/overwriting //apple_ref/applescript/defn/overwriting //apple_ref/applescript/macro/overwriting //apple_ref/doc/anysymbol/overwriting" target="_top"><span class="function">overwriting</span></a>:<a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/mv/overwrite" logicalPath="//apple_ref/applescript/instm/TaskBase/overwrite //apple_ref/applescript/clm/TaskBase/overwrite //apple_ref/applescript/intfcm/TaskBase/overwrite //apple_ref/applescript/intfm/TaskBase/overwrite //apple_ref/applescript/func/overwrite //apple_ref/applescript/ftmplt/TaskBase/overwrite //apple_ref/applescript/defn/overwrite //apple_ref/applescript/macro/overwrite //apple_ref/doc/anysymbol/overwrite" target="_top"><span class="function">overwrite</span></a> : <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/false //apple_ref/applescript/clm/TaskBase/false //apple_ref/applescript/intfcm/TaskBase/false //apple_ref/applescript/intfm/TaskBase/false //apple_ref/applescript/func/false //apple_ref/applescript/ftmplt/TaskBase/false //apple_ref/applescript/defn/false //apple_ref/applescript/macro/false //apple_ref/doc/anysymbol/false" machineGenerated="true" --><span class="function">false</span><!-- /a --><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/copyItem//(overwriting:overwrite,intotargetDirPath);name=end --></pre>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Parameters</font></h5>
 <div class="param_indent">
@@ -1516,31 +1517,30 @@ directories in the destination should be overwritten.</p></dd>
  An error if an item cannot be copied.<br></p></dd>
 </dl>
 <hr class="betweenAPIEntries">
-<!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/deslash//(p);   name=TaskBase::deslash --><a name="//apple_ref/applescript/instm/TaskBase/deslash//(p)"></a>
+<!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/deslash//(aPath);   name=TaskBase::deslash --><a name="//apple_ref/applescript/instm/TaskBase/deslash//(aPath)"></a>
 <h3><a name="deslash">deslash</a></h3>
 <hr class="afterName">
-<p><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/deslash//(p);name=start --><!-- begin abstract --></p>
+<p><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/deslash//(aPath);name=start --><!-- begin abstract --></p>
 <p>Removes a trailing slash from a POSIX path.
-<!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/deslash//(p);name=end --></p>
+<!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/deslash//(aPath);name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/deslash//(p);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/deslash//(p)" logicalPath="//apple_ref/applescript/instm/TaskBase/deslash" target="_top"><span class="function">deslash</span></a>(
-    <span class="param">p</span>)<!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/deslash//(p);name=end --></pre>
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/deslash//(aPath);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/deslash//(aPath)" logicalPath="//apple_ref/applescript/instm/TaskBase/deslash" target="_top"><span class="function">deslash</span></a>(
+    <span class="param">aPath</span>)<!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/deslash//(aPath);name=end --></pre>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Parameters</font></h5>
 <div class="param_indent">
 <dl>
 <dt>
-<!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/deslash/p;   name=deslash::p -->
-<a name="//apple_ref/doc/functionparam/TaskBase/deslash/p"></a>
-<code>p</code>
+<!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/deslash/aPath;   name=deslash::aPath -->
+<a name="//apple_ref/doc/functionparam/TaskBase/deslash/aPath"></a>
+<code>aPath</code>
 </dt>
 <dd><p><em>[text]</em> A POSIX path.</p></dd>
 </dl>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Return Value</font></h5>
 <p><!-- begin return value --></p>
-<p><em>[text]</em> A copy of <code>p</code> with the trailing slash removed,
-or <code>p</code> itself if not trailing slash is present.
+<p><em>[text]</em> A copy of <code>aPath</code> without any trailing slash.
 
 <!-- end return value --></p>
 <hr class="betweenAPIEntries">
@@ -1583,16 +1583,6 @@ whereas <code>cp("foo", "bar")</code> will copy <code>foo</code> itself
 into <code>bar</code>.
 <!-- headerDoc=discussion;uid=//apple_ref/applescript/instm/TaskBase/ditto//(src,dst);name=end --><!-- end discussion -->
 </p>
-<hr class="betweenAPIEntries">
-<!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/echo//(s);   name=TaskBase::echo --><a name="//apple_ref/applescript/instm/TaskBase/echo//(s)"></a>
-<h3><a name="echo">echo</a></h3>
-<hr class="afterName">
-<p><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/echo//(s);name=start --><!-- begin abstract --></p>
-<p>TODO. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/echo//(s);name=end --></p>
-<div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/echo//(s);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/echo//(s)" logicalPath="//apple_ref/applescript/instm/TaskBase/echo" target="_top"><span class="function">echo</span></a>(
-    <span class="param">s</span>)<!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/echo//(s);name=end --></pre>
-</div>
 <hr class="betweenAPIEntries">
 <!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(name:bundleName:text,atbuildPath);   name=TaskBase::emptyScriptBundle --><a name="//apple_ref/applescript/instm/TaskBase/emptyScriptBundle//(name:bundleName:text,atbuildPath)"></a>
 <h3><a name="emptyScriptBundle">emptyScriptBundle</a></h3>
@@ -1667,7 +1657,7 @@ The directory where the script bundle should be created..</p></dd>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Discussion</font></h5>
 <!-- begin discussion --><!-- headerDoc=discussion;uid=//apple_ref/applescript/instm/TaskBase/filter//(aList,predicateashandler);name=start --><p>Returns a new list containing all and only the elements of the original list
-for which the predicate returns <tt>true</tt>. The original list remains unchanged.
+for which the predicate returns <code>true</code>. The original list remains unchanged.
 A predicate is a unary handler that returns a boolean value.
 </p>
 <p>For optimal performance, the list should be passed by reference, e.g.:
@@ -1687,9 +1677,7 @@ satisfying a given condition.
 <div class="declaration_indent">
 <pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/findItems//(aDir,predicate);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/findItems//(aDir,predicate)" logicalPath="//apple_ref/applescript/instm/TaskBase/findItems" target="_top"><span class="function">findItems</span></a>(
     <span class="param">aDir</span>,
-    <span class="param">predicate</span>) <span class="comment">-- FIXME: doesn't work when aDir is "~"
- local dirEnumerator, 
-    filter<!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/findItems//(aDir,predicate);name=end --></span></pre>
+    <span class="param">predicate</span>)<!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/findItems//(aDir,predicate);name=end --></pre>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Parameters</font></h5>
 <div class="param_indent">
@@ -1706,13 +1694,13 @@ The path of the directory to search.</p></dd>
 <a name="//apple_ref/doc/functionparam/TaskBase/findItems/predicate"></a>
 <code>predicate</code>
 </dt>
-<dd><p><em>[text]</em> A predicate, specified using the syntax of Cocoa predicates.</p></dd>
+<dd><p><em>[text]</em> A predicate, specified using the syntax of NSPredicate.</p></dd>
 </dl>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Return Value</font></h5>
 <p><!-- begin return value --></p>
 <p><em>[list]</em> The list of the paths satisfying the predicate.
-The paths are relative to <tt>aDir</tt>.
+The paths are relative to <code>aDir</code>.
 
 <!-- end return value --></p>
 <hr class="betweenAPIEntries">
@@ -1751,6 +1739,54 @@ the caller (e.g., <code>glob("/some/'path with spaces'/*")</code>.
 <!-- headerDoc=discussion;uid=//apple_ref/applescript/instm/TaskBase/glob//(pattern);name=end --><!-- end discussion -->
 </p>
 <hr class="betweenAPIEntries">
+<!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/insertionSort//(x,compareHandler);   name=TaskBase::insertionSort --><a name="//apple_ref/applescript/instm/TaskBase/insertionSort//(x,compareHandler)"></a>
+<h3><a name="insertionSort">insertionSort</a></h3>
+<hr class="afterName">
+<p><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/insertionSort//(x,compareHandler);name=start --><!-- begin abstract --></p>
+<p>Sorts a list in-place.
+<!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/insertionSort//(x,compareHandler);name=end --></p>
+<div class="declaration_indent">
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/insertionSort//(x,compareHandler);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/insertionSort//(x,compareHandler)" logicalPath="//apple_ref/applescript/instm/TaskBase/insertionSort" target="_top"><span class="function">insertionSort</span></a>(
+    <span class="param">x</span>,
+    <span class="param">compareHandler</span>)<!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/insertionSort//(x,compareHandler);name=end --></pre>
+</div>
+<h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Parameters</font></h5>
+<div class="param_indent">
+<dl>
+<dt>
+<!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/insertionSort/x;   name=insertionSort::x -->
+<a name="//apple_ref/doc/functionparam/TaskBase/insertionSort/x"></a>
+<code>x</code>
+</dt>
+<dd><p><em>[reference]</em> A reference to a list.</p></dd>
+<dt>
+<!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/insertionSort/compareHandler;   name=insertionSort::compareHandler -->
+<a name="//apple_ref/doc/functionparam/TaskBase/insertionSort/compareHandler"></a>
+<code>compareHandler</code>
+</dt>
+<dd><p><em>[handler]</em> A comparator, that is,
+a handler with two parameters <code>x</code> and <code>y</code>,
+which returns <code>-1</code> if <code>x</code> is less than <code>y</code>,
+returns <code>1</code> if <code>x</code> is greater than <code>y</code>,
+and returns <code>0</code> if <code>x</code> and <code>y</code> are equal.
+To use the default semantics for comparison, pass <code>missing value</code>.</p></dd>
+</dl>
+</div>
+<h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Return Value</font></h5>
+<p><!-- begin return value --></p>
+<p>Nothing.
+
+<!-- end return value --></p>
+<h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Discussion</font></h5>
+<!-- begin discussion --><!-- headerDoc=discussion;uid=//apple_ref/applescript/instm/TaskBase/insertionSort//(x,compareHandler);name=start --><p>This handler sorts a list in-place. Call it as follows:
+                        </p>
+<pre><code>
+      set myList to {4,2,6,3}
+      insertionSort(a reference to myList)
+      myList -- {2,3,4,6}
+                        </code></pre>
+<!-- headerDoc=discussion;uid=//apple_ref/applescript/instm/TaskBase/insertionSort//(x,compareHandler);name=end --><!-- end discussion -->
+<hr class="betweenAPIEntries">
 <!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/isDirectory//(aPath);   name=TaskBase::isDirectory --><a name="//apple_ref/applescript/instm/TaskBase/isDirectory//(aPath)"></a>
 <h3><a name="isDirectory">isDirectory</a></h3>
 <hr class="afterName">
@@ -1781,7 +1817,7 @@ A path.</p></dd>
 <dl>
 <dt><b>Throws</b></dt>
 <dd><p>
- An error if the property cannot be retrieved.<br></p></dd>
+ An error if the property cannot be retrieved, for example because the path does not exist.<br></p></dd>
 </dl>
 <hr class="betweenAPIEntries">
 <!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/join//(aList,aDelimiter);   name=TaskBase::join --><a name="//apple_ref/applescript/instm/TaskBase/join//(aList,aDelimiter)"></a>
@@ -1791,7 +1827,7 @@ A path.</p></dd>
 <p>Joins the elements of a list separating them with the given delimiter.
 <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/join//(aList,aDelimiter);name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/join//(aList,aDelimiter);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/join//(aList,aDelimiter)" logicalPath="//apple_ref/applescript/instm/TaskBase/join" target="_top"><span class="function">join</span></a>(
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/join//(aList,aDelimiter);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/joinPath//(basePath,relPath)" logicalPath="//apple_ref/applescript/instm/TaskBase/join" target="_top"><span class="function">join</span></a>(
     <span class="param">aList</span>,
     <span class="param">aDelimiter</span>)<!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/join//(aList,aDelimiter);name=end --></pre>
 </div>
@@ -1825,7 +1861,7 @@ separated by the given delimiter.
 <p><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/joinPath//(basePath,relPath);name=start --><!-- begin abstract --></p>
 <p>Returns a new POSIX path formed by joining a base path and a relative path.
 If the relative path has a trailing slash, it is stripped.
-The resulting path is relative is base path is relative.
+The resulting path is relative if base path is relative.
 <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/joinPath//(basePath,relPath);name=end --></p>
 <div class="declaration_indent">
 <pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/joinPath//(basePath,relPath);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/joinPath//(basePath,relPath)" logicalPath="//apple_ref/applescript/instm/TaskBase/joinPath" target="_top"><span class="function">joinPath</span></a>(<a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/joinPath/basePath" logicalPath="//apple_ref/applescript/instm/TaskBase/basePath //apple_ref/applescript/clm/TaskBase/basePath //apple_ref/applescript/intfcm/TaskBase/basePath //apple_ref/applescript/intfm/TaskBase/basePath //apple_ref/applescript/func/basePath //apple_ref/applescript/ftmplt/TaskBase/basePath //apple_ref/applescript/defn/basePath //apple_ref/applescript/macro/basePath //apple_ref/doc/anysymbol/basePath" target="_top"><span class="function">basePath</span></a>,
@@ -1887,15 +1923,15 @@ The path to the Finder alias to be created.</p></dd>
 </dl>
 </div>
 <hr class="betweenAPIEntries">
-<!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/makeApplication:missingvalue//(atbuildLocation);   name=TaskBase::makeApplication : missing value --><a name="//apple_ref/applescript/instm/TaskBase/makeApplication:missingvalue//(atbuildLocation)"></a>
+<!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/makeApplication:missingvalue//(overwriting:overwrite,atbuildLocation);   name=TaskBase::makeApplication : missing value --><a name="//apple_ref/applescript/instm/TaskBase/makeApplication:missingvalue//(overwriting:overwrite,atbuildLocation)"></a>
 <h3><a name="makeApplication:missingvalue">makeApplication : missing value</a></h3>
 <hr class="afterName">
-<p><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/makeApplication:missingvalue//(atbuildLocation);name=start --><!-- begin abstract --></p>
+<p><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/makeApplication:missingvalue//(overwriting:overwrite,atbuildLocation);name=start --><!-- begin abstract --></p>
 <p>Builds an application from a source script, including resources and
 embedded script libraries.
-<!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/makeApplication:missingvalue//(atbuildLocation);name=end --></p>
+<!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/makeApplication:missingvalue//(overwriting:overwrite,atbuildLocation);name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/makeApplication:missingvalue//(atbuildLocation);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/makeApplication:missingvalue//(atbuildLocation)" logicalPath="//apple_ref/applescript/instm/TaskBase/makeApplication" target="_top"><span class="function">makeApplication</span></a> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/from //apple_ref/applescript/clm/TaskBase/from //apple_ref/applescript/intfcm/TaskBase/from //apple_ref/applescript/intfm/TaskBase/from //apple_ref/applescript/func/from //apple_ref/applescript/ftmplt/TaskBase/from //apple_ref/applescript/defn/from //apple_ref/applescript/macro/from //apple_ref/doc/anysymbol/from" machineGenerated="true" --><span class="function">from</span><!-- /a --> <span class="param">sourcePath</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/at //apple_ref/applescript/clm/TaskBase/at //apple_ref/applescript/intfcm/TaskBase/at //apple_ref/applescript/intfm/TaskBase/at //apple_ref/applescript/func/at //apple_ref/applescript/ftmplt/TaskBase/at //apple_ref/applescript/defn/at //apple_ref/applescript/macro/at //apple_ref/doc/anysymbol/at" machineGenerated="true" --><span class="function">at</span><!-- /a --> <span class="param">buildLocation</span> : <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/missing //apple_ref/applescript/clm/TaskBase/missing //apple_ref/applescript/intfcm/TaskBase/missing //apple_ref/applescript/intfm/TaskBase/missing //apple_ref/applescript/func/missing //apple_ref/applescript/ftmplt/TaskBase/missing //apple_ref/applescript/defn/missing //apple_ref/applescript/macro/missing //apple_ref/doc/anysymbol/missing" machineGenerated="true" --><span class="function">missing</span><!-- /a --> <span class="param">value</span><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/makeApplication:missingvalue//(atbuildLocation);name=end --></pre>
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/makeApplication:missingvalue//(overwriting:overwrite,atbuildLocation);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/makeApplication:missingvalue//(overwriting:overwrite,atbuildLocation)" logicalPath="//apple_ref/applescript/instm/TaskBase/makeApplication" target="_top"><span class="function">makeApplication</span></a> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/from //apple_ref/applescript/clm/TaskBase/from //apple_ref/applescript/intfcm/TaskBase/from //apple_ref/applescript/intfm/TaskBase/from //apple_ref/applescript/func/from //apple_ref/applescript/ftmplt/TaskBase/from //apple_ref/applescript/defn/from //apple_ref/applescript/macro/from //apple_ref/doc/anysymbol/from" machineGenerated="true" --><span class="function">from</span><!-- /a --> <span class="param">sourcePath</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/at //apple_ref/applescript/clm/TaskBase/at //apple_ref/applescript/intfcm/TaskBase/at //apple_ref/applescript/intfm/TaskBase/at //apple_ref/applescript/func/at //apple_ref/applescript/ftmplt/TaskBase/at //apple_ref/applescript/defn/at //apple_ref/applescript/macro/at //apple_ref/doc/anysymbol/at" machineGenerated="true" --><span class="function">at</span><!-- /a --> <span class="param">buildLocation</span> : <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/missing //apple_ref/applescript/clm/TaskBase/missing //apple_ref/applescript/intfcm/TaskBase/missing //apple_ref/applescript/intfm/TaskBase/missing //apple_ref/applescript/func/missing //apple_ref/applescript/ftmplt/TaskBase/missing //apple_ref/applescript/defn/missing //apple_ref/applescript/macro/missing //apple_ref/doc/anysymbol/missing" machineGenerated="true" --><span class="function">missing</span><!-- /a --> <span class="param">value</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/given //apple_ref/applescript/clm/TaskBase/given //apple_ref/applescript/intfcm/TaskBase/given //apple_ref/applescript/intfm/TaskBase/given //apple_ref/applescript/func/given //apple_ref/applescript/ftmplt/TaskBase/given //apple_ref/applescript/defn/given //apple_ref/applescript/macro/given //apple_ref/doc/anysymbol/given" machineGenerated="true" --><span class="function">given</span><!-- /a --> <a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/moveItems/overwriting" logicalPath="//apple_ref/applescript/instm/TaskBase/overwriting //apple_ref/applescript/clm/TaskBase/overwriting //apple_ref/applescript/intfcm/TaskBase/overwriting //apple_ref/applescript/intfm/TaskBase/overwriting //apple_ref/applescript/func/overwriting //apple_ref/applescript/ftmplt/TaskBase/overwriting //apple_ref/applescript/defn/overwriting //apple_ref/applescript/macro/overwriting //apple_ref/doc/anysymbol/overwriting" target="_top"><span class="function">overwriting</span></a>:<a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/mv/overwrite" logicalPath="//apple_ref/applescript/instm/TaskBase/overwrite //apple_ref/applescript/clm/TaskBase/overwrite //apple_ref/applescript/intfcm/TaskBase/overwrite //apple_ref/applescript/intfm/TaskBase/overwrite //apple_ref/applescript/func/overwrite //apple_ref/applescript/ftmplt/TaskBase/overwrite //apple_ref/applescript/defn/overwrite //apple_ref/applescript/macro/overwrite //apple_ref/doc/anysymbol/overwrite" target="_top"><span class="function">overwrite</span></a> : <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/false //apple_ref/applescript/clm/TaskBase/false //apple_ref/applescript/intfcm/TaskBase/false //apple_ref/applescript/intfm/TaskBase/false //apple_ref/applescript/func/false //apple_ref/applescript/ftmplt/TaskBase/false //apple_ref/applescript/defn/false //apple_ref/applescript/macro/false //apple_ref/doc/anysymbol/false" machineGenerated="true" --><span class="function">false</span><!-- /a --><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/makeApplication:missingvalue//(overwriting:overwrite,atbuildLocation);name=end --></pre>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Parameters</font></h5>
 <div class="param_indent">
@@ -1916,6 +1952,13 @@ path to the source file (a file with <code>.applescript</code> suffix).</p></dd>
 The path of the directory in which the script bundle should be built.
 This argument is optional: when omitted, the script bundle is saved
 in a <tt>build</tt> directory in the same folder as the source script.</p></dd>
+<dt>
+<!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/makeApplication:missingvalue/overwrite;   name=makeApplication : missing value::overwrite -->
+<a name="//apple_ref/doc/functionparam/TaskBase/makeApplication:missingvalue/overwrite"></a>
+<code>overwrite</code>
+</dt>
+<dd><p><em>[boolean]</em> An optional flag indicating whether an existing build
+location should be overwritten (default: <code>false</code>).</p></dd>
 </dl>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Return Value</font></h5>
@@ -1957,15 +2000,15 @@ A path or a list of paths.</p></dd>
 </dl>
 </div>
 <hr class="betweenAPIEntries">
-<!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/makeScriptBundle:missingvalue//(atbuildLocation);   name=TaskBase::makeScriptBundle : missing value --><a name="//apple_ref/applescript/instm/TaskBase/makeScriptBundle:missingvalue//(atbuildLocation)"></a>
+<!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/makeScriptBundle:missingvalue//(overwriting:overwrite,atbuildLocation);   name=TaskBase::makeScriptBundle : missing value --><a name="//apple_ref/applescript/instm/TaskBase/makeScriptBundle:missingvalue//(overwriting:overwrite,atbuildLocation)"></a>
 <h3><a name="makeScriptBundle:missingvalue">makeScriptBundle : missing value</a></h3>
 <hr class="afterName">
-<p><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/makeScriptBundle:missingvalue//(atbuildLocation);name=start --><!-- begin abstract --></p>
+<p><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/makeScriptBundle:missingvalue//(overwriting:overwrite,atbuildLocation);name=start --><!-- begin abstract --></p>
 <p>Builds a script bundle from source, including resources and
 embedded script libraries.
-<!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/makeScriptBundle:missingvalue//(atbuildLocation);name=end --></p>
+<!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/makeScriptBundle:missingvalue//(overwriting:overwrite,atbuildLocation);name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/makeScriptBundle:missingvalue//(atbuildLocation);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/makeScriptBundle:missingvalue//(atbuildLocation)" logicalPath="//apple_ref/applescript/instm/TaskBase/makeScriptBundle" target="_top"><span class="function">makeScriptBundle</span></a> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/from //apple_ref/applescript/clm/TaskBase/from //apple_ref/applescript/intfcm/TaskBase/from //apple_ref/applescript/intfm/TaskBase/from //apple_ref/applescript/func/from //apple_ref/applescript/ftmplt/TaskBase/from //apple_ref/applescript/defn/from //apple_ref/applescript/macro/from //apple_ref/doc/anysymbol/from" machineGenerated="true" --><span class="function">from</span><!-- /a --> <span class="param">sourcePath</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/at //apple_ref/applescript/clm/TaskBase/at //apple_ref/applescript/intfcm/TaskBase/at //apple_ref/applescript/intfm/TaskBase/at //apple_ref/applescript/func/at //apple_ref/applescript/ftmplt/TaskBase/at //apple_ref/applescript/defn/at //apple_ref/applescript/macro/at //apple_ref/doc/anysymbol/at" machineGenerated="true" --><span class="function">at</span><!-- /a --> <span class="param">buildLocation</span> : <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/missing //apple_ref/applescript/clm/TaskBase/missing //apple_ref/applescript/intfcm/TaskBase/missing //apple_ref/applescript/intfm/TaskBase/missing //apple_ref/applescript/func/missing //apple_ref/applescript/ftmplt/TaskBase/missing //apple_ref/applescript/defn/missing //apple_ref/applescript/macro/missing //apple_ref/doc/anysymbol/missing" machineGenerated="true" --><span class="function">missing</span><!-- /a --> <span class="param">value</span><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/makeScriptBundle:missingvalue//(atbuildLocation);name=end --></pre>
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/makeScriptBundle:missingvalue//(overwriting:overwrite,atbuildLocation);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/makeScriptBundle:missingvalue//(overwriting:overwrite,atbuildLocation)" logicalPath="//apple_ref/applescript/instm/TaskBase/makeScriptBundle" target="_top"><span class="function">makeScriptBundle</span></a> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/from //apple_ref/applescript/clm/TaskBase/from //apple_ref/applescript/intfcm/TaskBase/from //apple_ref/applescript/intfm/TaskBase/from //apple_ref/applescript/func/from //apple_ref/applescript/ftmplt/TaskBase/from //apple_ref/applescript/defn/from //apple_ref/applescript/macro/from //apple_ref/doc/anysymbol/from" machineGenerated="true" --><span class="function">from</span><!-- /a --> <span class="param">sourcePath</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/at //apple_ref/applescript/clm/TaskBase/at //apple_ref/applescript/intfcm/TaskBase/at //apple_ref/applescript/intfm/TaskBase/at //apple_ref/applescript/func/at //apple_ref/applescript/ftmplt/TaskBase/at //apple_ref/applescript/defn/at //apple_ref/applescript/macro/at //apple_ref/doc/anysymbol/at" machineGenerated="true" --><span class="function">at</span><!-- /a --> <span class="param">buildLocation</span> : <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/missing //apple_ref/applescript/clm/TaskBase/missing //apple_ref/applescript/intfcm/TaskBase/missing //apple_ref/applescript/intfm/TaskBase/missing //apple_ref/applescript/func/missing //apple_ref/applescript/ftmplt/TaskBase/missing //apple_ref/applescript/defn/missing //apple_ref/applescript/macro/missing //apple_ref/doc/anysymbol/missing" machineGenerated="true" --><span class="function">missing</span><!-- /a --> <span class="param">value</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/given //apple_ref/applescript/clm/TaskBase/given //apple_ref/applescript/intfcm/TaskBase/given //apple_ref/applescript/intfm/TaskBase/given //apple_ref/applescript/func/given //apple_ref/applescript/ftmplt/TaskBase/given //apple_ref/applescript/defn/given //apple_ref/applescript/macro/given //apple_ref/doc/anysymbol/given" machineGenerated="true" --><span class="function">given</span><!-- /a --> <a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/moveItems/overwriting" logicalPath="//apple_ref/applescript/instm/TaskBase/overwriting //apple_ref/applescript/clm/TaskBase/overwriting //apple_ref/applescript/intfcm/TaskBase/overwriting //apple_ref/applescript/intfm/TaskBase/overwriting //apple_ref/applescript/func/overwriting //apple_ref/applescript/ftmplt/TaskBase/overwriting //apple_ref/applescript/defn/overwriting //apple_ref/applescript/macro/overwriting //apple_ref/doc/anysymbol/overwriting" target="_top"><span class="function">overwriting</span></a>:<a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/mv/overwrite" logicalPath="//apple_ref/applescript/instm/TaskBase/overwrite //apple_ref/applescript/clm/TaskBase/overwrite //apple_ref/applescript/intfcm/TaskBase/overwrite //apple_ref/applescript/intfm/TaskBase/overwrite //apple_ref/applescript/func/overwrite //apple_ref/applescript/ftmplt/TaskBase/overwrite //apple_ref/applescript/defn/overwrite //apple_ref/applescript/macro/overwrite //apple_ref/doc/anysymbol/overwrite" target="_top"><span class="function">overwrite</span></a> : <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/false //apple_ref/applescript/clm/TaskBase/false //apple_ref/applescript/intfcm/TaskBase/false //apple_ref/applescript/intfm/TaskBase/false //apple_ref/applescript/func/false //apple_ref/applescript/ftmplt/TaskBase/false //apple_ref/applescript/defn/false //apple_ref/applescript/macro/false //apple_ref/doc/anysymbol/false" machineGenerated="true" --><span class="function">false</span><!-- /a --><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/makeScriptBundle:missingvalue//(overwriting:overwrite,atbuildLocation);name=end --></pre>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Parameters</font></h5>
 <div class="param_indent">
@@ -1986,6 +2029,13 @@ path to the source file (a file with <code>.applescript</code> suffix).</p></dd>
 The path of the directory in which the script bundle should be built.
 This argument is optional: when omitted, the script bundle is saved
 in a <tt>build</tt> directory in the same folder as the source script.</p></dd>
+<dt>
+<!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/makeScriptBundle:missingvalue/overwrite;   name=makeScriptBundle : missing value::overwrite -->
+<a name="//apple_ref/doc/functionparam/TaskBase/makeScriptBundle:missingvalue/overwrite"></a>
+<code>overwrite</code>
+</dt>
+<dd><p><em>[boolean]</em> An optional flag indicating whether an existing build
+location should be overwritten (default: <code>false</code>).</p></dd>
 </dl>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Return Value</font></h5>
@@ -2054,7 +2104,7 @@ of the original list.
 <p>Moves one or more files or directories to the specified destination.
 <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/moveItem//(overwriting:overwrite,intotargetDirPath);name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/moveItem//(overwriting:overwrite,intotargetDirPath);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/moveItems//(overwriting:overwrite,intotargetDirPath)" logicalPath="//apple_ref/applescript/instm/TaskBase/moveItem" target="_top"><span class="function">moveItem</span></a> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/at //apple_ref/applescript/clm/TaskBase/at //apple_ref/applescript/intfcm/TaskBase/at //apple_ref/applescript/intfm/TaskBase/at //apple_ref/applescript/func/at //apple_ref/applescript/ftmplt/TaskBase/at //apple_ref/applescript/defn/at //apple_ref/applescript/macro/at //apple_ref/doc/anysymbol/at" machineGenerated="true" --><span class="function">at</span><!-- /a --> <span class="param">sourcePath</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/into //apple_ref/applescript/clm/TaskBase/into //apple_ref/applescript/intfcm/TaskBase/into //apple_ref/applescript/intfm/TaskBase/into //apple_ref/applescript/func/into //apple_ref/applescript/ftmplt/TaskBase/into //apple_ref/applescript/defn/into //apple_ref/applescript/macro/into //apple_ref/doc/anysymbol/into" machineGenerated="true" --><span class="function">into</span><!-- /a --> <span class="param">targetDirPath</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/given //apple_ref/applescript/clm/TaskBase/given //apple_ref/applescript/intfcm/TaskBase/given //apple_ref/applescript/intfm/TaskBase/given //apple_ref/applescript/func/given //apple_ref/applescript/ftmplt/TaskBase/given //apple_ref/applescript/defn/given //apple_ref/applescript/macro/given //apple_ref/doc/anysymbol/given" machineGenerated="true" --><span class="function">given</span><!-- /a --> <a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/moveItems/overwriting" logicalPath="//apple_ref/applescript/instm/TaskBase/overwriting //apple_ref/applescript/clm/TaskBase/overwriting //apple_ref/applescript/intfcm/TaskBase/overwriting //apple_ref/applescript/intfm/TaskBase/overwriting //apple_ref/applescript/func/overwriting //apple_ref/applescript/ftmplt/TaskBase/overwriting //apple_ref/applescript/defn/overwriting //apple_ref/applescript/macro/overwriting //apple_ref/doc/anysymbol/overwriting" target="_top"><span class="function">overwriting</span></a>:<a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/mv/overwrite" logicalPath="//apple_ref/applescript/instm/TaskBase/overwrite //apple_ref/applescript/clm/TaskBase/overwrite //apple_ref/applescript/intfcm/TaskBase/overwrite //apple_ref/applescript/intfm/TaskBase/overwrite //apple_ref/applescript/func/overwrite //apple_ref/applescript/ftmplt/TaskBase/overwrite //apple_ref/applescript/defn/overwrite //apple_ref/applescript/macro/overwrite //apple_ref/doc/anysymbol/overwrite" target="_top"><span class="function">overwrite</span></a> : <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/false //apple_ref/applescript/clm/TaskBase/false //apple_ref/applescript/intfcm/TaskBase/false //apple_ref/applescript/intfm/TaskBase/false //apple_ref/applescript/func/false //apple_ref/applescript/ftmplt/TaskBase/false //apple_ref/applescript/defn/false //apple_ref/applescript/macro/false //apple_ref/doc/anysymbol/false" machineGenerated="true" --><span class="function">false</span><!-- /a --><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/moveItem//(overwriting:overwrite,intotargetDirPath);name=end --></pre>
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/moveItem//(overwriting:overwrite,intotargetDirPath);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/moveItem//(overwriting:overwrite,intotargetDirPath)" logicalPath="//apple_ref/applescript/instm/TaskBase/moveItem" target="_top"><span class="function">moveItem</span></a> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/at //apple_ref/applescript/clm/TaskBase/at //apple_ref/applescript/intfcm/TaskBase/at //apple_ref/applescript/intfm/TaskBase/at //apple_ref/applescript/func/at //apple_ref/applescript/ftmplt/TaskBase/at //apple_ref/applescript/defn/at //apple_ref/applescript/macro/at //apple_ref/doc/anysymbol/at" machineGenerated="true" --><span class="function">at</span><!-- /a --> <span class="param">sourcePath</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/into //apple_ref/applescript/clm/TaskBase/into //apple_ref/applescript/intfcm/TaskBase/into //apple_ref/applescript/intfm/TaskBase/into //apple_ref/applescript/func/into //apple_ref/applescript/ftmplt/TaskBase/into //apple_ref/applescript/defn/into //apple_ref/applescript/macro/into //apple_ref/doc/anysymbol/into" machineGenerated="true" --><span class="function">into</span><!-- /a --> <span class="param">targetDirPath</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/given //apple_ref/applescript/clm/TaskBase/given //apple_ref/applescript/intfcm/TaskBase/given //apple_ref/applescript/intfm/TaskBase/given //apple_ref/applescript/func/given //apple_ref/applescript/ftmplt/TaskBase/given //apple_ref/applescript/defn/given //apple_ref/applescript/macro/given //apple_ref/doc/anysymbol/given" machineGenerated="true" --><span class="function">given</span><!-- /a --> <a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/moveItems/overwriting" logicalPath="//apple_ref/applescript/instm/TaskBase/overwriting //apple_ref/applescript/clm/TaskBase/overwriting //apple_ref/applescript/intfcm/TaskBase/overwriting //apple_ref/applescript/intfm/TaskBase/overwriting //apple_ref/applescript/func/overwriting //apple_ref/applescript/ftmplt/TaskBase/overwriting //apple_ref/applescript/defn/overwriting //apple_ref/applescript/macro/overwriting //apple_ref/doc/anysymbol/overwriting" target="_top"><span class="function">overwriting</span></a>:<a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/mv/overwrite" logicalPath="//apple_ref/applescript/instm/TaskBase/overwrite //apple_ref/applescript/clm/TaskBase/overwrite //apple_ref/applescript/intfcm/TaskBase/overwrite //apple_ref/applescript/intfm/TaskBase/overwrite //apple_ref/applescript/func/overwrite //apple_ref/applescript/ftmplt/TaskBase/overwrite //apple_ref/applescript/defn/overwrite //apple_ref/applescript/macro/overwrite //apple_ref/doc/anysymbol/overwrite" target="_top"><span class="function">overwrite</span></a> : <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/false //apple_ref/applescript/clm/TaskBase/false //apple_ref/applescript/intfcm/TaskBase/false //apple_ref/applescript/intfm/TaskBase/false //apple_ref/applescript/func/false //apple_ref/applescript/ftmplt/TaskBase/false //apple_ref/applescript/defn/false //apple_ref/applescript/macro/false //apple_ref/doc/anysymbol/false" machineGenerated="true" --><span class="function">false</span><!-- /a --><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/moveItem//(overwriting:overwrite,intotargetDirPath);name=end --></pre>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Parameters</font></h5>
 <div class="param_indent">
@@ -2368,7 +2418,7 @@ A relative or absolute path.</p></dd>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Return Value</font></h5>
 <p><!-- begin return value --></p>
-<p><em>[boolean]</em> <tt>true</tt> is the path exists, <tt>false</tt> otherwise.
+<p><em>[boolean]</em> <code>true</code> is the path exists, <code>false</code> otherwise.
 
 <!-- end return value --></p>
 <hr class="betweenAPIEntries">
@@ -2379,7 +2429,7 @@ A relative or absolute path.</p></dd>
 <p>Turns (almost) any path specification into a POSIX path.
 <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/posixPath//(aPath);name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/posixPath//(aPath);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/posixPath//(aPath)" logicalPath="//apple_ref/applescript/instm/TaskBase/posixPath" target="_top"><span class="function">posixPath</span></a>(
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/posixPath//(aPath);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/posixPaths//(src)" logicalPath="//apple_ref/applescript/instm/TaskBase/posixPath" target="_top"><span class="function">posixPath</span></a>(
     <span class="param">aPath</span>)<!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/posixPath//(aPath);name=end --></pre>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Parameters</font></h5>
@@ -2460,7 +2510,7 @@ accepted, and they are flattened.
 <h3><a name="quoteText">quoteText</a></h3>
 <hr class="afterName">
 <p><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/quoteText//(s);name=start --><!-- begin abstract --></p>
-<p>A wrapper around <tt>quoted form of</tt>. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/quoteText//(s);name=end --></p>
+<p>A wrapper around <code>quoted form of</code>. <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/quoteText//(s);name=end --></p>
 <div class="declaration_indent">
 <pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/quoteText//(s);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/quoteText//(s)" logicalPath="//apple_ref/applescript/instm/TaskBase/quoteText" target="_top"><span class="function">quoteText</span></a>(
     <span class="param">s</span>)<!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/quoteText//(s);name=end --></pre>
@@ -2510,7 +2560,7 @@ accepted, and they are flattened.
 <p>Deletes one or more files or directories (with their content).
 <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/removeItem//(forcing:force,atsomePath);name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/removeItem//(forcing:force,atsomePath);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/removeItems//(forcing:force,atsomePaths)" logicalPath="//apple_ref/applescript/instm/TaskBase/removeItem" target="_top"><span class="function">removeItem</span></a> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/at //apple_ref/applescript/clm/TaskBase/at //apple_ref/applescript/intfcm/TaskBase/at //apple_ref/applescript/intfm/TaskBase/at //apple_ref/applescript/func/at //apple_ref/applescript/ftmplt/TaskBase/at //apple_ref/applescript/defn/at //apple_ref/applescript/macro/at //apple_ref/doc/anysymbol/at" machineGenerated="true" --><span class="function">at</span><!-- /a --> <span class="param">somePath</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/given //apple_ref/applescript/clm/TaskBase/given //apple_ref/applescript/intfcm/TaskBase/given //apple_ref/applescript/intfm/TaskBase/given //apple_ref/applescript/func/given //apple_ref/applescript/ftmplt/TaskBase/given //apple_ref/applescript/defn/given //apple_ref/applescript/macro/given //apple_ref/doc/anysymbol/given" machineGenerated="true" --><span class="function">given</span><!-- /a --> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/forcing //apple_ref/applescript/clm/TaskBase/forcing //apple_ref/applescript/intfcm/TaskBase/forcing //apple_ref/applescript/intfm/TaskBase/forcing //apple_ref/applescript/func/forcing //apple_ref/applescript/ftmplt/TaskBase/forcing //apple_ref/applescript/defn/forcing //apple_ref/applescript/macro/forcing //apple_ref/doc/anysymbol/forcing" machineGenerated="true" --><span class="function">forcing</span><!-- /a -->:<a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/rm/force" logicalPath="//apple_ref/applescript/instm/TaskBase/force //apple_ref/applescript/clm/TaskBase/force //apple_ref/applescript/intfcm/TaskBase/force //apple_ref/applescript/intfm/TaskBase/force //apple_ref/applescript/func/force //apple_ref/applescript/ftmplt/TaskBase/force //apple_ref/applescript/defn/force //apple_ref/applescript/macro/force //apple_ref/doc/anysymbol/force" target="_top"><span class="function">force</span></a> : <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/false //apple_ref/applescript/clm/TaskBase/false //apple_ref/applescript/intfcm/TaskBase/false //apple_ref/applescript/intfm/TaskBase/false //apple_ref/applescript/func/false //apple_ref/applescript/ftmplt/TaskBase/false //apple_ref/applescript/defn/false //apple_ref/applescript/macro/false //apple_ref/doc/anysymbol/false" machineGenerated="true" --><span class="function">false</span><!-- /a --><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/removeItem//(forcing:force,atsomePath);name=end --></pre>
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/removeItem//(forcing:force,atsomePath);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/removeItem//(forcing:force,atsomePath)" logicalPath="//apple_ref/applescript/instm/TaskBase/removeItem" target="_top"><span class="function">removeItem</span></a> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/at //apple_ref/applescript/clm/TaskBase/at //apple_ref/applescript/intfcm/TaskBase/at //apple_ref/applescript/intfm/TaskBase/at //apple_ref/applescript/func/at //apple_ref/applescript/ftmplt/TaskBase/at //apple_ref/applescript/defn/at //apple_ref/applescript/macro/at //apple_ref/doc/anysymbol/at" machineGenerated="true" --><span class="function">at</span><!-- /a --> <span class="param">somePath</span> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/given //apple_ref/applescript/clm/TaskBase/given //apple_ref/applescript/intfcm/TaskBase/given //apple_ref/applescript/intfm/TaskBase/given //apple_ref/applescript/func/given //apple_ref/applescript/ftmplt/TaskBase/given //apple_ref/applescript/defn/given //apple_ref/applescript/macro/given //apple_ref/doc/anysymbol/given" machineGenerated="true" --><span class="function">given</span><!-- /a --> <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/forcing //apple_ref/applescript/clm/TaskBase/forcing //apple_ref/applescript/intfcm/TaskBase/forcing //apple_ref/applescript/intfm/TaskBase/forcing //apple_ref/applescript/func/forcing //apple_ref/applescript/ftmplt/TaskBase/forcing //apple_ref/applescript/defn/forcing //apple_ref/applescript/macro/forcing //apple_ref/doc/anysymbol/forcing" machineGenerated="true" --><span class="function">forcing</span><!-- /a -->:<a machinegenerated="true" href="index.html#//apple_ref/doc/functionparam/TaskBase/rm/force" logicalPath="//apple_ref/applescript/instm/TaskBase/force //apple_ref/applescript/clm/TaskBase/force //apple_ref/applescript/intfcm/TaskBase/force //apple_ref/applescript/intfm/TaskBase/force //apple_ref/applescript/func/force //apple_ref/applescript/ftmplt/TaskBase/force //apple_ref/applescript/defn/force //apple_ref/applescript/macro/force //apple_ref/doc/anysymbol/force" target="_top"><span class="function">force</span></a> : <!-- a logicalPath="//apple_ref/applescript/instm/TaskBase/false //apple_ref/applescript/clm/TaskBase/false //apple_ref/applescript/intfcm/TaskBase/false //apple_ref/applescript/intfm/TaskBase/false //apple_ref/applescript/func/false //apple_ref/applescript/ftmplt/TaskBase/false //apple_ref/applescript/defn/false //apple_ref/applescript/macro/false //apple_ref/doc/anysymbol/false" machineGenerated="true" --><span class="function">false</span><!-- /a --><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/removeItem//(forcing:force,atsomePath);name=end --></pre>
 </div>
 <p><b>See</b></p>
 <div class="list_indent"><dl>
@@ -2560,7 +2610,7 @@ A path or a list of paths.</p></dd>
 <code>force</code>
 </dt>
 <dd><p><em>[boolean]</em> A flag indicating whether an error should be raised
-when an item cannot be deleted. When set to <tt>true</tt>,
+when an item cannot be deleted. When set to <code>true</code>,
 no errors are reported.</p></dd>
 </dl>
 </div>
@@ -2572,7 +2622,7 @@ no errors are reported.</p></dd>
 <dl>
 <dt><b>Throws</b></dt>
 <dd><p>
- Only if <tt>force</tt> is <tt>false</tt>. In such a case, an error is thrown when an item cannot be deleted, for example because it does not exist.<br></p></dd>
+ Only if <code>force</code> is <code>false</code>. In such a case, an error is thrown when an item cannot be deleted, for example because it does not exist.<br></p></dd>
 </dl>
 <hr class="betweenAPIEntries">
 <!-- headerDoc=instm;  uid=//apple_ref/applescript/instm/TaskBase/setIcon//(docPath,imgPath);   name=TaskBase::setIcon --><a name="//apple_ref/applescript/instm/TaskBase/setIcon//(docPath,imgPath)"></a>
@@ -2727,20 +2777,20 @@ to a list). Each option is quoted before the command is executed.</p></dd>
 <code>privileges</code>
 </dt>
 <dd><p><em>[boolean]</em> A flag indicating whether the command should be executed as a different user.
-The default is <tt>false</tt>.</p></dd>
+The default is <code>false</code>.</p></dd>
 <dt>
 <!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/shell/username;   name=shell::username -->
 <a name="//apple_ref/doc/functionparam/TaskBase/shell/username"></a>
 <code>username</code>
 </dt>
 <dd><p><em>[text]</em> The username that should execute the command.
-This argument is ignored unless <tt>privileges</tt> is set to <tt>true</tt>.</p></dd>
+This argument is ignored unless <code>privileges</code> is set to <code>true</code>.</p></dd>
 <dt>
 <!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/shell/pass;   name=shell::pass -->
 <a name="//apple_ref/doc/functionparam/TaskBase/shell/pass"></a>
 <code>pass</code>
 </dt>
-<dd><p><em>[text]</em> The password to be authenticated as <tt>username</tt>.</p></dd>
+<dd><p><em>[text]</em> The password to be authenticated as <code>username</code>.</p></dd>
 <dt>
 <!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/shell/out;   name=shell::out -->
 <a name="//apple_ref/doc/functionparam/TaskBase/shell/out"></a>
@@ -2753,14 +2803,14 @@ This argument is ignored unless <tt>privileges</tt> is set to <tt>true</tt>.</p>
 <code>err</code>
 </dt>
 <dd><p><em>[text]</em> Redirect the standard error to the specified file.
-Pass <tt>&amp;1</tt> to redirect to the standard output.</p></dd>
+Pass <code>&amp;1</code> to redirect to the standard output.</p></dd>
 <dt>
 <!-- headerDoc=functionparam;  uid=//apple_ref/doc/functionparam/TaskBase/shell/ale;   name=shell::ale -->
 <a name="//apple_ref/doc/functionparam/TaskBase/shell/ale"></a>
 <code>ale</code>
 </dt>
 <dd><p><em>[boolean]</em> Whether line endings should be changed or not.
-The default is <tt>true</tt>.</p></dd>
+The default is <code>true</code>.</p></dd>
 </dl>
 </div>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Return Value</font></h5>
@@ -2786,7 +2836,7 @@ with password <code>xyz123</code> may look as follows:
                         shell for "mycmd" given out:"/some/file", err:"&amp;1", alteringLineEndings:false
                         </pre>
 <p>This handler uses the syntax introduced is OS X 10.10 (Yosemite) for optional labeled parameters. 
-Apart from the <tt>for</tt> parameter, all other arguments are optional (and may appear in any order).
+Apart from the <code>for</code> parameter, all other arguments are optional (and may appear in any order).
 <!-- headerDoc=discussion;uid=//apple_ref/applescript/instm/TaskBase/shell//(options:options:%7B%7D,privileges:privileges,username:username:missingvalue,password%7C:pass:missingvalue,out:out:,err:err:,alteringLineEndings:ale,forcommand);name=end --><!-- end discussion -->
 </p>
 <dl>
@@ -2816,7 +2866,7 @@ Apart from the <tt>for</tt> parameter, all other arguments are optional (and may
 <p>Splits a string at the given delimiter.
 <!-- end abstract --><!-- headerDoc=abstract;uid=//apple_ref/applescript/instm/TaskBase/split//(theText,aDelimiter);name=end --></p>
 <div class="declaration_indent">
-<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/split//(theText,aDelimiter);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/splitPath//(aPath)" logicalPath="//apple_ref/applescript/instm/TaskBase/split" target="_top"><span class="function">split</span></a>(
+<pre><!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/split//(theText,aDelimiter);name=start --><span class="keyword">on</span> <a machinegenerated="true" href="index.html#//apple_ref/applescript/instm/TaskBase/split//(theText,aDelimiter)" logicalPath="//apple_ref/applescript/instm/TaskBase/split" target="_top"><span class="function">split</span></a>(
     <span class="param">theText</span>,
     <span class="param">aDelimiter</span>)<!-- headerDoc=declaration;uid=//apple_ref/applescript/instm/TaskBase/split//(theText,aDelimiter);name=end --></pre>
 </div>
@@ -2998,7 +3048,7 @@ A path.</p></dd>
 <h5 class="tight"><font face="Lucida Grande,Helvetica,Arial">Return Value</font></h5>
 <p><!-- begin return value --></p>
 <p><em>[text]<em> The POSIX path of the executable, if found;
-otherwise, returns <tt>missing value</tt>.                
+otherwise, returns <code>missing value</code>.                
 
 <!-- end return value --></em></em></p>
 <hr class="betweenAPIEntries">
@@ -3204,7 +3254,7 @@ directly from the command line, but it can be called by other tasks.
 <p class="gapBeforeFooter">Ê</p>
 <hr class="afterFooter">
 <div class="hd_copyright_and_timestamp">
-<p class="hd_timestamp">Last Updated: Sunday, January 18, 2015
+<p class="hd_timestamp">Last Updated: Monday, January 19, 2015
 </p>
 </div>
 </td>
