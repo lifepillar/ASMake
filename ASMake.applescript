@@ -1739,6 +1739,9 @@ script TaskBase
 			The path of the directory in which the script bundle should be built.
 			This argument is optional: when omitted, the script bundle is saved
 			in a <tt>build</tt> directory in the same folder as the source script.
+		@param
+			overwrite <em>[boolean]</em> An optional flag indicating whether an existing build
+			location should be overwritten (default: <code>false</code>).
 		@return
 			Nothing
 		@throws
@@ -1746,8 +1749,8 @@ script TaskBase
 		@seealso
 			_buildScript()
 	*)
-	on makeScriptBundle from sourcePath at buildLocation : missing value
-		local sourceURL, sourceDirectoryURL, scriptBundleName, buildURL, languageInstance
+	on makeScriptBundle from sourcePath at buildLocation : missing value given overwriting:overwrite : false
+		local sourceURL, sourceDirectoryURL, scriptBundleName, buildURL, bundleURL, languageInstance
 		
 		set sourceURL to toNSURL(sourcePath)
 		set sourceDirectoryURL to _parentDirectory(sourceURL)
@@ -1757,6 +1760,18 @@ script TaskBase
 		else
 			set buildURL to toNSURL(buildLocation)
 		end if
+		
+		set bundleURL to _joinPath(buildURL, scriptBundleName)
+		if overwrite then
+			if _pathExists(bundleURL) then
+				_removeItem(bundleURL)
+			end if
+		else
+			if _pathExists(bundleURL) then
+				error (bundleURL's |path| as text) & space & "already exists."
+			end if
+		end if
+		
 		set languageInstance to _languageInstanceForName("AppleScript")
 		_buildScript(sourceURL, missing value, _joinPath(buildURL, scriptBundleName), Â
 			languageInstance, my OSAStorageScriptBundleType, my OSANull)
@@ -1775,6 +1790,9 @@ script TaskBase
 			The path of the directory in which the script bundle should be built.
 			This argument is optional: when omitted, the script bundle is saved
 			in a <tt>build</tt> directory in the same folder as the source script.
+		@param
+			overwrite <em>[boolean]</em> An optional flag indicating whether an existing build
+			location should be overwritten (default: <code>false</code>).
 		@return
 			Nothing
 		@throws
@@ -1782,8 +1800,8 @@ script TaskBase
 		@seealso
 			_buildScript()
 	*)
-	on makeApplication from sourcePath at buildLocation : missing value
-		local sourceURL, sourceDirectoryURL, scriptBundleName, buildURL, languageInstance
+	on makeApplication from sourcePath at buildLocation : missing value given overwriting:overwrite : false
+		local sourceURL, sourceDirectoryURL, scriptBundleName, buildURL, bundleURL, languageInstance
 		
 		set sourceURL to toNSURL(sourcePath)
 		set sourceDirectoryURL to _parentDirectory(sourceURL)
@@ -1793,6 +1811,18 @@ script TaskBase
 		else
 			set buildURL to toNSURL(buildLocation)
 		end if
+		
+		set bundleURL to _joinPath(buildURL, scriptBundleName)
+		if overwrite then
+			if _pathExists(bundleURL) then
+				_removeItem(bundleURL)
+			end if
+		else
+			if _pathExists(bundleURL) then
+				error (bundleURL's |path| as text) & space & "already exists."
+			end if
+		end if
+		
 		set languageInstance to _languageInstanceForName("AppleScript")
 		_buildScript(sourceURL, missing value, _joinPath(buildURL, scriptBundleName), Â
 			languageInstance, my OSAStorageApplicationType, my OSANull)

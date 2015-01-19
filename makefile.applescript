@@ -57,8 +57,7 @@ on tasks()
 		property parent : Task(me)
 		property description : "Build ASMake."
 		
-		tell clean to exec:{}
-		makeScriptBundle from "ASMake.applescript" at "build"
+		makeScriptBundle from "ASMake.applescript" at "build" with overwriting
 	end script
 	
 	script doc
@@ -95,7 +94,7 @@ on tasks()
 		property name : "test/build"
 		property description : "Build tests, but do not run them."
 		
-		makeScriptBundle from "test/Test ASMake.applescript" at "test"
+		makeScriptBundle from "test/Test ASMake.applescript" at "test" with overwriting
 	end script
 	
 	script RunTests
