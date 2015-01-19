@@ -79,8 +79,7 @@ script Stdout
 	
 	(*! @abstract Prints a failure message and exits. *)
 	on ofail(msg, info)
-		set msg to col("Fail:", my red) & space & my boldType & (msg as text) & my reset
-		log msg
+		log col("Fail:", my red) & space & my boldType & (msg as text) & my reset
 		error info
 	end ofail
 	
