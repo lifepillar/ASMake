@@ -1,4 +1,6 @@
 .DS_Store
-*~
-*.scpt
+/*~
 README.html
+/build/
+/example/SampleApp.app
+/test/Test ASMake.scptd
