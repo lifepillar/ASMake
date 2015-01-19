@@ -1390,15 +1390,15 @@ script TaskBase
 			aDir <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
 			The path of the directory to search.
 		@param
-			predicate <em>[text]</em> A predicate, specified using the syntax of Cocoa predicates.
+			predicate <em>[text]</em> A predicate, specified using the syntax of NSPredicate.
 		@return
 			<em>[list]</em> The list of the paths satisfying the predicate.
 			The paths are relative to <code>aDir</code>.
 	*)
-	on findItems(aDir, predicate) -- FIXME: doesn't work when aDir is "~"
+	on findItems(aDir, predicate)
 		local dirEnumerator, filter
 		
-		set dirEnumerator to (my NSFileManager)'s defaultManager()'s enumeratorAtPath:(posixPath(aDir))
+		set dirEnumerator to (my NSFileManager)'s defaultManager()'s enumeratorAtPath:(toNSURL(aDir)'s |path|)
 		set filter to current application's NSPredicate's predicateWithFormat:predicate
 		return (dirEnumerator's allObjects()'s filteredArrayUsingPredicate:filter) as list
 	end findItems
@@ -2059,7 +2059,7 @@ script TaskBase
 			set item (i + 1) of x to key
 		end repeat
 	end insertionSort
-
+	
 	
 	---------------------------
 	-- Task-related handlers --
