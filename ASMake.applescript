@@ -928,7 +928,7 @@ script TaskBase
 			end if
 		end if
 		set command to command & space & (join(map(options, my quoteText), space)) & out & err
-		if my verbose then log command
+		overb(command)
 		if my dry then return command
 		set command to "cd" & space & quoted form of workingDirectory() & ";" & command
 		if pass is missing value then
@@ -937,7 +937,7 @@ script TaskBase
 			if username is missing value then set username to short user name of (system info)
 			set output to (do shell script command administrator privileges privileges user name username password pass altering line endings ale)
 		end if
-		if my verbose and output is not "" then log output
+		overb(output)
 		return output
 	end shell
 	
@@ -1344,10 +1344,8 @@ script TaskBase
 		repeat with f in every item of (a reference to Wrapper's pathList)
 			set srcURL to toNSURL(contents of f)
 			set destURL to _joinPath(targetDirURL, _basename(srcURL))
-			if my verbose then
-				log "Copying" & space & (srcURL's |path| as text) & Â
-					space & "into" & space & (targetDirURL's |path| as text)
-			end if
+			overb("Copying" & space & (srcURL's |path| as text) & Â
+				space & "into" & space & (targetDirURL's |path| as text))
 			if not my dry then
 				if overwrite and _pathExists(destURL) then
 					_removeItem(destURL)
@@ -1434,11 +1432,9 @@ script TaskBase
 		set src to absolutePath(source)
 		set tgt to absolutePath(target)
 		set {dir, base} to splitPath(tgt)
-		if my verbose then
-			log "Make alias at" & space & (dir as text) & space & Â
-				"to" & space & (src as text) & space & Â
-				"with name" & space & (base as text)
-		end if
+		overb("Make alias at" & space & (dir as text) & space & Â
+			"to" & space & (src as text) & space & Â
+			"with name" & space & (base as text))
 		if not my dry then
 			tell application "Finder"
 				make new alias file at POSIX file dir to POSIX file src with properties {name:base}
@@ -1551,10 +1547,8 @@ script TaskBase
 		repeat with f in every item of (a reference to Wrapper's pathList)
 			set srcURL to toNSURL(contents of f)
 			set destURL to _joinPath(targetDirURL, _basename(srcURL))
-			if my verbose then
-				log "Moving" & space & (srcURL's |path| as text) & Â
-					space & "into" & space & (targetDirURL's |path| as text)
-			end if
+			overb("Moving" & space & (srcURL's |path| as text) & Â
+				space & "into" & space & (targetDirURL's |path| as text))
 			if not my dry then
 				if overwrite and _pathExists(destURL) then
 					_removeItem(destURL)
@@ -1647,7 +1641,7 @@ script TaskBase
 			if (theURL's |path| as text) is in forbiddenPaths then
 				error "ASMake is not allowed to delete" & space & (theURL's |path| as text)
 			end if
-			if my verbose then log "Deleting" & space & (theURL's |path| as text)
+			overb("Deleting" & space & (theURL's |path| as text))
 			if not my dry then
 				try
 					_removeItem(theURL)
@@ -2128,6 +2122,11 @@ script TaskBase
 	on odebug(s)
 		log "DEBUG:" & space & s
 	end odebug
+	
+	(*! @abstract Logs a message only in verbose mode. *)
+	on overb(s as text)
+		if my verbose and s is not "" then log s
+	end overb
 	
 	(*! @abstract TODO. *)
 	on owarn(s)
