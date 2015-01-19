@@ -35,7 +35,6 @@ on tasks()
 		--Set LANG to get rid of warnings about missing default encoding
 		shell for "env LANG=en_US.UTF-8 headerdoc2html" given options:{"-q", "-o", dir, "ASMake.applescript"}
 		shell for "env LANG=en_US.UTF-8 gatherheaderdoc" given options:dir
-		shell for "open" given options:(dir & "/ASMake_applescript/index.html")
 	end script
 	
 	script clean
