@@ -707,8 +707,8 @@ script TaskBase
         Info.plist
         MyApp.applescript
         Resources
-        applet.icns
-        Readme.txt
+          applet.icns
+          Readme.txt
           Scripts
             helper.applescript
           Script Libraries
