@@ -410,6 +410,10 @@ script TaskBase
 	on _copyItem(srcURL, destURL)
 		local ok, theError
 		
+		overb("Copying" & space & (srcURL's |path| as text) & space & Â
+			"to" & (destURL's |path| as text))
+		if my dry then return
+		
 		_makePath(_parentDirectory(destURL))
 		set {ok, theError} to ((my NSFileManager)'s defaultManager()'s copyItemAtURL:srcURL Â
 			toURL:destURL Â
@@ -455,6 +459,9 @@ script TaskBase
 	on _makePath(aURL)
 		local ok, theError
 		
+		overb("Creating path" & space & (aURL's |path| as text))
+		if my dry then return
+		
 		set {ok, theError} to (my NSFileManager)'s defaultManager()'s createDirectoryAtPath:(aURL's |path|) Â
 			withIntermediateDirectories:true Â
 			attributes:(missing value) Â
@@ -483,6 +490,10 @@ script TaskBase
 	on _moveItem(srcURL, destURL)
 		local ok, theError
 		
+		overb("Moving" & space & (srcURL's |path| as text) & space & Â
+			"to" & (destURL's |path| as text))
+		if my dry then return
+		
 		set {ok, theError} to ((my NSFileManager)'s defaultManager()'s moveItemAtURL:srcURL Â
 			toURL:destURL Â
 			|error|:(reference))
@@ -505,6 +516,8 @@ script TaskBase
 	*)
 	on _readFile(aURL)
 		local theText, theEncoding, theError
+		
+		overb("Reading" & space & (aURL's |path| as text))
 		
 		set {theText, theEncoding, theError} to Â
 			(my NSString)'s stringWithContentsOfFile:(aURL's |path|) Â
@@ -530,6 +543,9 @@ script TaskBase
 	on _removeItem(aURL)
 		local ok, theError
 		
+		overb("Deleting" & space & (aURL's |path| as text))
+		if my dry then return
+		
 		set {ok, theError} to (my NSFileManager)'s defaultManager()'s removeItemAtURL:aURL |error|:(reference)
 		if not ok then _raise("Could not delete item", theError)
 		
@@ -550,6 +566,9 @@ script TaskBase
 	*)
 	on _setIcon(docURL, imgURL)
 		local ok
+		
+		overb("Setting icon for" & space & (docURL's |path| as text))
+		if my dry then return
 		
 		set ok to current application's NSWorkspace's sharedWorkspace()'s Â
 			setIcon:(current application's NSImage's alloc's initByReferencingURL:imgURL) Â
@@ -576,6 +595,10 @@ script TaskBase
 	*)
 	on _symlink(aURL, destURL)
 		local ok, theError
+		
+		overb("Creating symbolic link to" & space & (destURL's |path| as text) & space & Â
+			"at" & space & (aURL's |path| as text))
+		if my dry then return
 		
 		set {ok, theError} to (my NSFileManager)'s defaultManager()'s createSymbolicLinkAtURL:aURL Â
 			withDestinationURL:destURL Â
@@ -657,6 +680,8 @@ script TaskBase
 	on _compile(source, fromURL, writeURL, languageInstance, storageType, storageOptions)
 		local theScript, ok, theError
 		
+		overb("Building" & space & (writeURL's |path| as text))
+		
 		set theScript to (my OSAScript)'s alloc's Â
 			initWithSource:source fromURL:fromURL Â
 				languageInstance:languageInstance Â
@@ -668,6 +693,8 @@ script TaskBase
 			error (theError as record)'s OSAScriptErrorMessageKey as text Â
 				number (theError as record)'s OSAScriptErrorNumberKey
 		end if
+		
+		if my dry then return
 		
 		set {ok, theError} to theScript's writeToURL:writeURL Â
 			ofType:storageType Â
@@ -1337,21 +1364,17 @@ script TaskBase
 			if not _isDirectory(targetDirURL) then
 				error (targetDirURL's |path| as text) & space & "is not a directory."
 			end if
-		else if not my dry then
+		else
 			_makePath(targetDirURL)
 		end if
 		
 		repeat with f in every item of (a reference to Wrapper's pathList)
 			set srcURL to toNSURL(contents of f)
 			set destURL to _joinPath(targetDirURL, _basename(srcURL))
-			overb("Copying" & space & (srcURL's |path| as text) & Â
-				space & "into" & space & (targetDirURL's |path| as text))
-			if not my dry then
-				if overwrite and _pathExists(destURL) then
-					_removeItem(destURL)
-				end if
-				_copyItem(srcURL, destURL)
+			if overwrite and _pathExists(destURL) then
+				_removeItem(destURL)
 			end if
+			_copyItem(srcURL, destURL)
 		end repeat
 		
 		return
@@ -1432,7 +1455,7 @@ script TaskBase
 		set src to absolutePath(source)
 		set tgt to absolutePath(target)
 		set {dir, base} to splitPath(tgt)
-		overb("Make alias at" & space & (dir as text) & space & Â
+		overb("Creating alias at" & space & (dir as text) & space & Â
 			"to" & space & (src as text) & space & Â
 			"with name" & space & (base as text))
 		if not my dry then
@@ -1540,21 +1563,17 @@ script TaskBase
 			if not _isDirectory(targetDirURL) then
 				error (targetDirURL's |path| as text) & space & "is not a directory."
 			end if
-		else if not my dry then
+		else
 			_makePath(targetDirURL)
 		end if
 		
 		repeat with f in every item of (a reference to Wrapper's pathList)
 			set srcURL to toNSURL(contents of f)
 			set destURL to _joinPath(targetDirURL, _basename(srcURL))
-			overb("Moving" & space & (srcURL's |path| as text) & Â
-				space & "into" & space & (targetDirURL's |path| as text))
-			if not my dry then
-				if overwrite and _pathExists(destURL) then
-					_removeItem(destURL)
-				end if
-				_moveItem(srcURL, destURL)
+			if overwrite and _pathExists(destURL) then
+				_removeItem(destURL)
 			end if
+			_moveItem(srcURL, destURL)
 		end repeat
 		
 		return
@@ -1575,6 +1594,7 @@ script TaskBase
 	*)
 	on readUTF8(fileName)
 		set ff to posixPath(fileName)
+		overb("Reading" & space & ff)
 		set fp to open for access POSIX file ff without write permission
 		try
 			read fp as Çclass utf8È
@@ -1641,14 +1661,11 @@ script TaskBase
 			if (theURL's |path| as text) is in forbiddenPaths then
 				error "ASMake is not allowed to delete" & space & (theURL's |path| as text)
 			end if
-			overb("Deleting" & space & (theURL's |path| as text))
-			if not my dry then
-				try
-					_removeItem(theURL)
-				on error errMsg
-					if not force then error errMsg
-				end try
-			end if
+			try
+				_removeItem(theURL)
+			on error errMsg
+				if not force then error errMsg
+			end try
 		end repeat
 	end rm
 	
@@ -1694,6 +1711,10 @@ script TaskBase
 	*)
 	on writeUTF8(fileName, content)
 		set ff to posixPath(fileName)
+		
+		overb("Writing" & space & ff)
+		if my dry then return
+		
 		set fp to open for access POSIX file ff with write permission
 		try
 			write content to fp as Çclass utf8È
@@ -2097,6 +2118,8 @@ script TaskBase
 			An error if the task cannot be run or the task fails.
 	*)
 	on exec:(args as list)
+		odebug("Executing" & space & (my name) & space & "task with arguments:" & Â
+			space & join(args, space))
 		set my argv to args
 		run me
 	end exec:
@@ -2120,7 +2143,7 @@ script TaskBase
 	
 	(*! @abstract TODO. *)
 	on odebug(s)
-		log "DEBUG:" & space & s
+		if my debug then log "DEBUG:" & space & s
 	end odebug
 	
 	(*! @abstract Logs a message only in verbose mode. *)
