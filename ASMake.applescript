@@ -261,7 +261,7 @@ script TaskBase
 	property synonyms : {}
 	
 	(*! @abstract A description for this task. *)
-	property description : "No description."
+	property description : "No description"
 	
 	(*!
 		@abstract
