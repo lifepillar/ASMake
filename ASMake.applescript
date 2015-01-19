@@ -408,12 +408,12 @@ script TaskBase
 		@abstract
 			Copies the file or directory at the specified URL to a new location.
 		@discussion
-			If the item at <tt>srcURL</tt> is a directory, this handler
+			If the item at <code>srcURL</code> is a directory, this handler
 			copies the directory and all of its contents, including any hidden files.
 		@param
 			srcURL <em>[NSURL]</em> The file URL that identifies to be copied.
 		@param
-			destURL <em>[NSURL]</em> The URL at which to place the copy of <tt>srcURL</tt>.
+			destURL <em>[NSURL]</em> The URL at which to place the copy of <code>srcURL</code>.
 		@return
 			Nothing.
 		@throws
@@ -480,12 +480,12 @@ script TaskBase
 		@abstract
 			Moves the file or directory at the specified URL to a new location.
 		@discussion
-			If the item at <tt>srcURL</tt> is a directory, this handler
+			If the item at <code>srcURL</code> is a directory, this handler
 			moves the directory and all of its contents, including any hidden files.
 		@param
 			srcURL <em>[NSURL]</em> The file URL that identifies the item to be moved.
 		@param
-			destURL <em>[NSURL]</em> The new location for the item in <tt>srcURL</tt>.
+			destURL <em>[NSURL]</em> The new location for the item in <code>srcURL</code>.
 			This file URL must include the name of the file or directory in its new location.
 		@return
 			Nothing.
@@ -602,7 +602,7 @@ script TaskBase
 	-- Private script manipulation handlers --
 	------------------------------------------
 	
-	(*! @abstract Returns an <tt>OSALanguageInstance</tt> object for the specified language. *)
+	(*! @abstract Returns an <code>OSALanguageInstance</code> object for the specified language. *)
 	on _languageInstanceForName(languageName as text)
 		(my OSALanguageInstance)'s languageInstanceWithLanguage:((my OSALanguage)'s languageForName:languageName)
 	end _languageInstanceForName
@@ -644,23 +644,23 @@ script TaskBase
 		@param
 			fromURL <em>[NSURL]</em> URL argument used to indicate the origin of scripts.
 			In AppleScript, for example, this URL may be used for the value of "path to me",
-			unless you use the <tt>OSADontSetScriptLocation</tt> storage option.
+			unless you use the <code>OSADontSetScriptLocation</code> storage option.
 			This URL may also be used to specify the location of the script libraries this
 			script depends upon.
 		@param
 			writeURL <em>[NSURL]</em> The location where the compiled script should be saved.
 		@param
 			storageType A constant specifying the type of object to create:
-			one of <tt>OSAStorageScriptType</tt>, <tt>OSAStorageScriptBundleType</tt>,
-			<tt>OSAStorageApplicationType</tt>, <tt>OSAStorageApplicationBundleType</tt>
-			or <tt>OSAStorageTextType</tt>.
+			one of <code>OSAStorageScriptType</code>, <code>OSAStorageScriptBundleType</code>,
+			<code>OSAStorageApplicationType</code>, <code>OSAStorageApplicationBundleType</code>
+			or <code>OSAStorageTextType</code>.
 		@param
 			languageInstance <em>[OSALanguageInstance]</em> The language instance to be used to
 			compile the script.
 		@param
-			storageOptions One ore more of <tt>OSANull</tt>, <tt>OSAPreventGetSource</tt>,
-			<tt>OSACompileIntoContext</tt>, <tt>OSADontSetScriptLocation</tt>,
-			<tt>OSAStayOpenApplet</tt>, or <tt>OSAShowStartupScreen</tt>.
+			storageOptions One ore more of <code>OSANull</code>, <code>OSAPreventGetSource</code>,
+			<code>OSACompileIntoContext</code>, <code>OSADontSetScriptLocation</code>,
+			<code>OSAStayOpenApplet</code>, or <code>OSAShowStartupScreen</code>.
 		@return
 			Nothing.
 		@throws
@@ -703,7 +703,7 @@ script TaskBase
 			into a <tt>.scpt</tt> file as a special case, but @link _compile() @/link
 			is recommended instead.)
 
-			The <tt>sourceURL</tt> must point to the main script source file. An optional
+			The <code>sourceURL</code> must point to the main script source file. An optional
 			<tt>Info.plist</tt> file and an optional <tt>Resources</tt> folder may be
 			placed in the same directory as the the main script. The <tt>Resources</tt>
 			folder may contain any required resources, including additional scripts
@@ -766,16 +766,16 @@ script TaskBase
 			script bundles and <tt>.app</tt> for applets).
 		@param
 			storageType A constant specifying the type of object to create:
-			one of <tt>OSAStorageScriptType</tt>, <tt>OSAStorageScriptBundleType</tt>,
-			<tt>OSAStorageApplicationType</tt>, <tt>OSAStorageApplicationBundleType</tt>
-			or <tt>OSAStorageTextType</tt>.
+			one of <code>OSAStorageScriptType</code>, <code>OSAStorageScriptBundleType</code>,
+			<code>OSAStorageApplicationType</code>, <code>OSAStorageApplicationBundleType</code>
+			or <code>OSAStorageTextType</code>.
 		@param
 			languageInstance <em>[OSALanguageInstance]</em> The language instance to be used to
 			compile the script.
 		@param
-			storageOptions One ore more of <tt>OSANull</tt>, <tt>OSAPreventGetSource</tt>,
-			<tt>OSACompileIntoContext</tt>, <tt>OSADontSetScriptLocation</tt>,
-			<tt>OSAStayOpenApplet</tt>, or <tt>OSAShowStartupScreen</tt>.
+			storageOptions One ore more of <code>OSANull</code>, <code>OSAPreventGetSource</code>,
+			<code>OSACompileIntoContext</code>, <code>OSADontSetScriptLocation</code>,
+			<code>OSAStayOpenApplet</code>, or <code>OSAShowStartupScreen</code>.
 		@return
 			Nothing.
 		@throws
@@ -888,7 +888,7 @@ script TaskBase
 			shell for "mycmd" given out:"/some/file", err:"&1", alteringLineEndings:false
 			</pre>
 			This handler uses the syntax introduced is OS X 10.10 (Yosemite) for optional labeled parameters. 
-			Apart from the <tt>for</tt> parameter, all other arguments are optional (and may appear in any order).
+			Apart from the <code>for</code> parameter, all other arguments are optional (and may appear in any order).
 		@param
 			command <em>[text]</em> The command to be executed.
 		@param
@@ -897,20 +897,20 @@ script TaskBase
 			to a list). Each option is quoted before the command is executed.
 		@param
 			privileges <em>[boolean]</em> A flag indicating whether the command should be executed as a different user.
-			The default is <tt>false</tt>.
+			The default is <code>false</code>.
 		@param
 			username <em>[text]</em> The username that should execute the command.
-			This argument is ignored unless <tt>privileges</tt> is set to <tt>true</tt>.
+			This argument is ignored unless <code>privileges</code> is set to <code>true</code>.
 		@param
-			pass <em>[text]</em> The password to be authenticated as <tt>username</tt>.
+			pass <em>[text]</em> The password to be authenticated as <code>username</code>.
 		@param
 			out <em>[text]</em> Redirect the standard output to the specified file.
 		@param
 			err <em>[text]</em> Redirect the standard error to the specified file.
-			Pass <tt>&1</tt> to redirect to the standard output.
+			Pass <code>&1</code> to redirect to the standard output.
 		@param
 			ale <em>[boolean]</em> Whether line endings should be changed or not.
-			The default is <tt>true</tt>.
+			The default is <code>true</code>.
 		@return
 			<em>[text]</em> The output of the command.
 			If ASMake is run with <code>--dry</code>, returns the text of the command.
@@ -1104,7 +1104,7 @@ script TaskBase
 			aPath <em>[text]</em>, <em>[file]</em>, or <em>[alias]</em>
 			A relative or absolute path.
 		@return
-			<em>[boolean]</em> <tt>true</tt> is the path exists, <tt>false</tt> otherwise.
+			<em>[boolean]</em> <code>true</code> is the path exists, <code>false</code> otherwise.
 	*)
 	on pathExists(aPath)
 		_pathExists(toNSURL(aPath)) as boolean
@@ -1394,7 +1394,7 @@ script TaskBase
 			predicate <em>[text]</em> A predicate, specified using the syntax of Cocoa predicates.
 		@return
 			<em>[list]</em> The list of the paths satisfying the predicate.
-			The paths are relative to <tt>aDir</tt>.
+			The paths are relative to <code>aDir</code>.
 	*)
 	on findItems(aDir, predicate) -- FIXME: doesn't work when aDir is "~"
 		local dirEnumerator, filter
@@ -1620,12 +1620,12 @@ script TaskBase
 			A path or a list of paths.
 		@param
 			force <em>[boolean]</em> A flag indicating whether an error should be raised
-			when an item cannot be deleted. When set to <tt>true</tt>,
+			when an item cannot be deleted. When set to <code>true</code>,
 			no errors are reported.
 		@return
 			Nothing.
 		@throws
-			Only if <tt>force</tt> is <tt>false</tt>. In such a case,
+			Only if <code>force</code> is <code>false</code>. In such a case,
 			an error is thrown when an item cannot be deleted, for example because it does not exist.
 	*)
 	on rm(somePaths, force as boolean)
@@ -1846,7 +1846,7 @@ script TaskBase
 			command <em>[text]</em> The name of a command.
 		@return
 			<em>[text]<em> The POSIX path of the executable, if found;
-			otherwise, returns <tt>missing value</tt>.		
+			otherwise, returns <code>missing value</code>.		
 	*)
 	on which(command)
 		try
@@ -1866,7 +1866,7 @@ script TaskBase
 			Filters the elements of a list using a boolean predicate.
 		@discussion
 			Returns a new list containing all and only the elements of the original list
-			for which the predicate returns <tt>true</tt>. The original list remains unchanged.
+			for which the predicate returns <code>true</code>. The original list remains unchanged.
 			A predicate is a unary handler that returns a boolean value.
 			
 			For optimal performance, the list should be passed by reference, e.g.:
@@ -1933,7 +1933,7 @@ script TaskBase
 		theResult
 	end map
 	
-	(*! @abstract A wrapper around <tt>quoted form of</tt>. *)
+	(*! @abstract A wrapper around <code>quoted form of</code>. *)
 	on quoteText(s)
 		quoted form of s
 	end quoteText
