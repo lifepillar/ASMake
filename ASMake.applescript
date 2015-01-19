@@ -2152,7 +2152,7 @@ end Task
 script HelpTask
 	property parent : Task(me)
 	property name : "help"
-	property description : "Show the list of available tasks and exit."
+	property description : "Show the list of available tasks and exit"
 	property printSuccess : false
 	property maxWidth : 0
 	property boldType : Stdout's boldType
@@ -2182,7 +2182,7 @@ script HelpTask
 		else
 			set default to ""
 		end if
-		echo(my boldType & t's name & my reset & padding(t's name) & default & t's description)
+		echo(my boldType & t's name & my reset & padding(t's name) & default & t's description & ".")
 		repeat with s in t's synonyms
 			echo(my boldType & s & my reset & padding(s) & default & "A synonym for" & space & my boldType & t's name & my reset & ".")
 		end repeat
@@ -2193,7 +2193,7 @@ end script
 script WorkDir
 	property parent : Task(me)
 	property name : "wd"
-	property description : "Print the path of the working directory and exit."
+	property description : "Print the path of the working directory and exit"
 	property printSuccess : false
 	
 	ohai(workingDirectory())

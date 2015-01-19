@@ -28,7 +28,7 @@ end Task
 on tasks()
 	script api
 		property parent : Task(me)
-		property description : "Build the API documentation."
+		property description : "Build the API documentation"
 		property dir : "Documentation"
 		
 		owarn("Building the API with HeaderDoc requires OS X 10.10 (Xcode 6)")
@@ -40,14 +40,14 @@ on tasks()
 	
 	script clean
 		property parent : Task(me)
-		property description : "Remove any generated products."
+		property description : "Remove any generated products"
 		
 		removeItems at glob({"**/*.scpt", "**/*.scptd"}) & {"build"} with forcing
 	end script
 	
 	script clobber
 		property parent : Task(me)
-		property description : "Remove all temporary products."
+		property description : "Remove all temporary products"
 		
 		tell clean to exec:{}
 		removeItems at {"README.html", "example/SampleApp.app"} with forcing
@@ -55,22 +55,22 @@ on tasks()
 	
 	script build
 		property parent : Task(me)
-		property description : "Build ASMake."
+		property description : "Build ASMake"
 		
 		makeScriptBundle from "ASMake.applescript" at "build" with overwriting
 	end script
 	
 	script doc
 		property parent : Task(me)
-		property description : "Compile the README."
+		property description : "Compile the README"
 		
 		shell for "markdown" given options:{"-o", "README.html", "README.md"}
 	end script
 	
 	script install
 		property parent : Task(me)
-		property dir :  my parent's joinPath(path to library folder from user domain, "Script Libraries")
-		property description : "Install ASMake in" & space & dir & "."
+		property dir : my parent's joinPath(path to library folder from user domain, "Script Libraries")
+		property description : "Install ASMake in" & space & dir
 		
 		tell build to exec:{}
 		
@@ -91,7 +91,7 @@ on tasks()
 	script BuildTests
 		property parent : Task(me)
 		property name : "test/build"
-		property description : "Build tests, but do not run them."
+		property description : "Build tests, but do not run them"
 		
 		makeScriptBundle from "test/Test ASMake.applescript" at "test" with overwriting
 	end script
@@ -110,7 +110,7 @@ on tasks()
 	script RunTests
 		property parent : Task(me)
 		property name : "test/run"
-		property description : "Build and run tests."
+		property description : "Build and run tests"
 		property printSuccess : false
 		
 		tell BuildTests to exec:{}
@@ -128,7 +128,7 @@ on tasks()
 	script VersionTask
 		property parent : Task(me)
 		property name : "version"
-		property description : "Print ASMake's version and exit."
+		property description : "Print ASMake's version and exit"
 		property printSuccess : false
 		
 		set {n, v} to {name, version} of Â
@@ -139,7 +139,7 @@ on tasks()
 	script ArgsExample
 		property parent : Task(me)
 		property name : "example/args"
-		property description : "Print the task's arguments and exit."
+		property description : "Print the task's arguments and exit"
 		property printSuccess : false
 		
 		if my debug or my dry or my verbose then echo("ASMake options:")
@@ -155,7 +155,7 @@ on tasks()
 	script SampleAppExample
 		property parent : Task(me)
 		property name : "example/app"
-		property description : "Build the sample app in the example/ folder."
+		property description : "Build the sample app in the example/ folder"
 		
 		makeApplication from "example/SampleApp/SampleApp.applescript" at "example" with overwriting
 	end script
