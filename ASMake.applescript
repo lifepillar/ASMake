@@ -1841,8 +1841,8 @@ script TaskBase
 		@abstract
 			Compiles one or more scripts.
 		@param
-			src <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
-			A path or a list of paths.
+			sources <em>[text]</em>, <em>[file]</em>, <em>[alias]</em>, or <em>[list]</em>
+			A path or a list of paths to the scripts to be compiled.
 		@param
 			target <em>[text]</em> The type of the result, which can be <code>scpt</code>,
 			<code>scptd</code>, or <code>app</code>, for a script, script bundle, or applet, respectively.
@@ -1850,8 +1850,9 @@ script TaskBase
 			options <em>[list]</em> A list of <code>osacompile</code> options
 			(see <code>man osacompile</code>).
 	*)
-	on osacompile from sources given target:target : "scpt", options:options : {}
+	on osacompile(sources, target, options)
 		local basename, paths
+		
 		set paths to posixPaths(sources)
 		if class of options is not list then set options to {options}
 		repeat with p in paths
