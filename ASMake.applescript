@@ -2178,6 +2178,7 @@ end Task
 script HelpTask
 	property parent : Task(me)
 	property name : "help"
+	property synonyms : {"h", "?"}
 	property description : "Show the list of available tasks and exit"
 	property printSuccess : false
 	property maxWidth : 0
