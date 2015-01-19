@@ -31,7 +31,7 @@ on tasks()
 		property description : "Build the API documentation"
 		property dir : "Documentation"
 		
-		owarn("Building the API with HeaderDoc requires OS X 10.10 (Xcode 6)")
+		ohai("Running HeaderDoc, please wait...")
 		--Set LANG to get rid of warnings about missing default encoding
 		shell for "env LANG=en_US.UTF-8 headerdoc2html" given options:{"-q", "-o", dir, "ASMake.applescript"}
 		shell for "env LANG=en_US.UTF-8 gatherheaderdoc" given options:dir
