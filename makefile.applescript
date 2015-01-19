@@ -104,6 +104,7 @@ on tasks()
 		if pathExists(targetPath) then
 			removeItem at targetPath
 		end if
+		ohai(targetPath & space & "deleted.")
 	end script
 	
 	script RunTests
@@ -142,11 +143,11 @@ on tasks()
 		property synonyms : {"exarg", "exargs"}
 		property printSuccess : false
 		
-		if my debug or my dry or my verbose then echo("ASMake options:")
+		if my debug or my dry or my verbose then log "ASMake options:"
 		if my debug then ohai("Debug")
 		if my dry then ohai("Dry run")
 		if my verbose then ohai("Verbose")
-		if my argv is not {} then echo("Task arguments:")
+		if my argv is not {} then log "Task arguments:"
 		repeat until my argv is {}
 			ohai(shift())
 		end repeat
