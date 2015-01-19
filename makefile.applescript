@@ -140,6 +140,7 @@ on tasks()
 		property parent : Task(me)
 		property name : "example/args"
 		property description : "Print the task's arguments and exit"
+		property synonyms : {"exarg", "exargs"}
 		property printSuccess : false
 		
 		if my debug or my dry or my verbose then echo("ASMake options:")
@@ -156,7 +157,7 @@ on tasks()
 		property parent : Task(me)
 		property name : "example/app"
 		property description : "Build the sample app in the example/ folder"
-		
+		property synonyms : {"exapp"}
 		makeApplication from "example/SampleApp/SampleApp.applescript" at "example" with overwriting
 	end script
 end tasks
