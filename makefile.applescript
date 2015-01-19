@@ -50,7 +50,7 @@ on tasks()
 		property description : "Remove all temporary products."
 		
 		tell clean to exec:{}
-		removeItem at "README.html" with forcing
+		removeItems at {"README.html", "example/SampleApp.app"} with forcing
 	end script
 	
 	script build
@@ -140,5 +140,13 @@ on tasks()
 		repeat until my argv is {}
 			ohai(shift())
 		end repeat
+	end script
+	
+	script SampleAppExample
+		property parent : Task(me)
+		property name : "example/app"
+		property description : "Build the sample app in the example/ folder."
+		
+		makeApplication from "example/SampleApp/SampleApp.applescript" at "example" with overwriting
 	end script
 end tasks
