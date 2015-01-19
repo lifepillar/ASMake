@@ -29,6 +29,7 @@ script TestSetCoreASMake
 	script TestASMakeClass
 		property name : "Check ASMake's class"
 		property parent : UnitTest(me)
+		
 		assertInstanceOf(script, ASMake)
 	end script
 	
@@ -36,6 +37,7 @@ script TestSetCoreASMake
 	script TestASMakeName
 		property name : "Check ASMake's name"
 		property parent : UnitTest(me)
+		
 		assertEqual("ASMake", ASMake's name)
 	end script
 	
@@ -43,6 +45,7 @@ script TestSetCoreASMake
 	script TestASMakeId
 		property name : "Check ASMake's id"
 		property parent : UnitTest(me)
+		
 		assertEqual("com.lifepillar.ASMake", ASMake's id)
 	end script
 	
@@ -50,6 +53,7 @@ script TestSetCoreASMake
 	script TestASMakeDataStructures
 		property name : "Check ASMake's data structures"
 		property parent : UnitTest(me)
+		
 		assertInstanceOf(script, ASMake's Stdout)
 		assertInstanceOf("Task", ASMake's TaskBase)
 		assertKindOf(script, ASMake's TaskBase)
@@ -130,12 +134,15 @@ script TestSetToNSURL
 	end script
 	
 	script TestFileURLStandardization
-		property name : "toNSURL()'s |path| is standardized"
+		property name : "toNSURL()'s |path| is not standardized"
 		property parent : UnitTest(me)
 		
-		assertEqual("/a/b/c", aTask's toNSURL("/a/../b/./c")'s |path| as text)
-		--		assertEqual("/a/b/c", aTask's toNSURL("/./a/b/../b/./c/d/../")'s |path| as text)
-		--		assertEqual("/a/b/c", aTask's toNSURL("/./a/b/../b/./c/d/..")'s |path| as text)
+		assertEqual("/a/../b/./c", aTask's toNSURL("/a/../b/./c")'s |path| as text)
+		assertEqual("/a/../b/./c", aTask's toNSURL("/a/../b/./c")'s relativePath as text)
+		assertEqual("/./a/b/../b/./c/d/..", aTask's toNSURL("/./a/b/../b/./c/d/../")'s |path| as text)
+		assertEqual("/./a/b/../b/./c/d/..", aTask's toNSURL("/./a/b/../b/./c/d/../")'s relativePath as text)
+		assertEqual("/./a/b/../b/./c/d/..", aTask's toNSURL("/./a/b/../b/./c/d/..")'s |path| as text)
+		assertEqual("/./a/b/../b/./c/d/..", aTask's toNSURL("/./a/b/../b/./c/d/..")'s relativePath as text)
 	end script
 end script -- TestSetASMakeInternals
 
@@ -158,6 +165,7 @@ script TestSetEmptyTask
 	script TestTaskClass
 		property name : "Task's class"
 		property parent : UnitTest(me)
+		
 		assertInstanceOf("Task", aTask)
 	end script
 	
@@ -165,6 +173,7 @@ script TestSetEmptyTask
 	script TestTaskName
 		property name : "Task's name"
 		property parent : UnitTest(me)
+		
 		assertEqual("EmptyTask", aTask's name)
 	end script
 	
@@ -172,6 +181,7 @@ script TestSetEmptyTask
 	script TestaskSynonyms
 		property name : "Task's synonyms"
 		property parent : UnitTest(me)
+		
 		assertEqual({}, aTask's synonyms)
 	end script
 	
@@ -179,6 +189,7 @@ script TestSetEmptyTask
 	script TestTaskPrintSuccess
 		property name : "Task's printSuccess"
 		property parent : UnitTest(me)
+		
 		ok(aTask's printSuccess)
 	end script
 end script -- TestSetEmptyTask
@@ -193,7 +204,7 @@ script TestSetWorkingDirectory
 	on setUp()
 		script
 			property name : "EmptyTask"
-			property parent : ASMake's Task(me)
+			property parent : ASMake's TaskBase
 		end script
 		set aTask to the result
 	end setUp
@@ -202,6 +213,7 @@ script TestSetWorkingDirectory
 	script TestWorkingDirectoryDefined
 		property name : "Working directory is set before running task"
 		property parent : UnitTest(me)
+		
 		refuteNil(aTask's workingDirectory())
 	end script
 	
@@ -209,31 +221,38 @@ script TestSetWorkingDirectory
 	script TestWorkingDirectoryPosix
 		property name : "Working directory path is of class text"
 		property parent : UnitTest(me)
+		
 		assertInstanceOf(text, aTask's workingDirectory())
 	end script
 	
 	---------------------------------------------------------------------------------
-	script TestTaskWorkingDirectorySlashes
-		property name : "Working directory path starts and ends with slash"
+	script TestTaskWorkingDirectoryAbsolute
+		property name : "Working directory path is absolute"
 		property parent : UnitTest(me)
+		
 		assert(aTask's workingDirectory() starts with "/", Â
 			"Working directory path is not an absolute path")
-		assert(aTask's workingDirectory() ends with "/", Â
-			"Working directory path does not have a trailing slash")
 	end script
 	
 	---------------------------------------------------------------------------------
-	script TestTaskWorkingDirectory
-		property name : "Working directory is set before running task"
+	script TestTaskWorkingDirectoryTrailingSlash
+		property name : "Working directory path has no trailing slash"
 		property parent : UnitTest(me)
 		
-		-- This assumes that this test file, ASMake.applescript
-		-- and makefile.applescript are in the same folder.
-		set myPath to (path to me)
-		tell application "Finder" to set myFolder to (folder of myPath) as alias
-		assertEqual(POSIX path of myFolder, aTask's workingDirectory())
+		assert(aTask's workingDirectory() does not end with "/", Â
+			"Working directory path has a trailing slash")
+	end script
+	
+	---------------------------------------------------------------------------------
+	script TestChangeWorkingDirectory
+		property name : "Change working directory"
+		property parent : UnitTest(me)
+		
+		aTask's setWorkingDirectory("/tmp")
+		assertEqual("/private/tmp", aTask's workingDirectory())
 	end script
 end script -- TestSetWorkingDirectory
+
 
 ###################################################################################
 script TestSetNonEmptyTask
@@ -243,7 +262,7 @@ script TestSetNonEmptyTask
 	
 	on setUp()
 		script
-			property parent : ASMake's Task(me)
+			property parent : ASMake's TaskBase
 			property name : "myTask"
 			property synonyms : {"yourTask"}
 			property printSuccess : false
@@ -255,6 +274,7 @@ script TestSetNonEmptyTask
 	script TestTaskClass
 		property name : "Task's class"
 		property parent : UnitTest(me)
+		
 		assertInstanceOf("Task", aTask)
 	end script
 	
@@ -262,6 +282,7 @@ script TestSetNonEmptyTask
 	script TestTaskName
 		property name : "Task's name"
 		property parent : UnitTest(me)
+		
 		assertEqual("myTask", aTask's name)
 	end script
 	
@@ -269,6 +290,7 @@ script TestSetNonEmptyTask
 	script TestTaskSynonyms
 		property name : "Task's synonyms"
 		property parent : UnitTest(me)
+		
 		assertEqual({"yourTask"}, aTask's synonyms)
 	end script
 	
@@ -276,6 +298,7 @@ script TestSetNonEmptyTask
 	script TestTaskPrintSuccess
 		property name : "Task's printSuccess"
 		property parent : UnitTest(me)
+		
 		notOk(aTask's printSuccess)
 	end script
 end script -- TestSetNonEmptyTask
@@ -290,48 +313,34 @@ script TestSetShellCommands
 	on setUp()
 		ASMake's CommandLine's clear()
 		set my tb to a reference to ASMake's TaskBase
-		my tb's setWorkingDirectory(TOPLEVEL's workingDir)
 	end setUp
 	
-	on tearDown()
-		
-	end tearDown
-	
 	---------------------------------------------------------------------------------
-	script TestDryShell
-		property name : "Dry shell()"
+	script TestShell
+		property name : "shell()"
 		property parent : UnitTest(me)
-		set ASMake's CommandLine's options to {"--dry"}
-		set expected to "cmd" & space & "'-x' 2>&1"
-		assertEqual(expected, shell of tb for "cmd" without executing given options:"-x", err:"&1")
+		
+		fail("TODO")
 	end script
 end script -- TestSetShellCommands
-
-
-on BaseTestSet(aTestSet)
-	script
-		property parent : TestSet(aTestSet)
-		
-		on setUp()
-			set ASMake's CommandLine's options to {"--dry"}
-			set my tb to a reference to ASMake's TaskBase
-			my tb's setWorkingDirectory(TOPLEVEL's workingDir)
-			--set my tb's arguments to ASMake's CommandLine
-		end setUp
-	end script
-end BaseTestSet
 
 
 ###################################################################################
 script TestSetPathHandlers
 	property name : "Path manipulation"
-	property parent : BaseTestSet(me)
+	property parent : TestSet(me)
 	property tb : missing value
+	
+	on setUp()
+		set my tb to a reference to ASMake's TaskBase
+		my tb's setWorkingDirectory("/tmp/") -- Is OS X, /tmp is a symbolic link to /private/tmp
+	end setUp
 	
 	---------------------------------------------------------------------------------
 	script TestPosixAbsolutePathNoSlash
 		property name : "posixPath() with absolute POSIX path without trailing slash"
 		property parent : UnitTest(me)
+		
 		assertEqual("/a/b/c", tb's posixPath("/a/b/c"))
 	end script
 	
@@ -339,6 +348,7 @@ script TestSetPathHandlers
 	script TestPosixRelativePathNoSlash
 		property name : "posixPath() with relative POSIX path without trailing slash"
 		property parent : UnitTest(me)
+		
 		assertEqual("a/b/c", tb's posixPath("a/b/c"))
 	end script
 	
@@ -346,6 +356,7 @@ script TestSetPathHandlers
 	script TestPosixAbsolutePathWithSlash
 		property name : "posixPath() with absolute POSIX path with trailing slash"
 		property parent : UnitTest(me)
+		
 		assertEqual("/a/b/c/", tb's posixPath("/a/b/c/"))
 	end script
 	
@@ -353,6 +364,7 @@ script TestSetPathHandlers
 	script TestPosixRelativePathWithSlash
 		property name : "posixPath() with relative POSIX path with trailing slash"
 		property parent : UnitTest(me)
+		
 		assertEqual("a/b/c/", tb's posixPath("a/b/c/"))
 	end script
 	
@@ -360,6 +372,7 @@ script TestSetPathHandlers
 	script TestPosixAbsoluteHFSPathNoColon
 		property name : "posixPath() with absolute HFS path without trailing colon"
 		property parent : UnitTest(me)
+		
 		assertEqual("/a/b/c", tb's posixPath("a:b:c"))
 	end script
 	
@@ -367,6 +380,7 @@ script TestSetPathHandlers
 	script TestPosixAbsoluteHFSPathWithColon
 		property name : "posixPath() with absolute HFS path with trailing colon"
 		property parent : UnitTest(me)
+		
 		assertEqual("/a/b/c/", tb's posixPath("a:b:c:"))
 	end script
 	
@@ -374,6 +388,7 @@ script TestSetPathHandlers
 	script TestPosixRelativeHFSPathNoColon
 		property name : "posixPath() with relative POSIX path without trailing colon"
 		property parent : UnitTest(me)
+		
 		assertEqual("a/b/c", tb's posixPath(":a:b:c"))
 	end script
 	
@@ -381,6 +396,7 @@ script TestSetPathHandlers
 	script TestPosixRelativeHFSPathWithColon
 		property name : "posixPath() with relative HFS path with trailing colon"
 		property parent : UnitTest(me)
+		
 		assertEqual("a/b/c/", tb's posixPath(":a:b:c:"))
 	end script
 	
@@ -388,6 +404,7 @@ script TestSetPathHandlers
 	script TestPosixAlias
 		property name : "posixPath() with alias"
 		property parent : UnitTest(me)
+		
 		set res to POSIX path of (path to library folder from user domain as alias)
 		assertEqual(res, tb's posixPath(path to library folder from user domain as alias))
 	end script
@@ -396,6 +413,7 @@ script TestSetPathHandlers
 	script TestPosixFile
 		property name : "posixPath() with file"
 		property parent : UnitTest(me)
+		
 		assertEqual("/System/Library", tb's posixPath(POSIX file "/System/Library"))
 	end script
 	
@@ -403,6 +421,7 @@ script TestSetPathHandlers
 	script TestPosixReference
 		property name : "posixPath() with reference to a POSIX path"
 		property parent : UnitTest(me)
+		
 		assertEqual("a/b/c", tb's posixPath(a reference to "a/b/c"))
 	end script
 	
@@ -410,6 +429,7 @@ script TestSetPathHandlers
 	script TestPosixPaths
 		property name : "posixPaths()"
 		property parent : UnitTest(me)
+		
 		set res to POSIX path of (path to library folder from user domain as alias)
 		assertEqual({res}, tb's posixPaths(path to library folder from user domain as alias))
 		set res to POSIX path of (path to library folder from user domain as text)
@@ -420,6 +440,7 @@ script TestSetPathHandlers
 	script TestPosixPathsAbsolutePath
 		property name : "posixPaths() with POSIX absolute path"
 		property parent : UnitTest(me)
+		
 		set res to "/a/b/c"
 		set v to item 1 of tb's posixPaths(res)
 		assertEqual(res, v)
@@ -429,37 +450,65 @@ script TestSetPathHandlers
 	script TestGlob
 		property name : "glob()"
 		property parent : UnitTest(me)
+		
 		assertInstanceOf(list, tb's glob({"*.scpt", "*.scptd"}))
 		assertInstanceOf(list, tb's glob("abc.scpt"))
-		assert(tb's glob({"*.applescript"})'s length > 2, "Once there was a bug causing glob() to collapse its arguments")
-		assertEqual({"ASMake.applescript"}, tb's glob("ASM*.applescript"))
-		assertEqual({"I/dont/exist/foobar"}, tb's glob("I/dont/exist/foobar"))
+		fail("TODO")
 	end script
 	
 	---------------------------------------------------------------------------------
-	script TestAbsolutePath
-		property name : "absolutePath()"
+	script TestAbsolutePathWithRelativePath
+		property name : "absolutePath() with relative path"
 		property parent : UnitTest(me)
-		assertEqual(tb's workingDirectory() & "a/b/c", tb's absolutePath("a/b/c"))
-		assertEqual(tb's workingDirectory() & "a/b/c", tb's absolutePath("a/b/c/"))
-		assertEqual(tb's workingDirectory() & "a/b/c", tb's absolutePath(":a:b:c"))
-		assertEqual(tb's workingDirectory() & "a/d", tb's absolutePath("a/./b/../d"))
-		assertEqual((POSIX path of (path to home folder)) & "a", tb's absolutePath("~/a/d/./../."))
+		
+		assertKindOf(text, tb's absolutePath("a/b/c"))
+		assertEqual(tb's workingDirectory() & "/a/b/c", tb's absolutePath("a/b/c"))
+		assertEqual(tb's workingDirectory() & "/d/e/f", tb's absolutePath("d/e/f/"))
+		assertEqual(tb's workingDirectory() & "/g/h/i", tb's absolutePath(":g:h:i"))
+		assertEqual(tb's workingDirectory() & "/j/k/l", tb's absolutePath(":j:k:l:"))
+		-- Why does NSURL's URLByStandardizingPath remove /private here,
+		-- but not earlier (it should always remove it)?
+		assertEqual(tb's workingDirectory(), "/private" & tb's absolutePath("."))
+	end script
+	
+	---------------------------------------------------------------------------------
+	script TestAbsolutePathWithAbsolutePath
+		property name : "absolutePath() with absolute path"
+		property parent : UnitTest(me)
+		
 		assertKindOf(text, tb's absolutePath("/a/b/c"))
+		assertEqual("/a/b/c", tb's absolutePath("/a/b/c"))
+		assertEqual("/a/b/c", tb's absolutePath("/a/b/c/"))
+		assertEqual("/a/b/c", tb's absolutePath("a:b:c"))
 		assertEqual("/a/b/c", tb's absolutePath("a:b:c:"))
 	end script
 	
 	---------------------------------------------------------------------------------
-	script TestAbsolutePathWithAbsPosixPath
-		property name : "Test absolutePath() with absolute POSIX path"
+	script TestAbsolutePathWithPathWithTilde
+		property name : "absolutePath() with path with tilde"
 		property parent : UnitTest(me)
-		assertEqual("/a/b/c", tb's absolutePath("/a/b/c"))
+		
+		assertEqual((POSIX path of (path to home folder)) & "a/d", tb's absolutePath("~/a/d"))
+		assertEqual((POSIX path of (path to home folder)) & "a/d", tb's absolutePath("~/a/d/"))
+	end script
+	
+	---------------------------------------------------------------------------------
+	script TestAbsolutePathStandardization
+		property name : "absoloutePath() standardizes its argument"
+		property parent : UnitTest(me)
+		
+		assertEqual("/b/c", tb's absolutePath("/a/../b/./c"))
+		assertEqual(tb's workingDirectory() & "/a/d", tb's absolutePath("a/./b/../d"))
+		assertEqual("/a/b/c", tb's absolutePath("/./a/b/../b/./c/d/../"))
+		assertEqual("/a/b/c", tb's absolutePath("/./a/b/../b/./c/d/.."))
+		assertEqual((POSIX path of (path to home folder)) & "a/b/c", tb's absolutePath("~/./a/b/../b/./c/d/../."))
 	end script
 	
 	---------------------------------------------------------------------------------
 	script TestBasename
 		property name : "basename()"
 		property parent : UnitTest(me)
+		
 		assertEqual("c", tb's basename("a/b/c"))
 		assertEqual("c", tb's basename("/a/b/c"))
 		assertEqual("c", tb's basename("a:b:c"))
@@ -469,26 +518,37 @@ script TestSetPathHandlers
 	---------------------------------------------------------------------------------
 	script TestBasenameTrailingSlash
 		property name : "basename() with trailing slash"
+		
 		property parent : UnitTest(me)
 		assertEqual("c", tb's basename("a/b/c/"))
+		assertEqual("c", tb's basename("a/b/c//"))
 	end script
 	
 	---------------------------------------------------------------------------------
 	script TestDeslash
 		property name : "deslash()"
 		property parent : UnitTest(me)
+		
 		assertEqual("a", tb's deslash("a"))
+		assertEqual("ab", tb's deslash("ab"))
+		assertEqual("/a", tb's deslash("/a"))
 		assertEqual("a", tb's deslash("a/"))
 		assertEqual("a", tb's deslash("a//"))
+		assertEqual("/a/a", tb's deslash("/a/a//"))
 		assertEqual("/", tb's deslash("/"))
+		assertEqual("/", tb's deslash("//"))
+		assertEqual("/", tb's deslash("///"))
 	end script
 	
 	---------------------------------------------------------------------------------
 	script TestParentDirectory
 		property name : "parentDirectory()"
 		property parent : UnitTest(me)
+		
 		assertEqual("a/b", tb's parentDirectory("a/b/c"))
+		assertEqual("a/b", tb's parentDirectory("a/b/c/"))
 		assertEqual("/a/b", tb's parentDirectory("/a/b/c"))
+		assertEqual("/a/b", tb's parentDirectory("/a/b/c/"))
 		assertEqual("/a/b", tb's parentDirectory("a:b:c"))
 		assertEqual("/a/b", tb's parentDirectory("a:b:c:"))
 	end script
@@ -497,6 +557,7 @@ script TestSetPathHandlers
 	script TestJoinPathText
 		property name : "joinPath() with text arguments"
 		property parent : UnitTest(me)
+		
 		assertEqual("abc/defg", tb's joinPath("abc", "defg"))
 		assertEqual("abc/defg", tb's joinPath("abc/", "defg"))
 		assertEqual("abc/defg", tb's joinPath("abc/", "defg/"))
@@ -510,6 +571,7 @@ script TestSetPathHandlers
 	script TestJoinPathAlias
 		property name : "joinPath() with aliases"
 		property parent : UnitTest(me)
+		
 		set p to path to library folder from user domain as alias
 		assertEqual(POSIX path of p & "Scripts", tb's joinPath(p, "Scripts"))
 		assertEqual(POSIX path of p & "Scripts", tb's joinPath(p, ":Scripts"))
@@ -519,6 +581,7 @@ script TestSetPathHandlers
 	script TestChomp
 		property name : "chomp()"
 		property parent : UnitTest(me)
+		
 		assertEqual("", tb's chomp(""))
 		assertEqual("", tb's chomp(return))
 		assertEqual("", tb's chomp(linefeed))
@@ -538,32 +601,37 @@ script TestSetPathHandlers
 	script TestPathComponents
 		property name : "pathComponents()"
 		property parent : UnitTest(me)
+		
 		assertInstanceOf(list, tb's pathComponents("a/b"))
-		assert(tb's pathComponents("a/b") ends with {"a", "b"}, "Path decomposed incorrectly")
+		assertEqual({"/", "a", "b"}, tb's pathComponents("/a/b"), "Absolute path decomposed incorrectly")
+		assertEqual({"/", "private", "tmp", "a", "b"}, tb's pathComponents("a/b"), "Relative path decomposed incorrectly")
+		assertEqual({"/", "private", "tmp", "a", "b"}, tb's pathComponents("a/b/"), "Relative path with trailing slash decomposed incorrectly")
 	end script
 	
 	---------------------------------------------------------------------------------
 	script TestPathExistsAbsPath
 		property name : "pathExists() with absolute paths"
 		property parent : UnitTest(me)
-		assert(tb's pathExists(tb's workingDirectory()), "The working directory should exist")
-		assert(tb's pathExists(tb's workingDirectory() & "/ASMake.applescript"), "ASMake.applescript should exist")
-		refute(tb's pathExists(tb's workingDirectory() & "/Idontexists"), "The file should not exist!")
+		
+		assert(tb's pathExists("/Users"), "The /Users folder should exist")
+		refute(tb's pathExists("/IdOnTeXisTs"), "The path should not exist!")
 	end script
 	
 	---------------------------------------------------------------------------------
 	script TestPathExistsRelPath
 		property name : "pathExists() with relative paths"
 		property parent : UnitTest(me)
+		
+		tb's setWorkingDirectory((folder of file (path to me) of application "Finder") as alias)
 		assert(tb's pathExists("."), "The working directory should exist")
-		assert(tb's pathExists("ASMake.applescript"), "ASMake.applescript should exist")
-		refute(tb's pathExists("Idontexists"), "The file should not exist!")
+		refute(tb's pathExists("I/d/on/tex/i/sts"), "The path should not exist!")
 	end script
 	
 	---------------------------------------------------------------------------------
 	script TestRelativizePathAbsPath
 		property name : "relativizePath() with absolute paths"
 		property parent : UnitTest(me)
+		
 		skip("Not implemented yet")
 		assertEqual("/a/b/c", tb's relativizePath("/a/b/c", ""))
 		assertEqual("a/b/c", tb's relativizePath("/a/b/c", "/"))
@@ -583,6 +651,7 @@ script TestSetPathHandlers
 	script TestRelativizePathRelPath
 		property name : "relativizePath() with relative paths"
 		property parent : UnitTest(me)
+		
 		skip("Not implemented yet")
 		assertEqual("a/b/c", tb's relativizePath("a/b/c", ""))
 		assertEqual("a/b/c", tb's relativizePath("a/b/c", "."))
@@ -602,6 +671,7 @@ script TestSetPathHandlers
 	script TestSplitPath
 		property name : "splitPath()"
 		property parent : UnitTest(me)
+		
 		assertEqual({"a/b", "c"}, tb's splitPath("a/b/c"))
 		assertEqual({"a/b", "c"}, tb's splitPath("a/b/c/"))
 		assertEqual({"/a/b", "c"}, tb's splitPath("/a/b/c"))
@@ -614,6 +684,7 @@ script TestSetPathHandlers
 	script TestSplitPathShort
 		property name : "splitPath() with short paths"
 		property parent : UnitTest(me)
+		
 		assertEqual({".", "c"}, tb's splitPath("c"))
 		assertEqual({".", "c"}, tb's splitPath("c/"))
 		assertEqual({".", "c"}, tb's splitPath(":c"))
@@ -625,117 +696,102 @@ script TestSetPathHandlers
 	
 	---------------------------------------------------------------------------------
 	script TestWhich
-		property name : "Test which()"
+		property name : "which()"
 		property parent : UnitTest(me)
-		set ASMake's CommandLine's options to {} -- remove --dry
+		
 		assertNil(tb's which("A-command-that-does-not-exist"))
 		assertEqual("/bin/bash", tb's which("bash"))
 	end script
 	
 end script -- TestSetTaskbase
 
+
 ###################################################################################
 script TestSetFileHandlers
 	property name : "File manipulation"
-	property parent : BaseTestSet(me)
+	property parent : TestSet(me)
 	property tb : missing value
 	
+	on setUp()
+		set ASMake's CommandLine's options to {}
+		set my tb to a reference to ASMake's TaskBase
+		--my tb's setWorkingDirectory(TOPLEVEL's workingDir)
+	end setUp
+	
 	---------------------------------------------------------------------------------
-	script TestCp
-		property name : "cp()"
+	script TestCopy
+		property name : "Copy items"
 		property parent : UnitTest(me)
-		set res to tb's cp({tb's glob("AS*.applescript"), POSIX file "doc/foo.txt", "examples/bar"}, "tmp/cp")
-		set expected to "/bin/cp" & space & quoted form of "-r" & space & Â
-			quoted form of "ASMake.applescript" & space & Â
-			quoted form of "doc/foo.txt" & space & Â
-			quoted form of "examples/bar" & space & Â
-			quoted form of "tmp/cp"
-		assertEqual(expected, res)
+		
+		fail("TODO")
 	end script
 	
 	---------------------------------------------------------------------------------
 	script TestDitto
 		property name : "ditto()"
 		property parent : UnitTest(me)
-		set res to tb's ditto({tb's glob("AS*.applescript"), POSIX file "doc/foo.txt", "examples/bar"}, "tmp/ditto")
-		set expected to "/usr/bin/ditto" & space & Â
-			quoted form of "ASMake.applescript" & space & Â
-			quoted form of "doc/foo.txt" & space & Â
-			quoted form of "examples/bar" & space & Â
-			quoted form of "tmp/ditto"
-		assertEqual(expected, res)
+		
+		fail("TODO")
 	end script
 	
 	---------------------------------------------------------------------------------
 	script TestMakeAlias
-		property name : "makeAlias()"
+		property name : "Create alias"
 		property parent : UnitTest(me)
-		set p to "/a/b/c"
-		set q to "/x/y"
-		set r to q & "/SomeAlias"
-		assertEqual({p, q, "SomeAlias"}, tb's makeAlias(p, r))
+		
+		fail("TODO")
 	end script
 	
 	---------------------------------------------------------------------------------
 	script TestMakePath
-		property name : "makePath()"
+		property name : "Create path"
 		property parent : UnitTest(me)
-		set res to tb's makePath({"a", "b/c", POSIX file "d/e"})
-		set expected to "/bin/mkdir" & space & quoted form of "-p" & space & Â
-			quoted form of "a" & space & Â
-			quoted form of "b/c" & space & Â
-			quoted form of "d/e"
-		assertEqual(expected, res)
-		set expected to "/bin/mkdir '-p' 'foo bar'"
-		assertEqual(expected, tb's makePath("foo bar"))
+		
+		fail("TODO")
 	end script
 	
 	---------------------------------------------------------------------------------
-	script TestMv
-		property name : "mv()"
+	script TestMove
+		property name : "Move items"
 		property parent : UnitTest(me)
-		set res to tb's mv({"foo", "examples/bar"}, "tmp/mv")
-		set expected to "/bin/mv" & space & Â
-			quoted form of "foo" & space & Â
-			quoted form of "examples/bar" & space & Â
-			quoted form of "tmp/mv"
-		assertEqual(expected, res)
+		
+		fail("TODO")
 	end script
 	
 	---------------------------------------------------------------------------------
-	script TestDryRm
-		property name : "Dry rm()"
+	script TestRemove
+		property name : "Remove items"
 		property parent : UnitTest(me)
-		set res to tb's rm({"a", "b/c", POSIX file "d/e"})
-		set expected to "Deleting" & space & Â
-			quoted form of "a" & ", " & Â
-			quoted form of "b/c" & ", " & Â
-			quoted form of "d/e"
-		assertEqual(expected, res)
+		
+		fail("TODO")
 	end script
 	
 	---------------------------------------------------------------------------------
 	script TestSymlink
 		property name : "symlink()"
 		property parent : UnitTest(me)
-		set expected to "/bin/ln '-s' 'foo' 'bar'"
-		assertEqual(expected, tb's symlink("foo", "bar"))
+		
+		fail("TODO")
 	end script
 end script -- TestSetFileHandlers
 
 
 ###################################################################################
-script TestScriptManipulation
+script TestScriptHandlers
 	property name : "Script manipulation"
-	property parent : BaseTestSet(me)
+	property parent : TestSet(me)
 	property tb : missing value
+	
+	on setUp()
+		set my tb to a reference to ASMake's TaskBase
+	end setUp
 	
 	---------------------------------------------------------------------------------
 	script TestOsacompile
 		property name : "osacompile()"
 		property parent : UnitTest(me)
-		set expected to "/usr/bin/osacompile '-o' 'ASMake.scpt' '-x' 'ASMake.applescript'"
-		assertEqual(expected, osacompile of tb from "ASMake" given target:"scpt", options:"-x")
+		
+		fail("TODO")
 	end script
 end script -- TestScriptBundles
 
@@ -743,9 +799,13 @@ end script -- TestScriptBundles
 ###################################################################################
 script TestSetFunctionalHandlers
 	property name : "Functional handlers"
-	property parent : BaseTestSet(me)
+	property parent : TestSet(me)
 	property TS : me
 	property tb : missing value
+	
+	on setUp()
+		set my tb to a reference to ASMake's TaskBase
+	end setUp
 	
 	on increment(x)
 		x + 1
@@ -825,5 +885,4 @@ script TestSetFunctionalHandlers
 		assertEqual("This:is:a:path", tb's join(tb's split("This:is:a:path", ":"), ":"))
 		assertEqual({"now", "here"}, tb's split(tb's join({"now", "here"}, "/"), "/"))
 	end script
-	
 end script -- TestSetFunctionalHandlers
