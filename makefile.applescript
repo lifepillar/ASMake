@@ -153,6 +153,13 @@ on tasks()
 		end repeat
 	end script
 	
+	script EmptyScriptBundleExample
+		property parent : Task(me)
+		property name : "example/bundle"
+		property description : "Create an empty script bundle"
+		emptyScriptBundle("example/Empty.scptd")
+	end script
+	
 	script SampleAppExample
 		property parent : Task(me)
 		property name : "example/app"
