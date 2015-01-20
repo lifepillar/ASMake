@@ -1857,7 +1857,7 @@ script TaskBase
 		if class of options is not list then set options to {options}
 		repeat with p in paths
 			if p ends with ".applescript" then
-				set basename to text 1 thru -13 of s -- remove suffix
+				set basename to text 1 thru -13 of p -- remove suffix
 			else
 				set basename to p
 			end if
