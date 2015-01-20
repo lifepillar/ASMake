@@ -6,7 +6,7 @@
 *)
 use AppleScript version "2.4"
 use scripting additions
-use ASUnit : script "ASUnit" version "1.2.3"
+use ASUnit : script "com.lifepillar/ASUnit" version "1.2.3"
 use ASMake : script "com.lifepillar/ASMake"
 
 property parent : ASUnit
