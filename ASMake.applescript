@@ -2286,7 +2286,7 @@ end findTask
 on run argv
 	CommandLine's parse(argv)
 	tell TaskBase
-		setWorkingDirectory((folder of file (path to me) of application "Finder") as text)
+		setWorkingDirectory((folder of file (path to it) of application "Finder") as text)
 		set its debug to CommandLine's debug()
 		set its dry to CommandLine's dry()
 		set its verbose to CommandLine's verbose()
