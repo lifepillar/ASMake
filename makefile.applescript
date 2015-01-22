@@ -14,7 +14,7 @@ on run argv
 	
 	script
 		property parent : ASMake
-		set my defaultTask to "test/run"
+		--set my defaultTask to "test/run"
 		continue run argv
 	end script
 	
