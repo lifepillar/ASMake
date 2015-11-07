@@ -168,4 +168,12 @@ on tasks()
 		property synonyms : {"exapp"}
 		makeApplication from "example/SampleApp/SampleApp.applescript" at "example" with overwriting
 	end script
+	
+	script CrashScriptBundleExample
+		property parent : Task(me)
+		property name : "example/crash"
+		property description : "Script bundle that causes a segfault"
+		makeScriptBundle from "example/Crash/Crash.applescript" at "example" with overwriting
+	end script
+	
 end tasks
