@@ -92,6 +92,7 @@ on tasks()
 		property name : "test/build"
 		property description : "Build tests, but do not run them"
 		
+		ohai("Building test script…")
 		makeScriptBundle from "test/Test ASMake.applescript" at "test" with overwriting
 	end script
 	
@@ -114,15 +115,17 @@ on tasks()
 		property printSuccess : false
 		
 		tell BuildTests to exec:{}
-		ohai("Tests built")
-		owarn("Due to bugs in OS X Yosemite, tests cannot be run from the makefile.")
-		owarn("Please run the tests with `osascript 'test/Test ASMake.scptd'`")
-		-- This method causes a segfault unless ASMake is installed in a shared location:
-		--local t
-		--set t to load script POSIX file (workingDirectory() & "/test/Test ASMake.scptd")
-		--run t
-		-- This method does not output anything (and needs ASMake installed):
-		--run script POSIX file (workingDirectory() & "/test/Test ASMake.applescript")
+
+		set macos_version to system version of (system info)
+		if macos_version starts with "10.10" then
+			owarn("Due to bugs in OS X Yosemite, tests cannot be run from the makefile.")
+			owarn("Please run the tests with `osascript 'test/Test ASMake.scptd'`")
+			return
+		end if
+
+		local t
+		set t to load script POSIX file (workingDirectory() & "/test/Test ASMake.scptd")
+		run t
 	end script
 	
 	script VersionTask
