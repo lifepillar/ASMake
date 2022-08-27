@@ -1,11 +1,11 @@
 (*!
- @header ASMake
- @abstract
- 	A simple build and task AppleScript script library.
- @author Lifepillar
- @copyright 2014Ð2015 Lifepillar
- @version 0.2.1
- @charset macintosh
+	@header ASMake
+	@abstract
+		A simple build and task AppleScript script library.
+	@author Lifepillar
+	@copyright 2014Ð2022 Lifepillar
+	@version 0.2.1
+	@charset macintosh
 *)
 use AppleScript version "2.4"
 use scripting additions
@@ -729,41 +729,41 @@ script TaskBase
 
 			For example, a source directory for an applet may have the following content:
 			<pre>
-      MyApp
-        Info.plist
-        MyApp.applescript
-        Resources
-          applet.icns
-          Readme.txt
-          Scripts
-            helper.applescript
-          Script Libraries
-            LibOne
-              LibOne.applescript
-              Resources
-                ...
-            org.me
-              Info.plist
-              LibTwo.applescript
-              Resources
-                ...
+			MyApp
+				Info.plist
+				MyApp.applescript
+				Resources
+					applet.icns
+					Readme.txt
+					Scripts
+						helper.applescript
+					Script Libraries
+						LibOne
+							LibOne.applescript
+							Resources
+								...
+						org.me
+							Info.plist
+							LibTwo.applescript
+							Resources
+								...
 			</pre>
 			After building the applet, you will get an <tt>.app</tt> folder with the
 			following content:
 			<pre>
-      MyApp.app
-        Contents
-          Info.plist
-          Resources
-            applet.icns
-            Readme.txt
-            Scripts
-              main.scpt
-              helper.scpt
-            Script Libraries
-              LibOne.scptd
-              org.me
-                LibTwo.scptd
+			MyApp.app
+				Contents
+					Info.plist
+					Resources
+						applet.icns
+						Readme.txt
+						Scripts
+							main.scpt
+							helper.scpt
+						Script Libraries
+							LibOne.scptd
+							org.me
+								LibTwo.scptd
 			</pre>
 			Note that if the name of a script (without extension) is equal to the name of the folder that contains
 			that script, such folder is not copied to the target bundle (e.g., <tt>LibOne.scptd</tt> is created
@@ -906,13 +906,13 @@ script TaskBase
 			with password <code>xyz123</code> may look as follows:
 			<pre>
 			shell for "mycmd" with privileges given options:{"--some", "--options"},
-			  username:"nick", |password|:"xyz123"
+				username:"nick", |password|:"xyz123"
 			</pre>
 			Output redirection is supported, too, as well as altering line endings, e.g.:
 			<pre>
 			shell for "mycmd" given out:"/some/file", err:"&1", alteringLineEndings:false
 			</pre>
-			This handler uses the syntax introduced is OS X 10.10 (Yosemite) for optional labeled parameters. 
+			This handler uses the syntax introduced is OS X 10.10 (Yosemite) for optional labeled parameters.
 			Apart from the <code>for</code> parameter, all other arguments are optional (and may appear in any order).
 		@param
 			command <em>[text]</em> The command to be executed.
@@ -2013,9 +2013,9 @@ script TaskBase
 		@discussion
 			This handler sorts a list in-place. Call it as follows:
 			<pre><code>
-      set myList to {4,2,6,3}
-      insertionSort(a reference to myList)
-      myList -- {2,3,4,6}
+			set myList to {4,2,6,3}
+			insertionSort(a reference to myList)
+			myList -- {2,3,4,6}
 			</code></pre>
 		@param
 			x <em>[reference]</em> A reference to a list.
