@@ -320,7 +320,7 @@ script TestSetShellCommands
 		property name : "shell()"
 		property parent : UnitTest(me)
 		
-		fail("TODO")
+		skip("Not implemented yet")
 	end script
 end script -- TestSetShellCommands
 
@@ -453,7 +453,7 @@ script TestSetPathHandlers
 		
 		assertInstanceOf(list, tb's glob({"*.scpt", "*.scptd"}))
 		assertInstanceOf(list, tb's glob("abc.scpt"))
-		fail("TODO")
+		skip("Not implemented yet")
 	end script
 	
 	---------------------------------------------------------------------------------
@@ -723,7 +723,7 @@ script TestSetFileHandlers
 		property name : "Copy items"
 		property parent : UnitTest(me)
 		
-		fail("TODO")
+		skip("Not implemented yet")
 	end script
 	
 	---------------------------------------------------------------------------------
@@ -731,7 +731,7 @@ script TestSetFileHandlers
 		property name : "ditto()"
 		property parent : UnitTest(me)
 		
-		fail("TODO")
+		skip("Not implemented yet")
 	end script
 	
 	---------------------------------------------------------------------------------
@@ -739,7 +739,7 @@ script TestSetFileHandlers
 		property name : "Create alias"
 		property parent : UnitTest(me)
 		
-		fail("TODO")
+		skip("Not implemented yet")
 	end script
 	
 	---------------------------------------------------------------------------------
@@ -747,7 +747,7 @@ script TestSetFileHandlers
 		property name : "Create path"
 		property parent : UnitTest(me)
 		
-		fail("TODO")
+		skip("Not implemented yet")
 	end script
 	
 	---------------------------------------------------------------------------------
@@ -755,7 +755,7 @@ script TestSetFileHandlers
 		property name : "Move items"
 		property parent : UnitTest(me)
 		
-		fail("TODO")
+		skip("Not implemented yet")
 	end script
 	
 	---------------------------------------------------------------------------------
@@ -763,7 +763,7 @@ script TestSetFileHandlers
 		property name : "Remove items"
 		property parent : UnitTest(me)
 		
-		fail("TODO")
+		skip("Not implemented yet")
 	end script
 	
 	---------------------------------------------------------------------------------
@@ -771,7 +771,7 @@ script TestSetFileHandlers
 		property name : "symlink()"
 		property parent : UnitTest(me)
 		
-		fail("TODO")
+		skip("Not implemented yet")
 	end script
 end script -- TestSetFileHandlers
 
@@ -791,7 +791,7 @@ script TestScriptHandlers
 		property name : "osacompile()"
 		property parent : UnitTest(me)
 		
-		fail("TODO")
+		skip("Not implemented yet")
 	end script
 end script -- TestScriptBundles
 
