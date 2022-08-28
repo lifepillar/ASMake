@@ -668,7 +668,7 @@ script TaskBase
 			languageInstance <em>[OSALanguageInstance]</em> The language instance to be used to
 			compile the script.
 		@param
-			storageOptions One ore more of <code>OSANull</code>, <code>OSAPreventGetSource</code>,
+			storageOptions One or more of <code>OSANull</code>, <code>OSAPreventGetSource</code>,
 			<code>OSACompileIntoContext</code>, <code>OSADontSetScriptLocation</code>,
 			<code>OSAStayOpenApplet</code>, or <code>OSAShowStartupScreen</code>.
 		@return
