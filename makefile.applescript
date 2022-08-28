@@ -115,14 +115,14 @@ on tasks()
 		property printSuccess : false
 		
 		tell BuildTests to exec:{}
-
+		
 		set macos_version to system version of (system info)
 		if macos_version starts with "10.10" then
 			owarn("Due to bugs in OS X Yosemite, tests cannot be run from the makefile.")
 			owarn("Please run the tests with `osascript 'test/Test ASMake.scptd'`")
 			return
 		end if
-
+		
 		local t
 		set t to load script POSIX file (workingDirectory() & "/test/Test ASMake.scptd")
 		run t
@@ -176,6 +176,9 @@ on tasks()
 		property parent : Task(me)
 		property name : "example/crash"
 		property description : "Script bundle that causes a segfault"
+		
+		owarn("This task exposes a likely bug is OSAKit.")
+		owarn("It can be reproduced in Script Editor, so it does not depend on ASMake.")
 		makeScriptBundle from "example/Crash/Crash.applescript" at "example" with overwriting
 	end script
 	
