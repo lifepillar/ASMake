@@ -28,7 +28,7 @@ end Task
 on tasks()
 	script api
 		property parent : Task(me)
-		property description : "Build the API documentation"
+		property description : "Build the API documentation (requires `headerdoc` and `gatherheaderdoc`)"
 		property dir : "Documentation"
 		
 		ohai("Running HeaderDoc, please wait...")
@@ -56,14 +56,7 @@ on tasks()
 		property parent : Task(me)
 		property description : "Build ASMake"
 		
-		makeScriptBundle from "ASMake.applescript" at "build" with overwriting
-	end script
-	
-	script doc
-		property parent : Task(me)
-		property description : "Compile the README"
-		
-		shell for "markdown" given options:{"-o", "README.html", "README.md"}
+		makeScriptBundle from "ASMake.applescript" at "build" with overwriting given encoding:my NSMacOSRomanStringEncoding
 	end script
 	
 	script install
