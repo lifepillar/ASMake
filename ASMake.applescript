@@ -3,8 +3,8 @@
 	@abstract
 		A simple build and task AppleScript script library.
 	@author Lifepillar
-	@copyright 2014Ð2022 Lifepillar
-	@version 0.2.1
+	@copyright 2014 Lifepillar <lifepillar@lifepillar.me>
+	@version 0.2.2
 	@charset macintosh
 *)
 use AppleScript version "2.4"
@@ -12,7 +12,7 @@ use scripting additions
 
 property name : "ASMake"
 property id : "com.lifepillar.ASMake"
-property version : "0.2.1"
+property version : "0.2.2"
 property parent : AppleScript
 (*! @abstract The top-level script object. *)
 property ASMake : me
