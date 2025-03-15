@@ -207,6 +207,13 @@ script TaskBase
 	property NSBundle : a reference to current application's NSBundle
 	property NSFileManager : a reference to current application's NSFileManager
 	property NSString : a reference to current application's NSString
+	property NSASCIIStringEncoding: a reference to current application's NSASCIIStringEncoding
+	property NSMacOSRomanStringEncoding : a reference to current application's NSMacOSRomanStringEncoding
+	property NSUnicodeStringEncoding: a reference to current application's NSUnicodeStringEncoding
+	property NSUTF8StringEncoding: a reference to current application's NSUTF8StringEncoding
+	property NSUTF16StringEncoding: a reference to current application's NSUTF16StringEncoding
+	property NSUTF16BigEndianStringEncoding: a reference to current application's NSUTF16BigEndianStringEncoding
+	property NSUTF16LittleEndianStringEncoding: a reference to current application's NSUTF16LittleEndianStringEncoding
 	property NSURL : a reference to current application's NSURL
 	property OSAScript : a reference to current application's OSAScript
 	property OSALanguage : a reference to current application's OSALanguage
@@ -508,19 +515,28 @@ script TaskBase
 			This handler attempts to determine the encoding of the file.
 		@param
 			aURL <em>[NSURL]</em> A file URL.
+		@param
+			encoding <em>[boolean]</em> The encoding of the file to read.
 		@return
 			<em>[NSString]</em> The content of the file.
 		@throws
 			An error if the file cannot be read or there is an encoding error.
 	*)
-	on _readFile(aURL)
+	on _readFile(aURL, encoding)
 		local theText, theEncoding, theError
 		
 		overb("Reading" & space & (aURL's |path| as text))
 		
-		set {theText, theEncoding, theError} to Â
-			(my NSString)'s stringWithContentsOfFile:(aURL's |path|) Â
-			usedEncoding:(reference) |error|:(reference)
+		if encoding is missing value then
+			set {theText, theEncoding, theError} to Â
+				(my NSString)'s stringWithContentsOfFile:(aURL's |path|) Â
+				usedEncoding:(reference) |error|:(reference)
+		else
+			set theEncoding to encoding
+			set {theText, theError} to Â
+				(my NSString)'s stringWithContentsOfFile:(aURL's |path|) Â
+				encoding:(theEncoding) |error|:(reference)
+		end if
 		if theText is missing value then _raise("Could not open file", theError)
 		
 		return theText
@@ -771,6 +787,9 @@ script TaskBase
 		@param
 			source <em>[NSString]</em> or <em>[text]</em> The script's source code.
 		@param
+			encoding <em>[boolean]</em> The encoding the source code. When this is
+			a missing value, the encoding is guessed.
+		@param
 			fromURL <em>[NSURL]</em> URL argument used to indicate the origin of scripts.
 			This URL may be used to specify the location of the script libraries this
 			script depends upon.
@@ -795,7 +814,7 @@ script TaskBase
 		@throws
 			An error if the script cannot be compiled or if it cannot be written to disk.
 	*)
-	on _buildScript(sourceURL, fromURL, bundleURL, languageInstance, storageType, storageOptions)
+	on _buildScript(sourceURL, encoding, fromURL, bundleURL, languageInstance, storageType, storageOptions)
 		local sourceDirURL, defaultManager, languageInstance
 		local srcURL, destURL, filter, scriptList, mainURL
 		local fsrc, fdst
@@ -807,7 +826,7 @@ script TaskBase
 		_makePath(buildDirURL)
 		
 		if storageType is (my OSAStorageScriptType) then -- .scpt
-			_compile(_readFile(sourceURL), fromURL, bundleURL, languageInstance, storageType, storageOptions)
+			_compile(_readFile(sourceURL, encoding), fromURL, bundleURL, languageInstance, storageType, storageOptions)
 			return
 		end if
 		
@@ -826,6 +845,7 @@ script TaskBase
 			repeat with f in scriptList
 				if f's pathExtension as text is "applescript" then
 					_buildScript(_joinPath(srcURL, f), Â
+						missing value, Â
 						missing value, Â
 						_joinPath(destURL, _setPathExtension(_removeParentDirectoryFromPathWhenMatchingScriptName(f), "scptd")), Â
 						languageInstance, my OSAStorageScriptBundleType, storageOptions)
@@ -846,6 +866,7 @@ script TaskBase
 			repeat with f in scriptList
 				if f's pathExtension as text is "applescript" then
 					_buildScript(_joinPath(srcURL, f), Â
+						missing value, Â
 						bundleURL, Â
 						_joinPath(destURL, _setPathExtension(_removeParentDirectoryFromPathWhenMatchingScriptName(f), "scpt")), Â
 						languageInstance, my OSAStorageScriptType, storageOptions)
@@ -859,7 +880,7 @@ script TaskBase
 		
 		-- Build main script
 		set mainURL to _joinPath(bundleURL, "Contents/Resources/Scripts/main.scpt")
-		_compile(_readFile(sourceURL), bundleURL, mainURL, languageInstance, my OSAStorageScriptType, storageOptions)
+		_compile(_readFile(sourceURL, encoding), bundleURL, mainURL, languageInstance, my OSAStorageScriptType, storageOptions)
 		
 		-- Copy other resources
 		set srcURL to _joinPath(sourceDirURL, "Resources")
@@ -1582,7 +1603,7 @@ script TaskBase
 	
 	(*! @abstract TODO *)
 	on readFile(aPath)
-		_readFile(toNSURL(aPath)) as text
+		_readFile(toNSURL(aPath), missing value) as text
 	end readFile
 	
 	(*!
@@ -1746,6 +1767,10 @@ script TaskBase
 		@param
 			overwrite <em>[boolean]</em> An optional flag indicating whether an existing build
 			location should be overwritten (default: <code>false</code>).
+		@param
+			encoding <em>[boolean]</em> The encoding of the source file.
+			An error occurs if the encoding is not provided and the encoding cannot be
+			determined automatically (default: <code>missing value</code>).
 		@return
 			Nothing
 		@throws
@@ -1753,7 +1778,7 @@ script TaskBase
 		@seealso
 			_buildScript()
 	*)
-	on makeScriptBundle from sourcePath at buildLocation : missing value given overwriting:overwrite : false
+	on makeScriptBundle from sourcePath at buildLocation : missing value given overwriting:overwrite : false, encoding:encoding : missing value
 		local sourceURL, sourceDirectoryURL, scriptBundleName, buildURL, bundleURL, languageInstance
 		
 		set sourceURL to toNSURL(sourcePath)
@@ -1773,7 +1798,7 @@ script TaskBase
 		end if
 		
 		set languageInstance to _languageInstanceForName("AppleScript")
-		_buildScript(sourceURL, missing value, _joinPath(buildURL, scriptBundleName), Â
+		_buildScript(sourceURL, encoding, missing value, _joinPath(buildURL, scriptBundleName), Â
 			languageInstance, my OSAStorageScriptBundleType, my OSANull)
 	end makeScriptBundle
 	
@@ -1793,6 +1818,10 @@ script TaskBase
 		@param
 			overwrite <em>[boolean]</em> An optional flag indicating whether an existing build
 			location should be overwritten (default: <code>false</code>).
+		@param
+			encoding <em>[boolean]</em> The encoding of the source file.
+			An error occurs if the encoding is not provided and the encoding cannot be
+			determined automatically (default: <code>missing value</code>).
 		@return
 			Nothing
 		@throws
@@ -1800,7 +1829,7 @@ script TaskBase
 		@seealso
 			_buildScript()
 	*)
-	on makeApplication from sourcePath at buildLocation : missing value given overwriting:overwrite : false
+	on makeApplication from sourcePath at buildLocation : missing value given overwriting:overwrite : false, encoding:encoding : missing value
 		local sourceURL, sourceDirectoryURL, scriptBundleName, buildURL, bundleURL, languageInstance
 		
 		set sourceURL to toNSURL(sourcePath)
@@ -1820,7 +1849,7 @@ script TaskBase
 		end if
 		
 		set languageInstance to _languageInstanceForName("AppleScript")
-		_buildScript(sourceURL, missing value, _joinPath(buildURL, scriptBundleName), Â
+		_buildScript(sourceURL, encoding, missing value, _joinPath(buildURL, scriptBundleName), Â
 			languageInstance, my OSAStorageApplicationType, my OSANull)
 	end makeApplication
 	
