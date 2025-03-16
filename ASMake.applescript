@@ -207,13 +207,13 @@ script TaskBase
 	property NSBundle : a reference to current application's NSBundle
 	property NSFileManager : a reference to current application's NSFileManager
 	property NSString : a reference to current application's NSString
-	property NSASCIIStringEncoding: a reference to current application's NSASCIIStringEncoding
+	property NSASCIIStringEncoding : a reference to current application's NSASCIIStringEncoding
 	property NSMacOSRomanStringEncoding : a reference to current application's NSMacOSRomanStringEncoding
-	property NSUnicodeStringEncoding: a reference to current application's NSUnicodeStringEncoding
-	property NSUTF8StringEncoding: a reference to current application's NSUTF8StringEncoding
-	property NSUTF16StringEncoding: a reference to current application's NSUTF16StringEncoding
-	property NSUTF16BigEndianStringEncoding: a reference to current application's NSUTF16BigEndianStringEncoding
-	property NSUTF16LittleEndianStringEncoding: a reference to current application's NSUTF16LittleEndianStringEncoding
+	property NSUnicodeStringEncoding : a reference to current application's NSUnicodeStringEncoding
+	property NSUTF8StringEncoding : a reference to current application's NSUTF8StringEncoding
+	property NSUTF16StringEncoding : a reference to current application's NSUTF16StringEncoding
+	property NSUTF16BigEndianStringEncoding : a reference to current application's NSUTF16BigEndianStringEncoding
+	property NSUTF16LittleEndianStringEncoding : a reference to current application's NSUTF16LittleEndianStringEncoding
 	property NSURL : a reference to current application's NSURL
 	property OSAScript : a reference to current application's OSAScript
 	property OSALanguage : a reference to current application's OSALanguage
@@ -787,7 +787,7 @@ script TaskBase
 		@param
 			source <em>[NSString]</em> or <em>[text]</em> The script's source code.
 		@param
-			encoding <em>[boolean]</em> The encoding the source code. When this is
+			encoding <em>[boolean]</em> The encoding of the source code. When this is
 			a missing value, the encoding is guessed.
 		@param
 			fromURL <em>[NSURL]</em> URL argument used to indicate the origin of scripts.
@@ -845,7 +845,7 @@ script TaskBase
 			repeat with f in scriptList
 				if f's pathExtension as text is "applescript" then
 					_buildScript(_joinPath(srcURL, f), Â
-						missing value, Â
+						encoding, Â
 						missing value, Â
 						_joinPath(destURL, _setPathExtension(_removeParentDirectoryFromPathWhenMatchingScriptName(f), "scptd")), Â
 						languageInstance, my OSAStorageScriptBundleType, storageOptions)
