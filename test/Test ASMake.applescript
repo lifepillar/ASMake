@@ -700,7 +700,7 @@ script TestSetPathHandlers
 		property parent : UnitTest(me)
 		
 		assertNil(tb's which("A-command-that-does-not-exist"))
-		assertEqual("/bin/bash", tb's which("bash"))
+		assertEqual("/usr/bin/ditto", tb's which("ditto"))
 	end script
 	
 end script -- TestSetTaskbase
