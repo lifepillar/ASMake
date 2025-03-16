@@ -86,7 +86,8 @@ on tasks()
 		property description : "Build tests, but do not run them"
 		
 		ohai("Building test scriptÉ")
-		makeScriptBundle from "test/Test ASMake.applescript" at "test" with overwriting
+		makeScriptBundle from "test/Test ASMake.applescript" at Â
+			"test" with overwriting given encoding:my NSMacOSRomanStringEncoding
 	end script
 	
 	script uninstall
@@ -136,7 +137,7 @@ on tasks()
 	script ArgsExample
 		property parent : Task(me)
 		property name : "example/args"
-		property description : "Print the task's arguments and exit"
+		property description : "Print the task's arguments and exit (e.g., `asmake exarg a b c`)"
 		property synonyms : {"exarg", "exargs"}
 		property printSuccess : false
 		
