@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> **As of March 11, 2026, this repository is on [Codeberg](https://codeberg.org/lifepillar/ASMake).**
+
 # ASMake: an AppleScript build library
 
 ASMake is an AppleScript script library that aims to provide functionality
